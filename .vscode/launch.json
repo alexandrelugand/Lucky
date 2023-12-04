@@ -1,0 +1,66 @@
+{
+    "configurations": [        
+        {
+            "name": "Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Debug/windows/x86_64/App.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/bin/Debug/windows/x86_64",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/msys64/ucrt64/bin/gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Debug"
+        },
+        {
+            "name": "Release",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Release/windows/x86_64/App.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/bin/Release/windows/x86_64",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "Release"
+        },
+        {
+            "name": "Setup",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/setup.bat",
+            "cwd": "${cwd}"
+        },
+        {
+            "name": "Clean",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/clean.bat",
+            "cwd": "${cwd}"
+        },
+        {
+            "name": "Wasm",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "ws -s App.html -o",
+            "cwd": "${workspaceFolder}/bin/Debug/browser",
+            "preLaunchTask": "Wasm",
+            "postDebugTask": "StopServer"
+        }
+    ],
+    "version": "2.0.0"
+}

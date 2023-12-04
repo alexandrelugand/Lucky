@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/Lucky/src",
+                "${workspaceFolder}/Vendors/SDL/include",
+                "${workspaceFolder}/Vendors/spdlog/include",
+                "${workspaceFolder}/Vendors/GLFW/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22621.0",
+            "intelliSenseMode": "windows-gcc-x64",
+            "cppStandard": "c++23"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,69 @@
+{
+    "tasks": [
+        {
+            "label": "Debug",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-j",
+                "config=debug",
+                "all"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Release",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-j",
+                "config=release",
+                "all"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Wasm",
+            "type": "shell",
+            "command": "make -f Makefile.wasm.mk",
+            "args": [
+                "-j",
+                "config=debug",
+                "all"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Setup",
+            "type": "shell",
+            "windows": {
+                "command": "${workspaceFolder}/setup.bat"
+            }
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "windows": {
+                "command": "${workspaceFolder}/clean.bat"
+            }
+        },
+        {
+            "label": "StopServer",
+            "type": "shell",
+            "windows": {
+                "command": "taskkill /f /im node.exe"
+            }
+        },
+    ],
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "cmd.exe",
+                "args": [
+                    "/d", "/c"
+                ]
+            }
+        }
+    },
+    "version": "2.0.0"
+}
