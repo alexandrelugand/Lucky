@@ -5,7 +5,6 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/Lucky/src",
-                "${workspaceFolder}/Vendors/SDL/include",
                 "${workspaceFolder}/Vendors/spdlog/include",
                 "${workspaceFolder}/Vendors/GLFW/include"
             ],
