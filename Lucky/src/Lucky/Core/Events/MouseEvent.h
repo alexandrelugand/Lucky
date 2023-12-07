@@ -18,7 +18,7 @@ namespace Lucky
     class MouseMovedEvent : public MouseEvent
     {
     public:
-        MouseMovedEvent(float x, float y)
+        MouseMovedEvent(double x, double y)
             : m_MouseX(x), m_MouseY(y)
         {                
         }
@@ -33,13 +33,13 @@ namespace Lucky
         EVENT_CLASS_TYPE(MouseMoved)
 
     private:
-        float m_MouseX, m_MouseY;
+        double m_MouseX, m_MouseY;
     };
 
     class MouseScrolledEvent : public MouseEvent
     {
     public:
-        MouseScrolledEvent(float xOffset, float yOffset)
+        MouseScrolledEvent(double xOffset, double yOffset)
             : m_XOffset(xOffset), m_YOffset(yOffset)
         {
         }
@@ -54,7 +54,7 @@ namespace Lucky
         EVENT_CLASS_TYPE(MouseScrolled)
 
     private:
-        float m_XOffset, m_YOffset;
+        double m_XOffset, m_YOffset;
     };
 
     class MouseButtonEvent : public MouseEvent

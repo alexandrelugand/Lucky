@@ -32,7 +32,7 @@ namespace Lucky
         virtual unsigned int GetWidth() const = 0;
         virtual unsigned int GetHeight() const = 0;
         virtual bool IsVSync() const = 0;
-        virtual bool ShouldClose() const = 0;
+        virtual void* GetHandle() const = 0;
 
         //Window attributes
         virtual void SetEventCallback(const EventCallbackFn& fn) = 0;

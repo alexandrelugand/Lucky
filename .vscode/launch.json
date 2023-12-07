@@ -1,13 +1,13 @@
 {
     "configurations": [        
         {
-            "name": "Debug",
+            "name": "Debug (native)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/windows/x86_64/App.exe",
+            "program": "${workspaceFolder}/bin/windows/x86_64/Debug/App.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/bin/Debug/windows/x86_64",
+            "cwd": "${workspaceFolder}/bin/windows/x86_64/Debug",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -24,19 +24,38 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "Debug"
+            "preLaunchTask": "Debug-native"
         },
         {
-            "name": "Release",
+            "name": "Release (native)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Release/windows/x86_64/App.exe",
+            "program": "${workspaceFolder}/bin/windows/x86_64/Release/App.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/bin/Release/windows/x86_64",
+            "cwd": "${workspaceFolder}/bin/windows/x86_64/Release",
             "environment": [],
             "externalConsole": false,
-            "preLaunchTask": "Release"
+            "preLaunchTask": "Release-native"
+        },
+        {
+            "name": "Debug (Emscripten)",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "ws -s index.html -o",
+            "cwd": "${workspaceFolder}/bin/browser/Debug",
+            "preLaunchTask": "Debug-emscripten",
+            "postDebugTask": "StopServer"
+        }
+        ,
+        {
+            "name": "Release (Emscripten)",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "ws -s index.html -o",
+            "cwd": "${workspaceFolder}/bin/browser/Release",
+            "preLaunchTask": "Release-emscripten",
+            "postDebugTask": "StopServer"
         },
         {
             "name": "Setup",
@@ -51,15 +70,6 @@
             "request": "launch",
             "script": "${workspaceFolder}/clean.bat",
             "cwd": "${cwd}"
-        },
-        {
-            "name": "Wasm",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "ws -s App.html -o",
-            "cwd": "${workspaceFolder}/bin/Debug/browser",
-            "preLaunchTask": "Wasm",
-            "postDebugTask": "StopServer"
         }
     ],
     "version": "2.0.0"

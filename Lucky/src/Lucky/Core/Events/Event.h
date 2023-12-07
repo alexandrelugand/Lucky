@@ -47,6 +47,7 @@ namespace Lucky
     class Event
     {
         friend class EventDispatcher;
+        friend class EventDispatcher;
     public:
         virtual EventType GetEventType() const = 0;
         virtual const char* GetName() const = 0;
@@ -57,6 +58,8 @@ namespace Lucky
         {
             return GetCategoryFlags() & category;
         }
+
+        inline bool Handled() { return m_Handled; }
 
     protected:
         bool m_Handled = false;

@@ -82,6 +82,10 @@ A section with all necessary VS code extensions is described below.
 - [Task Runner](https://marketplace.visualstudio.com/items?itemName=forbeslindesay.forbeslindesay-taskrunner)
 - [Visual Studio Keymap](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vs-keybindings)
 - [VSCode icons](https://marketplace.visualstudio.com/items?itemName=vscode-icons-team.vscode-icons)
+- [WebAssembly DWARF Debugging](https://marketplace.visualstudio.com/items?itemName=ms-vscode.wasm-dwarf-debugging)
+
+## Chrome / Edge extensions
+- [C/C++ DevTools Support (DWARF)](https://chromewebstore.google.com/detail/cc++-devtools-support-dwa/pdcpmagijalfljmkmjngeonclgbbannb)
 
 ## Makefile generation
 

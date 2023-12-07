@@ -1,35 +1,50 @@
-project "Lucky"  
-    kind "StaticLib"   
-    language "C++"   
-    cppdialect "C++17"
-    architecture "x64"
-    targetdir ("%{wks.location}/bin/" .. outputdir)
-    objdir ("%{wks.location}/bin-int/" .. outputdir)
+project "Lucky"
+	kind "StaticLib"
+	language "C++"
+	cppdialect "C++17"
+	architecture "x64"
+	targetdir ("%{wks.location}/bin/" .. outputdir)
+	objdir ("%{wks.location}/bin-int/" .. tmpdir)
 
-    files { "**.h", "**.cpp" } 
+	dependson { "GLAD", "ImGui" }
 
-    includedirs
-    {
-        "src",
-        "../Vendors/spdlog/include",
-        "../Vendors/GLFW/include"
-    }
+	files { "**.h", "**.cpp" }
 
-    libdirs 
-    {
-         "../Vendors/GLFW/lib-static-ucrt"
-    }
+	includedirs
+	{
+		"src",
+		"%{includeDir.spdlog}",
+		"%{includeDir.GLFW}",
+		"%{includeDir.GLAD}",
+		"%{includeDir.ImGui}",
+		"%{includeDir.ImGui}/backends"
+	}
 
-    links
-    {
-        "opengl32",
-        "GLFW3"
-    }
+	libdirs 
+	{
+		"%{libDir.GLFW}"
+	}
 
-    filter "configurations:Debug"
-        defines { "DEBUG" }  
-        symbols "On" 
+	links
+	{
+		"opengl32",
+		"GLFW3",
+		"GLAD",
+		"ImGui"
+	}
 
-    filter "configurations:Release"  
-        defines { "NDEBUG" }    
-        optimize "On" 
+	defines
+	{
+		"GLFW_INCLUDE_NONE"
+	}
+
+	filter "configurations:Debug"
+		defines { "DEBUG" }
+		symbols "On" 
+
+	filter "configurations:Release"
+		defines { "NDEBUG" }
+		optimize "On" 
+
+	filter "system:windows"
+		defines { "PLATFORM_WINDOW" }

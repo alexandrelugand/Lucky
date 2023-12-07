@@ -9,12 +9,14 @@ ifndef verbose
 endif
 
 ifeq ($(config),debug)
-  Lucky_config = debug
-  App_config = debug
+  ImGui_config = Debug
+  Lucky_config = Debug
+  App_config = Debug
 
 else ifeq ($(config),release)
-  Lucky_config = release
-  App_config = release
+  ImGui_config = Release
+  Lucky_config = Release
+  App_config = Release
 
 else
   $(error "invalid configuration $(config)")
@@ -26,24 +28,30 @@ PROJECTS := Lucky App
 
 all: $(PROJECTS)
 
+ImGui:
+ifneq (,$(ImGui_config))
+	@echo "==== Building ImGui ($(ImGui_config)) ===="
+	@${MAKE} --no-print-directory -C Vendors/ImGui -f Makefile.emscripten.mk CONFIG=$(ImGui_config)
+endif
+
 Lucky:
 ifneq (,$(Lucky_config))
 	@echo "==== Building Lucky ($(Lucky_config)) ===="
-	@${MAKE} --no-print-directory -C Lucky -f Makefile.wasm.mk config=$(Lucky_config)
+	@${MAKE} --no-print-directory -C Lucky -f Makefile.emscripten.mk CONFIG=$(Lucky_config)
 endif
 
-App: Lucky
+App: ImGui Lucky
 ifneq (,$(App_config))
 	@echo "==== Building App ($(App_config)) ===="
-	@${MAKE} --no-print-directory -C App -f Makefile.wasm.mk config=$(App_config)
+	@${MAKE} --no-print-directory -C App -f Makefile.emscripten.mk CONFIG=$(App_config)
 endif
 
 clean:
-	@${MAKE} --no-print-directory -C Lucky -f Makefile.wasm.mk clean
-	@${MAKE} --no-print-directory -C App -f Makefile.wasm.mk clean
+	@${MAKE} --no-print-directory -C Lucky -f Makefile.emscripten.mk clean
+	@${MAKE} --no-print-directory -C App -f Makefile.emscripten.mk clean
 
 help:
-	@echo "Usage: make -f Makefile.wasm.mk [config=name] [target]"
+	@echo "Usage: make -f Makefile.emscripten.mk [config=name] [target]"
 	@echo ""
 	@echo "CONFIGURATIONS:"
 	@echo "  debug"

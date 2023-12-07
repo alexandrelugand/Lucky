@@ -1,34 +1,43 @@
 {
     "tasks": [
         {
-            "label": "Debug",
+            "label": "Debug-native",
             "type": "shell",
             "command": "make",
             "args": [
-                "-j",
                 "config=debug",
                 "all"
             ],
             "group": "build"
         },
         {
-            "label": "Release",
+            "label": "Release-native",
             "type": "shell",
             "command": "make",
             "args": [
-                "-j",
                 "config=release",
                 "all"
             ],
             "group": "build"
         },
         {
-            "label": "Wasm",
+            "label": "Debug-emscripten",
             "type": "shell",
-            "command": "make -f Makefile.wasm.mk",
+            "command": "make -f Makefile.emscripten.mk",
             "args": [
                 "-j",
                 "config=debug",
+                "all"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Release-emscripten",
+            "type": "shell",
+            "command": "make -f Makefile.emscripten.mk",
+            "args": [
+                "-j",
+                "config=release",
                 "all"
             ],
             "group": "build"

@@ -2,12 +2,12 @@
 
 #ifdef PLATFORM_WINDOWS
     #ifdef _MSC_VER
-        #define DEBUG_BREAK __debugbreak()
+        #define DEBUG_BREAK __debugbreak
     #else
-        #define __builtin_trap()
+        #define __builtin_trap
     #endif
 #else
-	#define DEBUG_BREAK
+	#define DEBUG_BREAK __builtin_trap
 #endif
 
 // #ifdef __GNUG__
@@ -31,3 +31,4 @@
 #endif
 
 #define BIT(x) (x << 1)
+#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)

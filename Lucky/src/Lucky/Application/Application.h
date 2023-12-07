@@ -1,5 +1,4 @@
 #pragma once
-//#include <SDL2/SDL.h>
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #define GLFW_INCLUDE_ES3
@@ -10,6 +9,14 @@
 #include <GLFW/glfw3.h>
 
 #include "Window.h"
+#include "Lucky/Core/Events/ApplicationEvent.h"
+#include "Lucky/Core/LayerStack.h"
+
+#ifdef __EMSCRIPTEN__
+#define WASM_API static
+#else
+#define WASM_API
+#endif
 
 namespace Lucky
 {
@@ -19,24 +26,22 @@ namespace Lucky
         Application(const std::string& title);
         virtual ~Application();
 
+        static inline Application& Get() { return *s_Instance; }
+
         void Run();
+        void PushLayer(Layer* layer);
+        void PushOverlay(Layer* overlay);
+        inline Window& GetWindow() const { return *m_Window; }
 
     private:
-#ifdef __EMSCRIPTEN__
-        static std::unique_ptr<Window> m_Window;
-#else
-        //GLFWwindow* m_Window;
-        std::unique_ptr<Window> m_Window;
-#endif 
-        static void ErrorCallback(int error, const char* description);
-        static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        static Application* s_Instance;
+        WASM_API std::unique_ptr<Window> m_Window;
+        WASM_API LayerStack m_LayerStack;
+        bool m_Running;
 
-#ifdef __EMSCRIPTEN__
-        static void RenderFrame();
-#else
-        void RenderFrame();
-#endif        
-
+        WASM_API void RenderFrame();
+        void OnEvent(Event& e);
+        bool OnWindowClose(WindowCloseEvent& event);
     };
 
     //To be defined in client

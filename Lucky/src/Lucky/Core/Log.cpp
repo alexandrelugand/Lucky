@@ -11,10 +11,10 @@ namespace Lucky
     {
         spdlog::set_pattern("%^[%T] %n: %v%$", spdlog::pattern_time_type::local);
         s_coreLogger = spdlog::stdout_color_mt("LUCKY", spdlog::color_mode::automatic);
-        s_coreLogger->set_level(spdlog::level::trace);
+        s_coreLogger->set_level(spdlog::level::info);
 
         s_clientLogger = spdlog::stdout_color_mt("APP", spdlog::color_mode::automatic);
-        s_clientLogger->set_level(spdlog::level::trace);
+        s_clientLogger->set_level(spdlog::level::info);
     }
 
     void Log::Shutdown()
