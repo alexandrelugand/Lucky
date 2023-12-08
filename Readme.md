@@ -14,6 +14,11 @@ A section with all necessary VS code extensions is described below.
 ## Native
 
 - Install [MSYS2](https://www.msys2.org/docs/installer/) in default folder at `C:\msys64`
+- Launch MSYS2 MSYS console and enter this command:
+    ```
+    pacman -S mingw-w64-ucrt-x86_64-toolchain   
+    ```
+    Install all packages (press Enter) annd accept all packages with 'Y'
 - Add `C:\msys64\ucrt64\bin` in PATH environment variable
 - Check if GCC or G++ compiler works fine in cmd console with command:
     ```
@@ -22,7 +27,7 @@ A section with all necessary VS code extensions is described below.
     It must return something like this
 
     ```
-    gcc version 13.2.0 (Rev2, Built by MSYS2 project)
+    gcc version 13.2.0 (GCC)
     ```
 - Install [Make (GNU)](https://sourceforge.net/projects/getgnuwin32/) in default folder at `C:\GnuWin32`
 - Add `C:\GnuWin32\bin` in PATH environment variable
@@ -33,7 +38,7 @@ A section with all necessary VS code extensions is described below.
     It must return something like this
 
     ```
-    GNU Make 3.81
+    GNU Make 4.4.1
     ```
 
 ## Web Assembly
@@ -62,7 +67,7 @@ A section with all necessary VS code extensions is described below.
  - Install [NodeJS (LTS version)](https://nodejs.org/en/download)
  - Install [local-web-server](https://www.npmjs.com/package/local-web-server) with NPM by typing command below:
     ```
-    npm i local-web-server
+    npm i -g local-web-server
     ```
 - Check if local-web-server works fine in cmd console with command:
     ```
