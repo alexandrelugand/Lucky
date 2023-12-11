@@ -6,10 +6,10 @@ namespace Lucky
 	{
 		switch (Renderer::GetApi())
 		{
-		case RendererApi::None:
+		case RendererApi::Api::None:
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
-		case RendererApi::OpenGL:
+		case RendererApi::Api::OpenGL:
 			return new OpenGLVertexBuffer(vertices, size);
 		}
 

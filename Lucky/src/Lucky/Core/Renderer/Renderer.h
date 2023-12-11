@@ -1,20 +1,20 @@
 #pragma once
 
+#include "RenderCommand.h"
+
 namespace Lucky
 {
-	enum class RendererApi : uint8_t
-	{
-		None = 0,
-		OpenGL
-	};
-
 	class Renderer 
 	{
 	public:
-		inline static RendererApi GetApi() { return s_RendererApi; }
+		static void BeginScene();
+		static void EndScene();
 
-	private:
-		static RendererApi s_RendererApi;
+		static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
+
+
+		inline static RendererApi::Api GetApi() { return RendererApi::GetApi(); }
+
 	};
 
 } // namespace Lucky

@@ -17,6 +17,8 @@
 #include "Lucky/Core/Events/MouseEvent.h"
 #include "Lucky/Core/ImGui/ImGuiLayer.h"
 #include "Lucky/Core/Renderer/Renderer.h"
+#include "Lucky/Core/Renderer/RendererApi.h"
+#include "Lucky/Core/Renderer/RenderCommand.h"
 #include "Lucky/Core/Renderer/Context.h"
 #include "Lucky/Core/Renderer/VertexArray.h"
 #include "Lucky/Core/Renderer/VertexBuffer.h"
@@ -24,6 +26,7 @@
 #include "Lucky/Core/Renderer/VertexBufferLayout.h"
 #include "Lucky/Core/Renderer/Shader.h"
 
+#include "Lucky/Platforms/OpenGL/OpenGLRendererApi.h"
 #include "Lucky/Platforms/OpenGL/OpenGLContext.h"
 #include "Lucky/Platforms/OpenGL/OpenGLVertexArray.h"
 #include "Lucky/Platforms/OpenGL/OpenGLVertexBuffer.h"
