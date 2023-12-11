@@ -1,3 +1,6 @@
 [submodule "Vendors/spdlog"]
 	path = Vendors/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "Vendors/GLM"]
+	path = Vendors/GLM
+	url = https://github.com/g-truc/glm.git
