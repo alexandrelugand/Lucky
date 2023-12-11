@@ -1,4 +1,4 @@
-#include "EntryPoint.h"
+#include "LuckyPch.h"
 
 EMSCRIPTEN_KEEPALIVE
 int main(int argc, char** argv)

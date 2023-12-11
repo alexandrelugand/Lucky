@@ -8,7 +8,8 @@
                 "${workspaceFolder}/Vendors/spdlog/include",
                 "${workspaceFolder}/Vendors/GLFW/include",
                 "${workspaceFolder}/Vendors/ImGui",
-                "${workspaceFolder}/Vendors/ImGui/backends"
+                "${workspaceFolder}/Vendors/ImGui/backends",
+                "${workspaceFolder}/Vendors/GLM"
             ],
             "defines": [
                 "_DEBUG",
@@ -17,7 +18,7 @@
             ],
             "windowsSdkVersion": "10.0.22621.0",
             "intelliSenseMode": "windows-gcc-x64",
-            "cppStandard": "c++23"
+            "cppStandard": "c++17"
         }
     ],
     "version": 4

@@ -5,6 +5,7 @@ project "GLAD"
 	architecture "x64"
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
+	staticruntime "on"
 
 	files
 	{

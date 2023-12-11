@@ -5,9 +5,11 @@
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/fmt/ostr.h>
 
+#ifndef __EMSCRIPTEN__
 #define ASSERT_MESSAGE_BOX (!DIST && PLATFORM_WINDOWS)
+#endif
 
-#if ASSERT_MESSAGE_BOX
+#ifdef ASSERT_MESSAGE_BOX
 	#ifdef PLATFORM_WINDOWS
 		#include <Windows.h>
 	#endif
@@ -96,8 +98,8 @@ namespace Lucky
 		auto logger = (type == Type::Core) ? GetCoreLogger() : GetClientLogger();
 		logger->error("{0}: {1}", prefix, fmt::format(std::forward<Args>(args)...));
 
-#if ASSERT_MESSAGE_BOX
-		constexpr std::string message = fmt::format(std::forward<Args>(args)...);
+#ifdef ASSERT_MESSAGE_BOX
+		std::string message = fmt::format(std::forward<Args>(args)...);
 		MessageBoxA(nullptr, message.c_str(), "Lucky Assert", MB_OK | MB_ICONERROR);
 #endif
 	}
@@ -107,7 +109,7 @@ namespace Lucky
 	{
 		auto logger = (type == Type::Core) ? GetCoreLogger() : GetClientLogger();
 		logger->error("{0}", prefix);
-#if ASSERT_MESSAGE_BOX
+#ifdef ASSERT_MESSAGE_BOX
 		MessageBoxA(nullptr, "No message :(", "Lucky Assert", MB_OK | MB_ICONERROR);
 #endif
 	}

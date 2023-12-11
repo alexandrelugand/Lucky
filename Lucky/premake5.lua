@@ -5,10 +5,17 @@ project "Lucky"
 	architecture "x64"
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
+	staticruntime "on"
 
 	dependson { "GLAD", "ImGui" }
 
-	files { "**.h", "**.cpp" }
+	files
+	{ 
+		"**.h", 
+		"**.cpp", 
+		"%{includeDir.GLM}/glm/**.hpp", 
+		"%{includeDir.GLM}/glm/**.inl" 
+	}
 
 	includedirs
 	{
@@ -17,7 +24,8 @@ project "Lucky"
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",
-		"%{includeDir.ImGui}/backends"
+		"%{includeDir.ImGui}/backends",
+		"%{includeDir.GLM}"
 	}
 
 	libdirs 
@@ -38,12 +46,22 @@ project "Lucky"
 		"GLFW_INCLUDE_NONE"
 	}
 
+	-- Precompile header
+	pchheader "LuckyPch.h"
+	-- Using ccache to accelerate compilation time (not mandatory)
+	makesettings [[CXX = ccache g++]]
+
+	filter { "action:gmake2" }
+  		buildoptions { "-Wall" }
+
 	filter "configurations:Debug"
 		defines { "DEBUG" }
+		runtime "Debug"
 		symbols "On" 
 
 	filter "configurations:Release"
 		defines { "NDEBUG" }
+		runtime "Release"
 		optimize "On" 
 
 	filter "system:windows"

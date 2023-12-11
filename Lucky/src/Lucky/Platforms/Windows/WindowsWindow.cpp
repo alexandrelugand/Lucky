@@ -1,12 +1,7 @@
+#include "LuckyPch.h"
 #ifndef __EMSCRIPTEN__
 #include <glad/glad.h>
 #endif
-
-#include "WindowsWindow.h"
-#include "Lucky/Core/Log.h"
-#include "Lucky/Core/Events/ApplicationEvent.h"
-#include "Lucky/Core/Events/MouseEvent.h"
-#include "Lucky/Core/Events/KeyEvent.h"
 
 namespace Lucky
 {
@@ -32,7 +27,7 @@ namespace Lucky
         // Handle any events
         glfwPollEvents();
         // Flip the double buffer
-        glfwSwapBuffers(m_Window);
+        m_Context->SwapBuffers();
     }
 
     void WindowsWindow::SetVSync(bool enabled)
@@ -52,6 +47,7 @@ namespace Lucky
         m_Data.Height = props.Height;
 
         LK_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
+
         if (!s_GLFWInitialized)
         {
             bool success = glfwInit() != 0;
@@ -59,7 +55,7 @@ namespace Lucky
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-            CORE_ASSERT(success, "Could not initialize GLFW!");
+            LK_CORE_ASSERT(success, "Could not initialize GLFW!");
             glfwSetErrorCallback([](int error_code, const char* description)
             {
                 LK_CORE_ERROR("GLFW Error ({0}): {1}", error_code, description);
@@ -68,12 +64,16 @@ namespace Lucky
         }
 
         m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
-        CORE_ASSERT(m_Window != nullptr, "Could not create window!");
-        glfwMakeContextCurrent(m_Window);
+        LK_CORE_ASSERT(m_Window != nullptr, "Could not create window!");
+
 #ifndef __EMSCRIPTEN__
-        bool status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) != 0;
-        CORE_ASSERT(status, "Failed to initialize GLAD");
+        int max_width  = GetSystemMetrics(SM_CXSCREEN);
+        int max_hieght = GetSystemMetrics(SM_CYSCREEN);
+        glfwSetWindowMonitor(m_Window, NULL, (max_width/2)-(m_Data.Width/2), (max_hieght/2) - (m_Data.Height/2), m_Data.Width, m_Data.Height, GLFW_DONT_CARE);
 #endif
+        m_Context = new OpenGLContext(m_Window);
+        m_Context->Init();
+
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
 
@@ -107,6 +107,13 @@ namespace Lucky
                     break;
                 }
             } 
+        });
+
+        glfwSetCharCallback(m_Window, [](GLFWwindow *window, unsigned int character)
+        {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+            KeyTypedEvent event(character);
+            data.EventCallback(event);
         });
 
         glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)

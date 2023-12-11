@@ -9,6 +9,7 @@ includeDir["spdlog"]="../Vendors/spdlog/include"
 includeDir["GLFW"]="../Vendors/GLFW/include"
 includeDir["GLAD"]="../Vendors/GLAD/include"
 includeDir["ImGui"]="../Vendors/ImGui"
+includeDir["GLM"]="../Vendors/GLM"
 
 libDir = {}
 libDir["GLFW"]="../Vendors/GLFW/lib-static-ucrt"

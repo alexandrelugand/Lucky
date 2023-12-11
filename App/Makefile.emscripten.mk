@@ -28,7 +28,7 @@ EXE = $(OUTDIR)/index.html
 LIB = $(OUTDIR)/$(PRJNAME).a
 
 INCLUDE_FLAGS = -I./src -I../Lucky/src
-INCLUDE_LIB_FLAGS = -I../Vendors/SDL/include -I../Vendors/spdlog/include -I../Vendors/ImGui
+INCLUDE_LIB_FLAGS = -I../Vendors/SDL/include -I../Vendors/spdlog/include -I../Vendors/ImGui -I../Vendors/GLM
 
 SUBDIRS = $(SRCDIR)
 VPATH := $(SUBDIRS)
@@ -47,7 +47,7 @@ EMS =
 
 # ("EMS" options gets added to both CPPFLAGS and LDFLAGS, whereas some options are for linker only)
 EMS += -s DISABLE_EXCEPTION_CATCHING=1
-LDFLAGS += -s USE_GLFW=3 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
+LDFLAGS += -s USE_GLFW=3 -s FULL_ES3=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
 
 # Uncomment next line to fix possible rendering bugs with Emscripten version older then 1.39.0 (https://github.com/ocornut/imgui/issues/2877)
 #EMS += -s BINARYEN_TRAP_MODE=clamp
@@ -96,10 +96,10 @@ $(OBJDIR):
 $(OUTDIR):
 	mkdir "$@"
 
-$(LIB): $(OBJS) $(OBJDIR) $(OUTDIR)
+$(LIB): $(OBJDIR) $(OUTDIR) $(OBJS)
 	$(AR) rcs $(LIB) $(OBJS)
 
-$(EXE): $(OBJS) $(OUTDIR) $(OBJDIR)
+$(EXE): $(OUTDIR) $(OBJDIR) $(OBJS)
 	$(CXX) -o $@ $(OBJS) $(LIBS) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
 
 clean:

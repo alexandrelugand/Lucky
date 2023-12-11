@@ -10,7 +10,12 @@
 
 #include "Window.h"
 #include "Lucky/Core/Events/ApplicationEvent.h"
+#include "Lucky/Core/ImGui/ImGuiLayer.h"
 #include "Lucky/Core/LayerStack.h"
+#include "Lucky/Core/Renderer/VertexArray.h"
+#include "Lucky/Core/Renderer/VertexBuffer.h"
+#include "Lucky/Core/Renderer/IndexBuffer.h"
+#include "Lucky/Core/Renderer/Shader.h"
 
 #ifdef __EMSCRIPTEN__
 #define WASM_API static
@@ -36,7 +41,12 @@ namespace Lucky
     private:
         static Application* s_Instance;
         WASM_API std::unique_ptr<Window> m_Window;
+        WASM_API ImGuiLayer* m_ImGuiLayer;
         WASM_API LayerStack m_LayerStack;
+        WASM_API std::shared_ptr<VertexArray> m_VertexArray;
+        WASM_API std::shared_ptr<VertexArray> m_squareVA;
+        WASM_API std::shared_ptr<Shader> m_Shader;
+        WASM_API std::shared_ptr<Shader> m_BlueShader;
         bool m_Running;
 
         WASM_API void RenderFrame();

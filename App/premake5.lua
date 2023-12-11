@@ -5,10 +5,17 @@ project "App"
 	architecture "x64"
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
-	
+	staticruntime "on"
+
 	dependson { "GLAD", "ImGui", "Lucky" }
 
-	files { "**.h", "**.cpp" }
+	files
+	{ 
+		"**.h", 
+		"**.cpp", 
+		"%{includeDir.GLM}/glm/**.hpp", 
+		"%{includeDir.GLM}/glm/**.inl" 
+	}
 
 	includedirs
 	{
@@ -17,7 +24,8 @@ project "App"
 		"%{includeDir.spdlog}",
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
-		"%{includeDir.ImGui}"
+		"%{includeDir.ImGui}",
+		"%{includeDir.GLM}"
 	}
 
 	libdirs 
@@ -34,12 +42,22 @@ project "App"
 		"ImGui"
 	}
 
+	-- Precompile header
+	pchheader "AppPch.h"
+	-- Using ccache to accelerate compilation time (not mandatory)
+	makesettings [[CXX = ccache g++]]
+
+	filter { "action:gmake2" }
+		buildoptions { "-Wall" }
+
 	filter "configurations:Debug"
-		defines { "DEBUG", "SDL_MAIN_HANDLED" }
+		defines { "DEBUG" }
+		runtime "Debug"
 		symbols "On" 
 
 	filter "configurations:Release"  
-		defines { "NDEBUG", "SDL_MAIN_HANDLED" }
+		defines { "NDEBUG" }
+		runtime "Release"
 		optimize "On" 
 
 	filter "system:windows"

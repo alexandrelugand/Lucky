@@ -106,6 +106,11 @@ For Web assembly, the Makefile is already generated (`Makefile.wasm.mk`).
 
 In **Run and Debug** VS code tab, select `Debug` or `Release` tasks to compile and launch in Debug or Release mode.
 
+If you want to speed up recompilation, you can use `ccache` utility. It can be download [here](https://ccache.dev/).
+Install `ccache` in same folder as g++ (by default: `C:\msys64\ucrt64\bin`).
+
+In **premake5.lua** files, comment (desactivate) or uncomment (activate) section `makesettings [[CXX = ccache g++]]` to override default compiler with ccache.
+
 ## Web Assembly
 
 In **Run and Debug** VS code tab, select `Wasm` task to compile and launch wasm binaries (wasm + js + app.html). At the end of compilation, VS code will open default browser to the URL http://127.0.0.1:8000.

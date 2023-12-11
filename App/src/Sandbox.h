@@ -1,3 +1,4 @@
+#pragma once
 #include <Lucky.h>
 
 class SandBox : public Lucky::Application

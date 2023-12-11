@@ -5,6 +5,7 @@
             "type": "shell",
             "command": "make",
             "args": [
+                "-j",
                 "config=debug",
                 "all"
             ],
@@ -15,6 +16,7 @@
             "type": "shell",
             "command": "make",
             "args": [
+                "-j",
                 "config=release",
                 "all"
             ],
