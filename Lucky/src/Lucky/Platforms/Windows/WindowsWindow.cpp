@@ -75,7 +75,7 @@ namespace Lucky
         m_Context->Init();
 
         glfwSetWindowUserPointer(m_Window, &m_Data);
-        SetVSync(true);
+        SetVSync(props.VSync);
 
         // Setup GLFW callbacks
         glfwSetKeyCallback(m_Window, [](GLFWwindow *window, int key, int scancode, int action, int mods)

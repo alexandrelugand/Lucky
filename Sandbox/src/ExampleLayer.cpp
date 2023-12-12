@@ -1,12 +1,15 @@
 #include "SandboxPch.h"
 #include <imgui.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 ExampleLayer::ExampleLayer()
     :   m_Camera(-1.6f, 1.6f, 0.9f, -0.9f), 
         m_CameraPosition({0.0f, 0.0f, 0.0f}),
         m_CameraRotation(0.0f), 
         m_CameraMoveSpeed(2.0f), 
-        m_CameraRotationSpeed(90.0f)
+        m_CameraRotationSpeed(90.0f),
+        m_triangleRotation(0.0f),
+        m_triangleRotationSpeed(45.0f)
 {        
     m_VertexArray.reset(Lucky::VertexArray::Create());
     m_VertexArray->Bind();
@@ -42,12 +45,13 @@ ExampleLayer::ExampleLayer()
         out vec4 v_Color;
 
         uniform mat4 u_ViewProjection;
+        uniform mat4 u_Transform;
 
         void main()
         {
             v_Position = a_Position;
             v_Color = a_Color;
-            gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+            gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
         }
     )";
 
@@ -76,10 +80,10 @@ ExampleLayer::ExampleLayer()
 
     float squareVertices[4 * 3] = 
     {
-        -0.75f, -0.75f, 0.0f,
-        0.75f, -0.75f, 0.0f, 
-        0.75f, 0.75f, 0.0f,
-        -0.75f, 0.75f, 0.0f
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f, 
+        0.5f, 0.5f, 0.0f,
+        -0.5f, 0.5f, 0.0f
     };
     std::shared_ptr<Lucky::VertexBuffer> squareVB;
     squareVB.reset(Lucky::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
@@ -103,11 +107,12 @@ ExampleLayer::ExampleLayer()
         out vec3 v_Position;
 
         uniform mat4 u_ViewProjection;
+        uniform mat4 u_Transform;
 
         void main()
         {
             v_Position = a_Position;
-            gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+            gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
         }
     )";
 
@@ -123,11 +128,11 @@ ExampleLayer::ExampleLayer()
 
         void main()
         {
-            color = vec4(0.2, 0.3, 0.8, 1.0);
+            color = vec4(0.75, 0.75, 0.75, 1.0);
         }
     )";
 
-    m_BlueShader.reset(new Lucky::Shader(vertexSrc, fragmentSrc));
+    m_SquareShader.reset(new Lucky::Shader(vertexSrc, fragmentSrc));
 }
 
 ExampleLayer::~ExampleLayer()
@@ -169,6 +174,10 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
     if(m_CameraRotation > 360.0f || m_CameraRotation < -360.0f)
         m_CameraRotation = -0.0f;
 
+    m_triangleRotation -= m_triangleRotationSpeed * ts;
+    if(m_triangleRotation > 360.0f || m_triangleRotation < -360.0f)
+        m_triangleRotation = -0.0f;
+
      // Background color
     Lucky::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
     Lucky::RenderCommand::Clear();
@@ -178,8 +187,20 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
 
     Lucky::Renderer::BeginScene(m_Camera);
 
-    Lucky::Renderer::Submit(m_BlueShader, m_squareVA);
-    Lucky::Renderer::Submit(m_Shader, m_VertexArray);
+    static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+    for(int y = -10; y < 10; y++)
+    {
+        for(int x = -10; x < 10; x++)
+        {
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(x * 0.11f, y * 0.11f, 0.0f)) * scale;
+            Lucky::Renderer::Submit(m_SquareShader, m_squareVA, transform);
+        }
+    }
+    
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_triangleRotation), glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) * rotation;
+    Lucky::Renderer::Submit(m_Shader, m_VertexArray, transform);
 
     Lucky::Renderer::EndScene();
 }

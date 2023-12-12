@@ -4,6 +4,6 @@
 class SandBox : public Lucky::Application
 {
 public:
-    SandBox(const std::string& title);
+    SandBox(const Lucky::WindowProps& props);
     virtual ~SandBox();
 };

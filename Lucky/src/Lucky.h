@@ -2,6 +2,7 @@
 
 // --- Application -----------------------
 #include "Lucky/Application/Application.h"
+#include "Lucky/Application/WindowProps.h"
 #include "Lucky/Application/Input.h"
 #include "Lucky/Application/KeyCodes.h"
 #include "Lucky/Application/MouseButtonCodes.h"

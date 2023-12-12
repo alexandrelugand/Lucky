@@ -22,14 +22,14 @@ namespace Lucky
 
     Application* Application::s_Instance;
 
-    Application::Application(const std::string& title)
+    Application::Application(const WindowProps &props)
         : m_Running(true)
     {
         LK_CORE_ASSERT(s_Instance == nullptr, "Application instance alreay set");
         s_Instance = this;
         
         Log::Init();
-        m_Window = std::unique_ptr<Window>(Window::Create({ title.c_str() }));
+        m_Window = std::unique_ptr<Window>(Window::Create(props));
         m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);

@@ -30,7 +30,7 @@ namespace Lucky
     class Application
     {
     public:
-        Application(const std::string& title);
+        Application(const WindowProps& props);
         virtual ~Application();
 
         static inline Application& Get() { return *s_Instance; }
@@ -54,5 +54,5 @@ namespace Lucky
     };
 
     //To be defined in client
-    Application* CreateApplication();
+    Application* CreateApplication(const WindowProps& props);
 }

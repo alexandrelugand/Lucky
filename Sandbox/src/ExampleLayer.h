@@ -18,10 +18,12 @@ private:
     std::shared_ptr<Lucky::VertexArray> m_VertexArray;
     std::shared_ptr<Lucky::VertexArray> m_squareVA;
     std::shared_ptr<Lucky::Shader> m_Shader;
-    std::shared_ptr<Lucky::Shader> m_BlueShader;
+    std::shared_ptr<Lucky::Shader> m_SquareShader;
     Lucky::OrthographicCamera m_Camera;
     glm::vec3 m_CameraPosition;
     float m_CameraRotation;
     float m_CameraMoveSpeed;
     float m_CameraRotationSpeed;
+    float m_triangleRotation;
+    float m_triangleRotationSpeed;
 };

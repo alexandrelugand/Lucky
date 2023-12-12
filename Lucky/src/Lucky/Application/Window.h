@@ -3,24 +3,12 @@
 #include <string>
 #include <functional>
 
+#include "WindowProps.h"
 #include "Lucky/Core/Events/Event.h"
 #include "Lucky/Core/Timestep.h"
 
 namespace Lucky
 {
-    struct WindowProps 
-    {
-        WindowProps(const char* title = "Lucky engine",
-                    unsigned int width = 1280, 
-                    unsigned int height = 720)
-            : Title(title), Width(width), Height(height)
-        {
-        }
-
-        std::string Title;
-        unsigned int Width, Height;
-    };
-
     class Window 
     {
     public:
