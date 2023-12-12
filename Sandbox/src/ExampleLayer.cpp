@@ -1,6 +1,8 @@
 #include "SandboxPch.h"
 #include <imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <Lucky/Platforms/OpenGL/OpenGLShader.h>
 
 ExampleLayer::ExampleLayer()
     :   m_Camera(-1.6f, 1.6f, 0.9f, -0.9f), 
@@ -9,7 +11,8 @@ ExampleLayer::ExampleLayer()
         m_CameraMoveSpeed(2.0f), 
         m_CameraRotationSpeed(90.0f),
         m_triangleRotation(0.0f),
-        m_triangleRotationSpeed(45.0f)
+        m_triangleRotationSpeed(45.0f),
+        m_SquareColor({0.75f, 0.75f, 0.75f})
 {        
     m_VertexArray.reset(Lucky::VertexArray::Create());
     m_VertexArray->Bind();
@@ -73,7 +76,7 @@ ExampleLayer::ExampleLayer()
         }
     )";
 
-    m_Shader.reset(new Lucky::Shader(vertexSrc, fragmentSrc));
+    m_Shader.reset(Lucky::Shader::Create(vertexSrc, fragmentSrc));
 
     m_squareVA.reset(Lucky::VertexArray::Create());
     m_squareVA->Bind();
@@ -126,13 +129,15 @@ ExampleLayer::ExampleLayer()
         layout(location = 0) out vec4 color;
         in vec3 v_Position;
 
+        uniform vec3 u_Color;
+
         void main()
         {
-            color = vec4(0.75, 0.75, 0.75, 1.0);
+            color = vec4(u_Color, 1.0);
         }
     )";
 
-    m_SquareShader.reset(new Lucky::Shader(vertexSrc, fragmentSrc));
+    m_FlatColorShader.reset(Lucky::Shader::Create(vertexSrc, fragmentSrc));
 }
 
 ExampleLayer::~ExampleLayer()
@@ -188,13 +193,15 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
     Lucky::Renderer::BeginScene(m_Camera);
 
     static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+    std::dynamic_pointer_cast<Lucky::OpenGLShader>(m_FlatColorShader)->Bind();
+    std::dynamic_pointer_cast<Lucky::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
 
     for(int y = -10; y < 10; y++)
     {
         for(int x = -10; x < 10; x++)
         {
             glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(x * 0.11f, y * 0.11f, 0.0f)) * scale;
-            Lucky::Renderer::Submit(m_SquareShader, m_squareVA, transform);
+            Lucky::Renderer::Submit(m_FlatColorShader, m_squareVA, transform);
         }
     }
     
@@ -210,6 +217,8 @@ void ExampleLayer::OnImGuiRender()
     ImGui::Begin("Camera");
     ImGui::Text("Position: %.1f, %.1f", m_CameraPosition.x, m_CameraPosition.y);
     ImGui::Text("Rotation: %.1f", -m_CameraRotation); //Inverse because rotation is in counterclockwise degrees
+    ImGui::Separator();
+    ImGui::ColorEdit3("Square color", glm::value_ptr(m_SquareColor));
     ImGui::End();
 }
 

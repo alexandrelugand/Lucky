@@ -33,5 +33,6 @@
 #include "Lucky/Platforms/OpenGL/OpenGLVertexArray.h"
 #include "Lucky/Platforms/OpenGL/OpenGLVertexBuffer.h"
 #include "Lucky/Platforms/OpenGL/OpenGLIndexBuffer.h"
+#include "Lucky/Platforms/OpenGL/OpenGLShader.h"
 #include "Lucky/Platforms/Windows/WindowsInput.h"
 #include "Lucky/Platforms/Windows/WindowsWindow.h"
