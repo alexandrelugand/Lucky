@@ -18,7 +18,7 @@ CXX = em++
 AR = emar
 
 CONFIG ?= Debug
-PRJNAME = App
+PRJNAME = Sanbox
 
 OUTDIR = ../bin/browser/$(CONFIG)
 OBJDIR  = ../bin-int/browser/$(CONFIG)/$(PRJNAME)

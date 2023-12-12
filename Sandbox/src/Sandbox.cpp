@@ -1,4 +1,4 @@
-#include "AppPch.h"
+#include "SandboxPch.h"
 
 SandBox::SandBox(const std::string& title) :
     Application(title)
@@ -13,5 +13,5 @@ SandBox::~SandBox()
 
 Lucky::Application* CreateApplication()
 {
-    return new SandBox("SandBox");
+    return new SandBox("Lucky SandBox");
 }

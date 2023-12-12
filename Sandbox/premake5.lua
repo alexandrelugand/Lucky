@@ -1,4 +1,4 @@
-project "App"
+project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -43,7 +43,7 @@ project "App"
 	}
 
 	-- Precompile header
-	pchheader "AppPch.h"
+	pchheader "SandboxPch.h"
 	-- Using ccache to accelerate compilation time (not mandatory)
 	makesettings [[CXX = ccache g++]]
 
