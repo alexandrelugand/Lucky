@@ -4,10 +4,6 @@ ifndef config
   config=debug
 endif
 
-ifndef verbose
-  SILENT = @
-endif
-
 ifeq ($(config),debug)
   ImGui_config = Debug
   Lucky_config = Debug

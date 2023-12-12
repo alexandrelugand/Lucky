@@ -17,6 +17,10 @@ CC = emcc
 CXX = em++
 AR = emar
 
+ifndef verbose
+  SILENT = @
+endif
+
 CONFIG ?= Debug
 PRJNAME = ImGui
 
@@ -92,22 +96,25 @@ LDFLAGS += $(EMS)
 ##---------------------------------------------------------------------
 
 $(OBJDIR)/%.o: %.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@ 
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@ 
 
 all: $(LIB)
 	@echo Build complete for $(LIB)
 
 $(OBJDIR):
-	mkdir "$@"
+	$(SILENT) mkdir "$@"
 
 $(OUTDIR):
-	mkdir "$@"
+	$(SILENT) mkdir "$@"
 
 $(LIB): $(OBJDIR) $(OUTDIR) $(OBJS)
-	$(AR) rcs $(LIB) $(OBJS)
+	@echo $(notdir $<)
+	$(SILENT) $(AR) rcs $(LIB) $(OBJS)
 
 $(EXE): $(OUTDIR) $(OBJDIR) $(OBJS)
-	$(CXX) -o $@ $(OBJS) $(LIBS) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) -o $@ $(OBJS) $(LIBS) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
 
 clean:
-	rm -rf $(OBJS) $(OUTDIR)
+	$(SILENT) rm -rf $(OBJS) $(OUTDIR)
