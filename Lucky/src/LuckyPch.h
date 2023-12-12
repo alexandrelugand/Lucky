@@ -8,6 +8,7 @@
 #include "Lucky/Application/Window.h"
 
 #include "Lucky/Core/Core.h"
+#include "Lucky/Core/Timestep.h"
 #include "Lucky/Core/Layer.h"
 #include "Lucky/Core/LayerStack.h"
 #include "Lucky/Core/Log.h"
