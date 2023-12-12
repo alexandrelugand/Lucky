@@ -16,6 +16,7 @@
 #include "Lucky/Core/Renderer/VertexBuffer.h"
 #include "Lucky/Core/Renderer/IndexBuffer.h"
 #include "Lucky/Core/Renderer/Shader.h"
+#include "Lucky/Core/Renderer/OrthographicCamera.h"
 
 #ifdef __EMSCRIPTEN__
 #define WASM_API static
@@ -47,6 +48,7 @@ namespace Lucky
         WASM_API std::shared_ptr<VertexArray> m_squareVA;
         WASM_API std::shared_ptr<Shader> m_Shader;
         WASM_API std::shared_ptr<Shader> m_BlueShader;
+        WASM_API OrthographicCamera m_Camera;
         bool m_Running;
 
         WASM_API void RenderFrame();

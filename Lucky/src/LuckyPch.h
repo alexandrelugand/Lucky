@@ -25,6 +25,7 @@
 #include "Lucky/Core/Renderer/IndexBuffer.h"
 #include "Lucky/Core/Renderer/VertexBufferLayout.h"
 #include "Lucky/Core/Renderer/Shader.h"
+#include "Lucky/Core/Renderer/OrthographicCamera.h"
 
 #include "Lucky/Platforms/OpenGL/OpenGLRendererApi.h"
 #include "Lucky/Platforms/OpenGL/OpenGLContext.h"

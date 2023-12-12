@@ -5,7 +5,10 @@
 #include <GLES3/gl3.h>
 #else
 #include <glad/glad.h>
+#include "Shader.h"
 #endif
+
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Lucky
 {
@@ -131,4 +134,12 @@ namespace Lucky
 	{
 		glUseProgram(0);
 	}
-} // namespace Lucky
+
+	void Lucky::Shader::UploadUniformMat4(const std::string &name, const glm::mat4 &matrix)
+	{
+		GLint location = glGetUniformLocation(m_ProgramId, name.c_str());
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+}
+
+// namespace Lucky
