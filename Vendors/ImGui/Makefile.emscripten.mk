@@ -58,7 +58,7 @@ EMS =
 
 # ("EMS" options gets added to both CPPFLAGS and LDFLAGS, whereas some options are for linker only)
 EMS += -s DISABLE_EXCEPTION_CATCHING=1
-LDFLAGS += -s USE_GLFW=3 -s FULL_ES3=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
+LDFLAGS += -s USE_SDL=2 -s USE_GLFW=3 -s FULL_ES3=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
 
 # Uncomment next line to fix possible rendering bugs with Emscripten version older then 1.39.0 (https://github.com/ocornut/imgui/issues/2877)
 #EMS += -s BINARYEN_TRAP_MODE=clamp
@@ -68,13 +68,18 @@ LDFLAGS += -s USE_GLFW=3 -s FULL_ES3=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_
 # The Makefile for this example project suggests embedding the misc/fonts/ folder into our application, it will then be accessible as "/fonts"
 # See documentation for more details: https://emscripten.org/docs/porting/files/packaging_files.html
 # (Default value is 0. Set to 1 to enable file-system and include the misc/fonts/ folder as part of the build.)
-USE_FILE_SYSTEM ?= 0
+USE_FILE_SYSTEM ?= 1
 ifeq ($(USE_FILE_SYSTEM), 0)
 LDFLAGS += -s NO_FILESYSTEM=1
 CPPFLAGS += -DIMGUI_DISABLE_FILE_FUNCTIONS
 endif
 ifeq ($(USE_FILE_SYSTEM), 1)
-LDFLAGS += --no-heap-copy --preload-file ../Vendors/ImGui/misc/fonts@/fonts
+LDFLAGS += --no-heap-copy --preload-file ./misc/fonts@/fonts -s FORCE_FILESYSTEM=1
+endif
+
+USE_INDEX_DB_FILE_SYSTEM ?= 0
+ifeq ($(USE_INDEX_DB_FILE_SYSTEM), 1)
+LDFLAGS += -lidbfs.js
 endif
 
 ##---------------------------------------------------------------------

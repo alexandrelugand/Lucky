@@ -7,7 +7,7 @@
             "program": "${workspaceFolder}/bin/windows/x86_64/Debug/Sandbox.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/bin/windows/x86_64/Debug",
+            "cwd": "${workspaceFolder}/Sandbox",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -33,7 +33,7 @@
             "program": "${workspaceFolder}/bin/windows/x86_64/Release/Sandbox.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/bin/windows/x86_64/Release",
+            "cwd": "${workspaceFolder}/Sandbox",
             "environment": [],
             "externalConsole": false,
             "preLaunchTask": "Release-native"

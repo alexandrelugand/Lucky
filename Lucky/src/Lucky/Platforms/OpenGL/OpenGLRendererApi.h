@@ -7,6 +7,8 @@ namespace Lucky
 	class OpenGLRendererApi : public RendererApi
 	{
 	public:
+		void Init() override;
+		
 		void SetClearColor(const glm::vec4& color) override;
 		void Clear() override;
 

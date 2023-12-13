@@ -19,7 +19,10 @@ private:
     Lucky::Ref<Lucky::VertexArray> m_squareVA;
     Lucky::Ref<Lucky::Shader> m_Shader;
     Lucky::Ref<Lucky::Shader> m_FlatColorShader;
-    Lucky::OrthographicCamera m_Camera;
+    Lucky::Ref<Lucky::Shader> m_TextureShader;
+    Lucky::Ref<Lucky::Texture> m_Texture;
+    Lucky::Ref<Lucky::Texture> m_TexturePlane;
+    Lucky::Scope<Lucky::Camera> m_Camera;
     glm::vec3 m_CameraPosition;
     float m_CameraRotation;
     float m_CameraMoveSpeed;

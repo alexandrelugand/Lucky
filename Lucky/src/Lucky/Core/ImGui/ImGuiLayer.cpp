@@ -102,8 +102,10 @@ namespace Lucky
 
 	void ImGuiLayer::OnImGuiRender()
 	{
+#ifdef IMGUI_DEMO
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
+#endif		
 	}
 
 } // namespace Lucky

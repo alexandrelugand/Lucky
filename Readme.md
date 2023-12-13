@@ -1,6 +1,6 @@
 ## Lucky Engine ##
 
-A basic 3D engine framework (OpenGL) working with GCC (native) and EMCC (web assembly) compilers.
+A basic 2D/3D engine framework (OpenGL) working with GCC (native) and EMCC (web assembly) compilers.
 
 The project is configured to build inside [VS Code](https://code.visualstudio.com/download).
 The native Makefiles are generated with Premake5 (binary is included in repository in `Vendors/Binary/Premake` folder).
@@ -114,3 +114,16 @@ In **premake5.lua** files, comment (desactivate) or uncomment (activate) section
 ## Web Assembly
 
 In **Run and Debug** VS code tab, select `Wasm` task to compile and launch wasm binaries (wasm + js + app.html). At the end of compilation, VS code will open default browser to the URL http://127.0.0.1:8000.
+
+## Troubleshooting
+
+During compilation with EMCC, if you use **-s USE_SDL_IMAGE=2** option, it could be possible to have this error:
+***[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed***
+
+To fix that, edit this file:
+`C:\emsdk\upstream\emscripten\tools\ports\sdl2_image.py`
+and add this line:
+```
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+```

@@ -4,9 +4,14 @@ namespace Lucky
 {
 	Renderer::SceneData* Renderer::s_SceneData = new Renderer::SceneData;
 
-	void Renderer::BeginScene(const OrthographicCamera& camera)
+	void Renderer::Init()
 	{
-		s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+		RenderCommand::Init();
+	}
+
+	void Renderer::BeginScene(const Scope<Camera>& camera)
+	{
+		s_SceneData->ViewProjectionMatrix = camera->GetViewProjectionMatrix();
 	}
 
 	void Renderer::EndScene()

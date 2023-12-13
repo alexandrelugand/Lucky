@@ -14,7 +14,9 @@ project "Lucky"
 		"**.h", 
 		"**.cpp", 
 		"%{includeDir.GLM}/glm/**.hpp", 
-		"%{includeDir.GLM}/glm/**.inl" 
+		"%{includeDir.GLM}/glm/**.inl",
+		"%{includeDir.stb}/**.h", 
+		"%{includeDir.stb}/**.cpp", 
 	}
 
 	includedirs
@@ -25,7 +27,8 @@ project "Lucky"
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",
 		"%{includeDir.ImGui}/backends",
-		"%{includeDir.GLM}"
+		"%{includeDir.GLM}",
+		"%{includeDir.stb}"
 	}
 
 	libdirs 

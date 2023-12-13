@@ -26,7 +26,10 @@
 #include "Lucky/Core/Renderer/IndexBuffer.h"
 #include "Lucky/Core/Renderer/VertexBufferLayout.h"
 #include "Lucky/Core/Renderer/Shader.h"
+#include "Lucky/Core/Renderer/Texture.h"
+#include "Lucky/Core/Renderer/Camera.h"
 #include "Lucky/Core/Renderer/OrthographicCamera.h"
+#include "Lucky/Core/Renderer/PerspectiveCamera.h"
 
 #include "Lucky/Platforms/OpenGL/OpenGLRendererApi.h"
 #include "Lucky/Platforms/OpenGL/OpenGLContext.h"
@@ -34,5 +37,6 @@
 #include "Lucky/Platforms/OpenGL/OpenGLVertexBuffer.h"
 #include "Lucky/Platforms/OpenGL/OpenGLIndexBuffer.h"
 #include "Lucky/Platforms/OpenGL/OpenGLShader.h"
+#include "Lucky/Platforms/OpenGL/OpenGLTexture2D.h"
 #include "Lucky/Platforms/Windows/WindowsInput.h"
 #include "Lucky/Platforms/Windows/WindowsWindow.h"

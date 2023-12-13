@@ -5,15 +5,15 @@
 #include <Lucky/Platforms/OpenGL/OpenGLShader.h>
 
 ExampleLayer::ExampleLayer()
-    :   m_Camera(-1.6f, 1.6f, 0.9f, -0.9f), 
-        m_CameraPosition({0.0f, 0.0f, 0.0f}),
+    :   m_CameraPosition({0.0f, 0.0f, 2.0f}),
         m_CameraRotation(0.0f), 
         m_CameraMoveSpeed(2.0f), 
         m_CameraRotationSpeed(90.0f),
         m_triangleRotation(0.0f),
         m_triangleRotationSpeed(45.0f),
-        m_SquareColor({0.75f, 0.75f, 0.75f})
+        m_SquareColor({0.0f, 0.407f, 0.48f})
 {        
+    m_Camera = Lucky::Camera::Create(Lucky::CameraType::Perspective);
     m_VertexArray = Lucky::VertexArray::Create();
     m_VertexArray->Bind();
 
@@ -81,17 +81,19 @@ ExampleLayer::ExampleLayer()
     m_squareVA = Lucky::VertexArray::Create();
     m_squareVA->Bind();
 
-    float squareVertices[4 * 3] = 
+    float squareVertices[5 * 4] = 
     {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f, 
-        0.5f, 0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f
     };
+ 
     Lucky::Ref<Lucky::VertexBuffer> squareVB;
     squareVB = Lucky::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
     squareVB->SetLayout({
-        { Lucky::ShaderDataType::Float3, "a_Position" }
+        { Lucky::ShaderDataType::Float3, "a_Position" },
+        { Lucky::ShaderDataType::Float2, "a_TexCoord" }
     });
     m_squareVA->AddVertexBuffer(squareVB);
 
@@ -138,6 +140,50 @@ ExampleLayer::ExampleLayer()
     )";
 
     m_FlatColorShader = Lucky::Shader::Create(vertexSrc, fragmentSrc);
+
+#ifdef __EMSCRIPTEN__
+    vertexSrc = "#version 300 es\n";
+#else
+    vertexSrc = "#version 410\n";
+#endif
+    vertexSrc += R"(
+        layout(location = 0) in vec3 a_Position;
+        layout(location = 1) in vec2 a_TexCoord;
+
+        uniform mat4 u_ViewProjection;
+        uniform mat4 u_Transform;
+
+        out vec2 v_TexCoord;
+
+        void main()
+        {
+            v_TexCoord = a_TexCoord;
+            gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+        }
+    )";
+
+#ifdef __EMSCRIPTEN__
+    fragmentSrc = "#version 300 es\n";
+    fragmentSrc += "precision mediump float;\n";
+#else
+    fragmentSrc = "#version 410\n";
+#endif
+    fragmentSrc += R"(
+        layout(location = 0) out vec4 color;
+        in vec2 v_TexCoord;
+
+        uniform sampler2D u_Texture;
+
+        void main()
+        {
+            color = texture(u_Texture, v_TexCoord);
+        }
+    )";
+
+    m_TextureShader = Lucky::Shader::Create(vertexSrc, fragmentSrc);
+
+    m_Texture = Lucky::Texture2D::Create("assets/textures/Checkerboard.png");
+    m_TexturePlane = Lucky::Texture2D::Create("assets/textures/f14-tomcat.png");
 }
 
 ExampleLayer::~ExampleLayer()
@@ -161,18 +207,23 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
 #else
     if(Lucky::Input::IsKeyPressed(LK_KEY_Z))
 #endif
+        m_CameraPosition.z -= m_CameraMoveSpeed * ts;
+    else if(Lucky::Input::IsKeyPressed(LK_KEY_S))
+        m_CameraPosition.z += m_CameraMoveSpeed * ts;
+
+    if(Lucky::Input::IsKeyPressed(LK_KEY_D))
         m_CameraRotation -= m_CameraRotationSpeed * ts;
     else
 #ifndef __EMSCRIPTEN__
-    if(Lucky::Input::IsKeyPressed(LK_KEY_Q))
-#else
     if(Lucky::Input::IsKeyPressed(LK_KEY_A))
+#else
+    if(Lucky::Input::IsKeyPressed(LK_KEY_Q))
 #endif
         m_CameraRotation += m_CameraRotationSpeed * ts;
 
     if(Lucky::Input::IsKeyPressed(LK_KEY_SPACE))
     {
-        m_CameraPosition = glm::vec3(0.0f);
+        m_CameraPosition = glm::vec3({0.0f, 0.0f, 2.0f});
         m_CameraRotation = -0.0f;
     }
 
@@ -187,8 +238,8 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
     Lucky::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
     Lucky::RenderCommand::Clear();
 
-    m_Camera.SetPosition(m_CameraPosition);
-    m_Camera.SetRotation(m_CameraRotation);
+    m_Camera->SetPosition(m_CameraPosition);
+    m_Camera->SetRotation(m_CameraRotation);
 
     Lucky::Renderer::BeginScene(m_Camera);
 
@@ -204,10 +255,18 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
             Lucky::Renderer::Submit(m_FlatColorShader, m_squareVA, transform);
         }
     }
-    
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_triangleRotation), glm::vec3(0.0f, 0.0f, 1.0f));
-    glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) * rotation;
-    Lucky::Renderer::Submit(m_Shader, m_VertexArray, transform);
+
+    m_Texture->Bind();
+    Lucky::Renderer::Submit(m_TextureShader, m_squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+    m_TexturePlane->Bind();
+    Lucky::Renderer::Submit(m_TextureShader, m_squareVA, glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+
+
+    // Triangle   
+    // glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_triangleRotation), glm::vec3(0.0f, 0.0f, 1.0f));
+    // glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) * rotation;
+    // Lucky::Renderer::Submit(m_Shader, m_VertexArray, transform);
 
     Lucky::Renderer::EndScene();
 }
@@ -215,7 +274,7 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
 void ExampleLayer::OnImGuiRender()
 {
     ImGui::Begin("Camera");
-    ImGui::Text("Position: %.1f, %.1f", m_CameraPosition.x, m_CameraPosition.y);
+    ImGui::Text("Position: %.1f, %.1f, %.1f", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
     ImGui::Text("Rotation: %.1f", -m_CameraRotation); //Inverse because rotation is in counterclockwise degrees
     ImGui::Separator();
     ImGui::ColorEdit3("Square color", glm::value_ptr(m_SquareColor));
