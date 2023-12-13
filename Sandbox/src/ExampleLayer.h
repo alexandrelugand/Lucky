@@ -15,10 +15,10 @@ public:
 private:
     bool OnKeyPressedEvent(Lucky::KeyPressedEvent& event);
 
-    std::shared_ptr<Lucky::VertexArray> m_VertexArray;
-    std::shared_ptr<Lucky::VertexArray> m_squareVA;
-    std::shared_ptr<Lucky::Shader> m_Shader;
-    std::shared_ptr<Lucky::Shader> m_FlatColorShader;
+    Lucky::Ref<Lucky::VertexArray> m_VertexArray;
+    Lucky::Ref<Lucky::VertexArray> m_squareVA;
+    Lucky::Ref<Lucky::Shader> m_Shader;
+    Lucky::Ref<Lucky::Shader> m_FlatColorShader;
     Lucky::OrthographicCamera m_Camera;
     glm::vec3 m_CameraPosition;
     float m_CameraRotation;

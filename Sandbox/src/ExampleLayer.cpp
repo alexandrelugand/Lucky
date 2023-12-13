@@ -23,7 +23,7 @@ ExampleLayer::ExampleLayer()
         0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
         0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
     };
-    std::shared_ptr<Lucky::VertexBuffer> vertexBuffer;
+    Lucky::Ref<Lucky::VertexBuffer> vertexBuffer;
     vertexBuffer.reset(Lucky::VertexBuffer::Create(vertices, sizeof(vertices)));
     vertexBuffer->SetLayout({
         { Lucky::ShaderDataType::Float3, "a_Position" },
@@ -32,7 +32,7 @@ ExampleLayer::ExampleLayer()
     m_VertexArray->AddVertexBuffer(vertexBuffer);
 
     unsigned int indices[3] = { 0, 1, 2 };
-    std::shared_ptr<Lucky::IndexBuffer> indexBuffer;
+    Lucky::Ref<Lucky::IndexBuffer> indexBuffer;
     indexBuffer.reset(Lucky::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
     m_VertexArray->SetIndexBuffer(indexBuffer);
 
@@ -88,7 +88,7 @@ ExampleLayer::ExampleLayer()
         0.5f, 0.5f, 0.0f,
         -0.5f, 0.5f, 0.0f
     };
-    std::shared_ptr<Lucky::VertexBuffer> squareVB;
+    Lucky::Ref<Lucky::VertexBuffer> squareVB;
     squareVB.reset(Lucky::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
     squareVB->SetLayout({
         { Lucky::ShaderDataType::Float3, "a_Position" }
@@ -96,7 +96,7 @@ ExampleLayer::ExampleLayer()
     m_squareVA->AddVertexBuffer(squareVB);
 
     unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-    std::shared_ptr<Lucky::IndexBuffer> squareIB;
+    Lucky::Ref<Lucky::IndexBuffer> squareIB;
     squareIB.reset(Lucky::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
     m_squareVA->SetIndexBuffer(squareIB);
 

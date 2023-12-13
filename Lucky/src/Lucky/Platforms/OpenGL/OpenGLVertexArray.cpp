@@ -44,7 +44,7 @@ namespace Lucky
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(std::shared_ptr<VertexBuffer> vertexBuffer)
+	void OpenGLVertexArray::AddVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 	{
 		glBindVertexArray(m_VertexArrayId);
 		vertexBuffer->Bind();
@@ -69,7 +69,7 @@ namespace Lucky
 		m_VertexBuffers.push_back(vertexBuffer);
 	}
 
-	void OpenGLVertexArray::SetIndexBuffer(std::shared_ptr<IndexBuffer> indexBuffer)
+	void OpenGLVertexArray::SetIndexBuffer(Ref<IndexBuffer> indexBuffer)
 	{
 		glBindVertexArray(m_VertexArrayId);
 		indexBuffer->Bind();

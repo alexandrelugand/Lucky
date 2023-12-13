@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef PLATFORM_WINDOWS
     #ifdef _MSC_VER
         #define DEBUG_BREAK __debugbreak
@@ -30,3 +32,13 @@
 
 #define BIT(x) (x << 1)
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
+
+namespace Lucky
+{
+    template<typename T>
+    using Scope = std::unique_ptr<T>;
+
+    template<typename T>
+    using Ref = std::shared_ptr<T>;
+} // namespace Lucky
+
