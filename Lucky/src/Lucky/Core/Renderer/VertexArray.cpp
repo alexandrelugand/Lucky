@@ -2,7 +2,7 @@
 
 namespace Lucky
 {
-	VertexArray* VertexArray::Create()
+	Ref<VertexArray> VertexArray::Create()
 	{
 		switch (Renderer::GetApi())
 		{
@@ -10,7 +10,7 @@ namespace Lucky
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
 		case RendererApi::Api::OpenGL:
-			return new OpenGLVertexArray();
+			return std::make_shared<OpenGLVertexArray>();
 		}
 
 		LK_CORE_ASSERT(false, "Unknown renderer API!");

@@ -20,6 +20,6 @@ namespace Lucky
 		virtual void AddVertexBuffer(Ref<VertexBuffer> vertexBuffer) = 0;
 		virtual void SetIndexBuffer(Ref<IndexBuffer> indexBuffer) = 0;
 
-		static VertexArray* Create();
+		static Ref<VertexArray> Create();
 	};
 } // namespace Lucky

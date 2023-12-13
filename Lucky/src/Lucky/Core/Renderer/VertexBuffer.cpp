@@ -2,7 +2,7 @@
 
 namespace Lucky
 {
-	VertexBuffer* VertexBuffer::Create(float *vertices, uint32_t size)
+	Ref<VertexBuffer> VertexBuffer::Create(float *vertices, uint32_t size)
 	{
 		switch (Renderer::GetApi())
 		{
@@ -10,7 +10,7 @@ namespace Lucky
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
 		case RendererApi::Api::OpenGL:
-			return new OpenGLVertexBuffer(vertices, size);
+			return std::make_shared<OpenGLVertexBuffer>(vertices, size);
 		}
 
 		LK_CORE_ASSERT(false, "Unknown renderer API!");

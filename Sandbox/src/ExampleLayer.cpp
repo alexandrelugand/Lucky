@@ -14,7 +14,7 @@ ExampleLayer::ExampleLayer()
         m_triangleRotationSpeed(45.0f),
         m_SquareColor({0.75f, 0.75f, 0.75f})
 {        
-    m_VertexArray.reset(Lucky::VertexArray::Create());
+    m_VertexArray = Lucky::VertexArray::Create();
     m_VertexArray->Bind();
 
     float vertices[3 * 7] = 
@@ -24,7 +24,7 @@ ExampleLayer::ExampleLayer()
         0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
     };
     Lucky::Ref<Lucky::VertexBuffer> vertexBuffer;
-    vertexBuffer.reset(Lucky::VertexBuffer::Create(vertices, sizeof(vertices)));
+    vertexBuffer= Lucky::VertexBuffer::Create(vertices, sizeof(vertices));
     vertexBuffer->SetLayout({
         { Lucky::ShaderDataType::Float3, "a_Position" },
         { Lucky::ShaderDataType::Float4, "a_Color" }
@@ -33,7 +33,7 @@ ExampleLayer::ExampleLayer()
 
     unsigned int indices[3] = { 0, 1, 2 };
     Lucky::Ref<Lucky::IndexBuffer> indexBuffer;
-    indexBuffer.reset(Lucky::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+    indexBuffer = Lucky::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
     m_VertexArray->SetIndexBuffer(indexBuffer);
 
 #ifdef __EMSCRIPTEN__
@@ -76,9 +76,9 @@ ExampleLayer::ExampleLayer()
         }
     )";
 
-    m_Shader.reset(Lucky::Shader::Create(vertexSrc, fragmentSrc));
+    m_Shader = Lucky::Shader::Create(vertexSrc, fragmentSrc);
 
-    m_squareVA.reset(Lucky::VertexArray::Create());
+    m_squareVA = Lucky::VertexArray::Create();
     m_squareVA->Bind();
 
     float squareVertices[4 * 3] = 
@@ -89,7 +89,7 @@ ExampleLayer::ExampleLayer()
         -0.5f, 0.5f, 0.0f
     };
     Lucky::Ref<Lucky::VertexBuffer> squareVB;
-    squareVB.reset(Lucky::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+    squareVB = Lucky::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
     squareVB->SetLayout({
         { Lucky::ShaderDataType::Float3, "a_Position" }
     });
@@ -97,7 +97,7 @@ ExampleLayer::ExampleLayer()
 
     unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
     Lucky::Ref<Lucky::IndexBuffer> squareIB;
-    squareIB.reset(Lucky::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+    squareIB = Lucky::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
     m_squareVA->SetIndexBuffer(squareIB);
 
 #ifdef __EMSCRIPTEN__
@@ -137,7 +137,7 @@ ExampleLayer::ExampleLayer()
         }
     )";
 
-    m_FlatColorShader.reset(Lucky::Shader::Create(vertexSrc, fragmentSrc));
+    m_FlatColorShader = Lucky::Shader::Create(vertexSrc, fragmentSrc);
 }
 
 ExampleLayer::~ExampleLayer()

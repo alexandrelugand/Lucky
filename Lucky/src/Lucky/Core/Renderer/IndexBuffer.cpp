@@ -3,7 +3,7 @@
 
 namespace Lucky
 {
-	IndexBuffer* IndexBuffer::Create(uint32_t *indices, uint32_t count)
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t *indices, uint32_t count)
 	{
 		switch (Renderer::GetApi())
 		{
@@ -11,7 +11,7 @@ namespace Lucky
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
 		case RendererApi::Api::OpenGL:
-			return new OpenGLIndexBuffer(indices, count);
+			return std::make_shared<OpenGLIndexBuffer>(indices, count);
 		}
 
 		LK_CORE_ASSERT(false, "Unknown renderer API!");
