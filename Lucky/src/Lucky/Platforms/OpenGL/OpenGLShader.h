@@ -8,8 +8,10 @@ namespace Lucky
 	{
 	public:
 		OpenGLShader(const std::string& filepath);
-		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader();
+
+		inline const std::string& GetName() const { return m_Name; }
 
 		void Bind() const override;
 		void Unbind() const override;
@@ -30,5 +32,6 @@ namespace Lucky
 		void Compile(const std::unordered_map<uint32_t, std::string>& shaderSources);
 
 		uint32_t m_ProgramId;
+		std::string m_Name;
 	};
 } // namespace Lucky

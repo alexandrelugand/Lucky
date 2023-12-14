@@ -69,9 +69,9 @@ ExampleLayer::ExampleLayer()
     m_squareVA->SetIndexBuffer(squareIB);
 
     // Shaders
-    m_Shader = Lucky::Shader::Create(fmt::format("assets/shaders/PositionColor.{0}", GLSL_EXTENSION));
-    m_FlatColorShader = Lucky::Shader::Create(fmt::format("assets/shaders/FlatColor.{0}", GLSL_EXTENSION));
-    m_TextureShader = Lucky::Shader::Create(fmt::format("assets/shaders/Texture.{0}", GLSL_EXTENSION));
+    m_ShaderLibrary.Load(fmt::format("assets/shaders/VertexPosColor.{0}", GLSL_EXTENSION));
+    m_ShaderLibrary.Load(fmt::format("assets/shaders/FlatColor.{0}", GLSL_EXTENSION));
+    m_ShaderLibrary.Load(fmt::format("assets/shaders/Texture.{0}", GLSL_EXTENSION));
 
     // Textures
     m_Texture = Lucky::Texture2D::Create("assets/textures/Checkerboard.png");
@@ -135,30 +135,34 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
 
     Lucky::Renderer::BeginScene(m_Camera);
 
+    auto flatColorShader = m_ShaderLibrary.Get("FlatColor");
+
     static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-    std::dynamic_pointer_cast<Lucky::OpenGLShader>(m_FlatColorShader)->Bind();
-    std::dynamic_pointer_cast<Lucky::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
+    std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->Bind();
+    std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
 
     for(int y = -10; y < 10; y++)
     {
         for(int x = -10; x < 10; x++)
         {
             glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(x * 0.11f, y * 0.11f, 0.0f)) * scale;
-            Lucky::Renderer::Submit(m_FlatColorShader, m_squareVA, transform);
+            Lucky::Renderer::Submit(flatColorShader, m_squareVA, transform);
         }
     }
+    
+    auto textureShader = m_ShaderLibrary.Get("Texture");
 
     m_Texture->Bind();
-    Lucky::Renderer::Submit(m_TextureShader, m_squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+    Lucky::Renderer::Submit(textureShader, m_squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
     m_TexturePlane->Bind();
-    Lucky::Renderer::Submit(m_TextureShader, m_squareVA, glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-
+    Lucky::Renderer::Submit(textureShader, m_squareVA, glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 
     // Triangle   
     // glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_triangleRotation), glm::vec3(0.0f, 0.0f, 1.0f));
     // glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f)) * rotation;
-    // Lucky::Renderer::Submit(m_Shader, m_VertexArray, transform);
+    // auto vertexPosColorShader = m_ShaderLibrary.Get("VertexPosColor");
+    // Lucky::Renderer::Submit(vertexPosColorShader, m_VertexArray, transform);
 
     Lucky::Renderer::EndScene();
 }

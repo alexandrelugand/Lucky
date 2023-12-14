@@ -31,6 +31,7 @@
 #include "Lucky/Core/Renderer/Camera.h"
 #include "Lucky/Core/Renderer/OrthographicCamera.h"
 #include "Lucky/Core/Renderer/PerspectiveCamera.h"
+#include "Lucky/Core/Renderer/ShaderLibrary.h"
 // ---------------------------------------
 
 // --- Entry point -----------------------
