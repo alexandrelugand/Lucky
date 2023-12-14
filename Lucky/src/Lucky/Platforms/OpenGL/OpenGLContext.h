@@ -1,7 +1,5 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-
 #include "Lucky/Core/Renderer/Context.h"
 
 namespace Lucky

@@ -1,6 +1,10 @@
 #include "LuckyPch.h"
 #include "IndexBuffer.h"
 
+#include "Renderer.h"
+#include "RendererApi.h"
+#include "Lucky/Platforms/OpenGL/OpenGLIndexBuffer.h"
+
 namespace Lucky
 {
 	Ref<IndexBuffer> IndexBuffer::Create(uint32_t *indices, uint32_t count)

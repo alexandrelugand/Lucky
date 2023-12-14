@@ -1,8 +1,5 @@
 #include "LuckyPch.h"
-
-#ifndef __EMSCRIPTEN__
-#include <glad/glad.h>
-#endif
+#include "OpenGLContext.h"
 
 namespace Lucky
 {

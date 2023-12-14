@@ -1,7 +1,9 @@
 #pragma once
 
-#include "RenderCommand.h"
 #include "Camera.h"
+#include "Shader.h"
+#include "VertexArray.h"
+#include "RendererApi.h"
 
 namespace Lucky
 {

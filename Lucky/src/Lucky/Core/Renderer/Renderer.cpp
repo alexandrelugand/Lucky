@@ -1,4 +1,8 @@
 #include "LuckyPch.h"
+#include "Renderer.h"
+
+#include "RenderCommand.h"
+#include "Lucky/Platforms/OpenGL/OpenGLShader.h"
 
 namespace Lucky
 {

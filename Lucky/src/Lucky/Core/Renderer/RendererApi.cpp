@@ -1,4 +1,5 @@
 #include "LuckyPch.h"
+#include "RendererApi.h"
 
 namespace Lucky
 {

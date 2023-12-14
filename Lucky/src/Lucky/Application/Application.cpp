@@ -1,15 +1,8 @@
 #include "LuckyPch.h"
+#include "Application.h"
 
-#include <iostream>
-#include <stdexcept>
-#include <format>
-#ifdef __EMSCRIPTEN__
-#include <GLES3/gl3.h>
-#else
-#include <glad/glad.h>
-#endif
-#include <GLFW/glfw3.h>
-#include <memory>
+#include "Lucky/Core/Timestep.h"
+#include "Lucky/Core/Renderer/Renderer.h"
 
 namespace Lucky
 {

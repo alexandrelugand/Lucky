@@ -1,11 +1,10 @@
 #pragma once
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#else
-#define EMSCRIPTEN_KEEPALIVE
-#endif
-#include <iostream>
 
+#ifdef __EMSCRIPTEN__
+	#include <emscripten.h>
+#else
+	#define EMSCRIPTEN_KEEPALIVE
+#endif
 #include "Application.h"
 
 extern Lucky::Application* CreateApplication();

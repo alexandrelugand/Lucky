@@ -67,7 +67,8 @@
         "span": "cpp",
         "stop_token": "cpp",
         "thread": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "unordered_set": "cpp"
     },
     "cmake.configureOnOpen": false
 }

@@ -1,28 +1,14 @@
 #pragma once
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#define GLFW_INCLUDE_ES3
-#endif
-
-#include <string>
-#include <memory>
-#include <GLFW/glfw3.h>
 
 #include "Window.h"
 #include "Lucky/Core/Events/ApplicationEvent.h"
 #include "Lucky/Core/ImGui/ImGuiLayer.h"
 #include "Lucky/Core/LayerStack.h"
-#include "Lucky/Core/Renderer/VertexArray.h"
-#include "Lucky/Core/Renderer/VertexBuffer.h"
-#include "Lucky/Core/Renderer/IndexBuffer.h"
-#include "Lucky/Core/Renderer/Shader.h"
-#include "Lucky/Core/Renderer/OrthographicCamera.h"
-#include "Lucky/Core/Timestep.h"
 
 #ifdef __EMSCRIPTEN__
-#define WASM_API static
+    #define WASM_API static
 #else
-#define WASM_API
+    #define WASM_API
 #endif
 
 namespace Lucky

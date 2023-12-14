@@ -1,4 +1,9 @@
 #include "LuckyPch.h"
+#include "VertexArray.h"
+
+#include "Renderer.h"
+#include "RendererApi.h"
+#include "Lucky/Platforms/OpenGL/OpenGLVertexArray.h"
 
 namespace Lucky
 {

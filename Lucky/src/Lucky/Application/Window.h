@@ -1,11 +1,7 @@
 #pragma once
 
-#include <string>
-#include <functional>
-
 #include "WindowProps.h"
 #include "Lucky/Core/Events/Event.h"
-#include "Lucky/Core/Timestep.h"
 
 namespace Lucky
 {

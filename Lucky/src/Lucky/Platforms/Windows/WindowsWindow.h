@@ -1,5 +1,4 @@
 #pragma once
-#include <GLFW/glfw3.h>
 
 #include "Lucky/Application/Window.h"
 #include "Lucky/Core/Renderer/Context.h"

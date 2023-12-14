@@ -1,8 +1,7 @@
 #include "SandboxPch.h"
+#include "Sandbox.h"
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
+#include "ExampleLayer.h"
 
 SandBox::SandBox(const Lucky::WindowProps& props) :
     Application(props)
@@ -28,5 +27,5 @@ Lucky::Application* CreateApplication()
 //     );
 // #endif
 
-    return new SandBox({"Lucky SandBox", 1280, 720, false});
+    return new SandBox({"Lucky Sandbox", 1280, 720, false});
 }

@@ -1,14 +1,5 @@
 #include "LuckyPch.h"
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#include <GLES3/gl3.h>
-#else
-#include <glad/glad.h>
-#endif
-
-#include "stb/stb_image.h"
-
+#include "OpenGLTexture2D.h"
 
 namespace Lucky
 {
@@ -38,8 +29,8 @@ namespace Lucky
 
 		LK_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
 
-		LK_CORE_INFO("Image path: {0}", path);
-		LK_CORE_INFO("Image {0}x{1} pixels", m_Width, m_Height);
+		LK_CORE_TRACE("Image path: {0}", path);
+		LK_CORE_TRACE("Image {0}x{1} pixels", m_Width, m_Height);
 
 		glGenTextures(1, &m_TextureId);
 		glBindTexture(GL_TEXTURE_2D, m_TextureId);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 

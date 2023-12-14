@@ -1,7 +1,11 @@
 #include "LuckyPch.h"
-#ifndef __EMSCRIPTEN__
-#include <glad/glad.h>
-#endif
+#include "WindowsWindow.h"
+
+#include "Lucky/Platforms/OpenGL/OpenGLContext.h"
+#include "Lucky/Core/Events/Event.h"
+#include "Lucky/Core/Events/KeyEvent.h"
+#include "Lucky/Core/Events/MouseEvent.h"
+#include "Lucky/Core/Events/ApplicationEvent.h"
 
 namespace Lucky
 {

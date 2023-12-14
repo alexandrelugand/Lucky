@@ -9,6 +9,7 @@
 // ---------------------------------------
 
 // --- Core ------------------------------
+#include "Lucky/Core/Core.h"
 #include "Lucky/Core/Log.h"
 #include "Lucky/Core/Timestep.h"
 #include "Lucky/Core/Events/Event.h"

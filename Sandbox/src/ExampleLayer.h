@@ -1,6 +1,5 @@
 #pragma once
 #include <Lucky.h>
-#include <glm/glm.hpp>
 
 class ExampleLayer : public Lucky::Layer
 {

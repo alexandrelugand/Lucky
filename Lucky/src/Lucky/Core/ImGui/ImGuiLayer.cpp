@@ -1,15 +1,10 @@
 #include "LuckyPch.h"
+#include "ImGuiLayer.h"
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#include <GLES3/gl3.h>
-#else
-#include <glad/glad.h>
-#endif
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "ImGuiLayer.h"
+#include "Lucky/Application/Application.h"
 
 namespace Lucky
 {
@@ -24,7 +19,7 @@ namespace Lucky
 
 	void ImGuiLayer::OnAttach()
 	{
-		LK_CORE_INFO("ImGui create context");
+		LK_CORE_TRACE("ImGui create context");
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 

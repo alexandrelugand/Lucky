@@ -1,4 +1,9 @@
 #include "LuckyPch.h"
+#include "Texture.h"
+
+#include "Renderer.h"
+#include "RendererApi.h"
+#include "Lucky/Platforms/OpenGL/OpenGLTexture2D.h"
 
 namespace Lucky
 {

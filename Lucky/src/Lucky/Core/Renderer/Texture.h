@@ -1,10 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-#include <string>
-
-#include "Lucky/Core/Core.h"
-
 namespace Lucky
 {
 	class Texture

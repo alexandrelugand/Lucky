@@ -1,4 +1,5 @@
 #include "LuckyPch.h"
+#include "OpenGLVertexBuffer.h"
 
 namespace Lucky
 {

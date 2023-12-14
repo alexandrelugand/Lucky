@@ -1,4 +1,5 @@
 #include "LuckyPch.h"
+#include "Layer.h"
 
 namespace Lucky
 {

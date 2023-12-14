@@ -1,9 +1,5 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <stdint.h>
-
 namespace Lucky
 {
 	enum class ShaderDataType

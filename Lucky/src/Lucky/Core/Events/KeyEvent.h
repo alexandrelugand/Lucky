@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-#include <sstream>
 #include "Event.h"
 
 namespace Lucky

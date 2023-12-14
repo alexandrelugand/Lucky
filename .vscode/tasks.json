@@ -5,7 +5,7 @@
             "type": "shell",
             "command": "make",
             "args": [
-                "-j",
+                "-j8",
                 "config=debug",
                 "all"
             ],
@@ -16,7 +16,7 @@
             "type": "shell",
             "command": "make",
             "args": [
-                "-j",
+                "-j8",
                 "config=release",
                 "all"
             ],
@@ -27,7 +27,7 @@
             "type": "shell",
             "command": "make -f Makefile.emscripten.mk",
             "args": [
-                "-j",
+                "-j8",
                 "config=debug",
                 "all"
             ],
@@ -38,7 +38,7 @@
             "type": "shell",
             "command": "make -f Makefile.emscripten.mk",
             "args": [
-                "-j",
+                "-j8",
                 "config=release",
                 "all"
             ],
