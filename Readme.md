@@ -1,6 +1,6 @@
 ## Lucky Engine ##
 
-A basic 2D/3D engine framework (OpenGL) working with GCC (native) and EMCC (web assembly) compilers.
+A basic 2D/3D engine framework (OpenGL) working with G++ (native) and EMCC (web assembly) compilers.
 
 The project is configured to build inside [VS Code](https://code.visualstudio.com/download).
 The native Makefiles are generated with Premake5 (binary is included in repository in `Vendors/Binary/Premake` folder).

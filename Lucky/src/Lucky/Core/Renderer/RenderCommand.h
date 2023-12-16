@@ -27,6 +27,11 @@ namespace Lucky
 			s_RendererApi->DrawIndexed(vertexArray);
 		}
 
+		inline static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+		{
+			s_RendererApi->SetViewport(x, y ,width, height);
+		}
+
 	private:
 		static RendererApi* s_RendererApi;
 	};

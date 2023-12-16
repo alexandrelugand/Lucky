@@ -32,11 +32,13 @@ namespace Lucky
         WASM_API ImGuiLayer* m_ImGuiLayer;
         WASM_API LayerStack m_LayerStack;
         WASM_API float m_LastFrameTime;
-        bool m_Running;
+        WASM_API bool m_Minimized;
+        bool m_Running = true;
 
         WASM_API void RenderFrame();
         void OnEvent(Event& e);
         bool OnWindowClose(WindowCloseEvent& event);
+        bool OnWindowResize(WindowResizeEvent& event);
     };
 
     //To be defined in client
