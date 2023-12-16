@@ -61,15 +61,15 @@
             "name": "Setup",
             "type": "PowerShell",
             "request": "launch",
-            "script": "${workspaceFolder}/setup.bat",
-            "cwd": "${cwd}"
+            "script": "${workspaceFolder}/Scripts/setup.bat",
+            "cwd": "${workspaceFolder}/Scripts"
         },
         {
             "name": "Clean",
             "type": "PowerShell",
             "request": "launch",
-            "script": "${workspaceFolder}/clean.bat",
-            "cwd": "${cwd}"
+            "script": "${workspaceFolder}/Scripts/clean.bat",
+            "cwd": "${workspaceFolder}/Scripts"
         }
     ],
     "version": "2.0.0"

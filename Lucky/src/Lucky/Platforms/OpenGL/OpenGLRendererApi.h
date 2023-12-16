@@ -1,6 +1,8 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include "Lucky/Core/Renderer/RendererApi.h"
+#include "Lucky/Core/Core.h"
 
 namespace Lucky
 {

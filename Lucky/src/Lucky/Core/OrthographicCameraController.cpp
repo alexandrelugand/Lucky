@@ -23,20 +23,32 @@ namespace Lucky
 		#else
 		if(Input::IsKeyPressed(LK_KEY_Q))
 		#endif
-			m_Position.x -= m_Settings.TranslationSpeed * ts;
+		{
+			m_Position.x -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Position.y -= sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+		}	
 		else
 		if(Input::IsKeyPressed(LK_KEY_D))
-			m_Position.x += m_Settings.TranslationSpeed * ts;
+		{
+			m_Position.x += cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Position.y += sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+		}	
 
 		if(Input::IsKeyPressed(LK_KEY_S))
-			m_Position.y -= m_Settings.TranslationSpeed * ts;
+		{
+			m_Position.x -= -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Position.y -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+		}	
 		else 
 		#ifndef __EMSCRIPTEN__
 		if(Input::IsKeyPressed(LK_KEY_W))
 		#else
 		if(Input::IsKeyPressed(LK_KEY_Z))
 		#endif
-			m_Position.y += m_Settings.TranslationSpeed * ts;
+		{
+			m_Position.x += -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Position.y += cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+		}	
 
 		if(m_Settings.EnableRotation)
 		{
@@ -49,6 +61,11 @@ namespace Lucky
 			if(Input::IsKeyPressed(LK_KEY_A))
 			#endif
 				m_Rotation += m_Settings.RotationSpeed * ts;
+
+			if(m_Rotation > 180.0f)
+				m_Rotation -= 360.0f;
+			else if(m_Rotation <= -180.0f)
+				m_Rotation += 360.0f;
 
 			m_Camera.SetRotation(m_Rotation);
 		}

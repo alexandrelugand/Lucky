@@ -48,14 +48,20 @@
             "label": "Setup",
             "type": "shell",
             "windows": {
-                "command": "${workspaceFolder}/setup.bat"
+                "command": "${workspaceFolder}/Scripts/setup.bat"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/scripts"
             }
         },
         {
             "label": "Clean",
             "type": "shell",
             "windows": {
-                "command": "${workspaceFolder}/clean.bat"
+                "command": "${workspaceFolder}/Scripts/clean.bat"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/scripts"
             }
         },
         {
