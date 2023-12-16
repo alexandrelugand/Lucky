@@ -13,9 +13,9 @@ namespace Lucky
 		RenderCommand::Init();
 	}
 
-	void Renderer::BeginScene(const Scope<Camera>& camera)
+	void Renderer::BeginScene(const Scope<CameraController>& cameraController)
 	{
-		s_SceneData->ViewProjectionMatrix = camera->GetViewProjectionMatrix();
+		s_SceneData->ViewProjectionMatrix = cameraController->GetCamera().GetViewProjectionMatrix();
 	}
 
 	void Renderer::EndScene()

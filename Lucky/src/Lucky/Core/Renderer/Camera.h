@@ -4,6 +4,8 @@
 
 namespace Lucky
 {
+	struct CameraSettings;
+
 	enum class CameraType
 	{
 		Orthographic = 0,
@@ -13,11 +15,10 @@ namespace Lucky
 	class Camera
 	{
 	public:
-		Camera();
 		virtual ~Camera() = default;
 
 		const glm::vec3& GetPosition() const { return m_Position; }
-		void SetPosition(const glm::vec3& position) { m_Position = position; RecalculateViewMatrix(); }
+		void 	SetPosition(const glm::vec3& position) { m_Position = position; RecalculateViewMatrix(); }
 		
 		float GetRotation() const { return m_Rotation; }
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
@@ -25,8 +26,6 @@ namespace Lucky
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
-
-		static Scope<Camera> Create(CameraType type);
 
 	protected:
 		virtual void RecalculateViewMatrix();

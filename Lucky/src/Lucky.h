@@ -18,6 +18,7 @@
 #include "Lucky/Core/Events/ApplicationEvent.h"
 #include "Lucky/Core/Layer.h"
 #include "Lucky/Core/ImGui/ImGuiLayer.h"
+#include "Lucky/Core/CameraController.h"
 // ---------------------------------------
 
 // --- Renderer --------------------------

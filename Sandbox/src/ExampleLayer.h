@@ -12,19 +12,13 @@ public:
     void OnEvent(Lucky::Event& event) override;
 
 private:
-    bool OnKeyPressedEvent(Lucky::KeyPressedEvent& event);
-
     Lucky::Ref<Lucky::VertexArray> m_VertexArray;
     Lucky::Ref<Lucky::VertexArray> m_squareVA;
     Lucky::ShaderLibrary m_ShaderLibrary;
     Lucky::Ref<Lucky::Texture> m_Texture;
     Lucky::Ref<Lucky::Texture> m_TexturePlane;
-    Lucky::Scope<Lucky::Camera> m_Camera;
-    glm::vec3 m_CameraPosition;
-    float m_CameraRotation;
-    float m_CameraMoveSpeed;
-    float m_CameraRotationSpeed;
-    float m_triangleRotation;
-    float m_triangleRotationSpeed;
+    Lucky::Scope<Lucky::CameraController> m_CameraController;
+    /*float m_triangleRotation = 0.0f;
+    float m_triangleRotationSpeed = 45.0f;*/
     glm::vec3 m_SquareColor;
 };

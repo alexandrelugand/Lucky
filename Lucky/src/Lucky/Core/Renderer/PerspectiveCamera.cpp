@@ -3,9 +3,14 @@
 
 namespace Lucky
 {
-	PerspectiveCamera::PerspectiveCamera(float fov, float width, float height, float zNear, float zFar)
+	PerspectiveCamera::PerspectiveCamera(const CameraSettings& settings)
 	{
-		m_ProjectionMatrix = glm::perspectiveFov(fov, width, height, zNear, zFar);
+		SetProjection(settings.Fov, settings.AspectRatio, settings.ZNear, settings.ZFar);
+	}
+
+	void PerspectiveCamera::SetProjection(float fov, float aspectRatio, float zNear, float zFar)
+	{
+		m_ProjectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, zNear, zFar);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
 } // namespace Lucky

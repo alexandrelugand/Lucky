@@ -13,15 +13,24 @@
 #endif
 
 ExampleLayer::ExampleLayer()
-    :   m_CameraPosition({0.0f, 0.0f, 2.0f}),
-        m_CameraRotation(0.0f), 
-        m_CameraMoveSpeed(2.0f), 
-        m_CameraRotationSpeed(90.0f),
-        m_triangleRotation(0.0f),
-        m_triangleRotationSpeed(45.0f),
-        m_SquareColor({0.0f, 0.407f, 0.48f})
+    :   m_SquareColor({0.0f, 0.407f, 0.48f})
 {        
-    m_Camera = Lucky::Camera::Create(Lucky::CameraType::Perspective);
+    auto& window = Lucky::Application::Get().GetWindow();
+
+    Lucky::CameraSettings settings;
+    settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
+    settings.EnableRotation = true;
+    settings.Position = {0.0f, 0.0f, 2.0f}; //Perspective camera position
+    settings.TranslationSpeed = 2.0f;
+    settings.RotationSpeed = 90.0f;
+    settings.ZoomSpeed = 0.25f;
+    
+    settings.Fov = 60.0f;
+    settings.ZNear = 0.1f;
+    settings.ZFar = 10.0f;
+
+    m_CameraController = Lucky::CameraController::Create(Lucky::CameraType::Perspective, settings);
+
     m_VertexArray = Lucky::VertexArray::Create();
     m_VertexArray->Bind();
 
@@ -84,56 +93,14 @@ ExampleLayer::~ExampleLayer()
 
 void ExampleLayer::OnUpdate(Lucky::Timestep ts)
 {
-    if(Lucky::Input::IsKeyPressed(LK_KEY_LEFT))
-        m_CameraPosition.x -= m_CameraMoveSpeed * ts;
-    else if(Lucky::Input::IsKeyPressed(LK_KEY_RIGHT))
-        m_CameraPosition.x += m_CameraMoveSpeed * ts;
-
-    if(Lucky::Input::IsKeyPressed(LK_KEY_DOWN))
-        m_CameraPosition.y -= m_CameraMoveSpeed * ts;
-    else if(Lucky::Input::IsKeyPressed(LK_KEY_UP))
-        m_CameraPosition.y += m_CameraMoveSpeed * ts;
-
-#ifndef __EMSCRIPTEN__
-    if(Lucky::Input::IsKeyPressed(LK_KEY_W))
-#else
-    if(Lucky::Input::IsKeyPressed(LK_KEY_Z))
-#endif
-        m_CameraPosition.z -= m_CameraMoveSpeed * ts;
-    else if(Lucky::Input::IsKeyPressed(LK_KEY_S))
-        m_CameraPosition.z += m_CameraMoveSpeed * ts;
-
-    if(Lucky::Input::IsKeyPressed(LK_KEY_D))
-        m_CameraRotation -= m_CameraRotationSpeed * ts;
-    else
-#ifndef __EMSCRIPTEN__
-    if(Lucky::Input::IsKeyPressed(LK_KEY_A))
-#else
-    if(Lucky::Input::IsKeyPressed(LK_KEY_Q))
-#endif
-        m_CameraRotation += m_CameraRotationSpeed * ts;
-
-    if(Lucky::Input::IsKeyPressed(LK_KEY_SPACE))
-    {
-        m_CameraPosition = glm::vec3({0.0f, 0.0f, 2.0f});
-        m_CameraRotation = -0.0f;
-    }
-
-    if(m_CameraRotation > 360.0f || m_CameraRotation < -360.0f)
-        m_CameraRotation = -0.0f;
-
-    m_triangleRotation -= m_triangleRotationSpeed * ts;
-    if(m_triangleRotation > 360.0f || m_triangleRotation < -360.0f)
-        m_triangleRotation = -0.0f;
-
      // Background color
     Lucky::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
     Lucky::RenderCommand::Clear();
 
-    m_Camera->SetPosition(m_CameraPosition);
-    m_Camera->SetRotation(m_CameraRotation);
+    m_CameraController->OnUpdate(ts);
 
-    Lucky::Renderer::BeginScene(m_Camera);
+    //Lucky::Renderer::BeginScene(m_Camera);
+    Lucky::Renderer::BeginScene(m_CameraController);
 
     auto flatColorShader = m_ShaderLibrary.Get("FlatColor");
 
@@ -169,22 +136,14 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
 
 void ExampleLayer::OnImGuiRender()
 {
-    ImGui::Begin("Camera");
-    ImGui::Text("Position: %.1f, %.1f, %.1f", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
-    ImGui::Text("Rotation: %.1f", -m_CameraRotation); //Inverse because rotation is in counterclockwise degrees
-    ImGui::Separator();
-    ImGui::ColorEdit3("Squares", glm::value_ptr(m_SquareColor));
+    m_CameraController->OnImGuiRender();
+
+    ImGui::Begin("Squares");
+    ImGui::ColorEdit3("", glm::value_ptr(m_SquareColor));
     ImGui::End();
 }
 
 void ExampleLayer::OnEvent(Lucky::Event &event)
 {
-    Lucky::EventDispatcher dispatcher(event);
-    dispatcher.Dispatch<Lucky::KeyPressedEvent>(BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));
-}
-
-bool ExampleLayer::OnKeyPressedEvent(Lucky::KeyPressedEvent& event)
-{
-    LK_TRACE("Key press: {0}", event.GetKeyCode());
-    return false;
+    m_CameraController->OnEvent(event);
 }

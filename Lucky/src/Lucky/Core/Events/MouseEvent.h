@@ -21,6 +21,9 @@ namespace Lucky
         {                
         }
 
+        inline float GetMouseX() const { return m_MouseX; }
+        inline float GetMouseY() const { return m_MouseY; }
+
         std::string ToString() const override
         {
             std::stringstream ss;
@@ -31,7 +34,7 @@ namespace Lucky
         EVENT_CLASS_TYPE(MouseMoved)
 
     private:
-        double m_MouseX, m_MouseY;
+        float m_MouseX, m_MouseY;
     };
 
     class MouseScrolledEvent : public MouseEvent
@@ -41,6 +44,9 @@ namespace Lucky
             : m_XOffset(xOffset), m_YOffset(yOffset)
         {
         }
+
+        inline float GetXOffset() const { return m_XOffset; }
+        inline float GetYOffset() const { return m_YOffset; }
 
         std::string ToString() const override
         {
@@ -52,11 +58,14 @@ namespace Lucky
         EVENT_CLASS_TYPE(MouseScrolled)
 
     private:
-        double m_XOffset, m_YOffset;
+        float m_XOffset, m_YOffset;
     };
 
     class MouseButtonEvent : public MouseEvent
     {
+    public:
+        inline int GetButton() const { return m_MouseButton; }
+
     protected:
         MouseButtonEvent(int button)
             : m_MouseButton(button)
@@ -65,7 +74,7 @@ namespace Lucky
 
         int m_MouseButton;
     };
-     
+    
     class MouseButtonPressedEvent : public MouseButtonEvent
     {
     public:

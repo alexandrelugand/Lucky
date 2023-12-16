@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "VertexArray.h"
 #include "RendererApi.h"
+#include "Lucky/Core/CameraController.h"
 
 namespace Lucky
 {
@@ -12,7 +13,7 @@ namespace Lucky
 	public:
 		static void Init();
 
-		static void BeginScene(const Scope<Camera>& camera);
+		static void BeginScene(const Scope<CameraController>& cameraController);
 		static void EndScene();
 
 		static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));

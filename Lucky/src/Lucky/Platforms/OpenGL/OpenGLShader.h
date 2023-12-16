@@ -11,7 +11,7 @@ namespace Lucky
 		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader();
 
-		inline const std::string& GetName() const { return m_Name; }
+		inline const std::string& GetName() const override { return m_Name; }
 
 		void Bind() const override;
 		void Unbind() const override;
