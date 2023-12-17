@@ -5,7 +5,7 @@
 #else
 	#define EMSCRIPTEN_KEEPALIVE
 #endif
-#include "Application.h"
+#include "Lucky/Application/Application.h"
 
 extern Lucky::Application* CreateApplication();
 

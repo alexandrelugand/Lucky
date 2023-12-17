@@ -34,7 +34,3 @@
 #include "Lucky/Core/Renderer/PerspectiveCamera.h"
 #include "Lucky/Core/Renderer/ShaderLibrary.h"
 // ---------------------------------------
-
-// --- Entry point -----------------------
-#include "Lucky/Application/EntryPoint.h"
-// ---------------------------------------

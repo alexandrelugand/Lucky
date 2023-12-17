@@ -18,6 +18,5 @@ namespace Lucky
 	private:
 		uint32_t m_TextureId;
 		uint32_t m_Width, m_Height;
-		bool m_Alpha;
 	};
 } // namespace Lucky

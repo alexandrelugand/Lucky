@@ -36,7 +36,8 @@ LIB = $(OUTDIR)/$(PRJNAME).a
 INCLUDE_FLAGS = -I./src
 INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/ImGui/backends -I$(VENDORS)/GLM -I$(VENDORS)/stb
 
-SUBDIRS = $(SRCDIR)/Application
+SUBDIRS = $(SRCDIR)
+SUBDIRS += $(SRCDIR)/Application
 SUBDIRS += $(SRCDIR)/Core
 SUBDIRS += $(SRCDIR)/Core/ImGui
 SUBDIRS += $(SRCDIR)/Core/Renderer

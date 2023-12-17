@@ -21,6 +21,8 @@ namespace Lucky
 
 	void OpenGLRendererApi::DrawIndexed(const Ref<VertexArray> &vertexArray)
 	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}
 

@@ -29,6 +29,7 @@ namespace Lucky
 	private:
 		std::string ReadFile(const std::string& filepath);
 		std::unordered_map<uint32_t, std::string> PreProcess(const std::string& source);
+		std::string GetHeader(uint32_t shaderType);
 		void Compile(const std::unordered_map<uint32_t, std::string>& shaderSources);
 
 		uint32_t m_ProgramId;

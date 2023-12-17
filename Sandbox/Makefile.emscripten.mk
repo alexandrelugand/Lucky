@@ -36,6 +36,7 @@ INCLUDE_FLAGS = -I./src -I../Lucky/src
 INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/GLM -I$(VENDORS)/stb
 
 SUBDIRS = $(SRCDIR)
+SUBDIRS += $(SRCDIR)/Layers
 VPATH := $(SUBDIRS)
 
 SOURCES = $(shell cd $(SRCDIR) && dir /s/b *.cpp)

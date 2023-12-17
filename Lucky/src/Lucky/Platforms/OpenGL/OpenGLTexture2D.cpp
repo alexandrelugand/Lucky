@@ -18,13 +18,11 @@ namespace Lucky
 		{
 			internalFormat = GL_RGBA8;
 			dataFormat = GL_RGBA;
-			m_Alpha = true;
 		}
 		else if(channels == 3)
 		{
 			internalFormat = GL_RGB8;
 			dataFormat = GL_RGB;
-			m_Alpha = false;
 		}
 
 		LK_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
@@ -55,11 +53,6 @@ namespace Lucky
 	void OpenGLTexture2D::Bind(uint32_t slot)
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
-		if(m_Alpha)
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
 		glBindTexture(GL_TEXTURE_2D, m_TextureId);
 	}
 

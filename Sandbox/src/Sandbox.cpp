@@ -1,13 +1,15 @@
 #include "SandboxPch.h"
 #include "Sandbox.h"
 
-#include "ExampleLayer.h"
+#include "Layers/Sandbox3D.h"
+#include "Layers/Sandbox2D.h"
 
 SandBox::SandBox(const Lucky::WindowProps& props) :
     Application(props)
 {    
+    PushLayer(new Sandbox3D());
+    // PushLayer(new Sandbox2D());
     LK_INFO("Application initialized");
-    PushLayer(new ExampleLayer());
 }
 
 SandBox::~SandBox()

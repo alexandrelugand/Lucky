@@ -1,26 +1,20 @@
 #include "SandboxPch.h"
-#include "ExampleLayer.h"
+#include "Sandbox3D.h"
 
 #include <imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Lucky/Platforms/OpenGL/OpenGLShader.h>
 
-#ifdef __EMSCRIPTEN__
-    #define GLSL_EXTENSION "wasm.glsl"
-#else
-    #define GLSL_EXTENSION "glsl"
-#endif
-
-ExampleLayer::ExampleLayer()
-    :   m_SquareColor({0.0f, 0.407f, 0.48f})
+Sandbox3D::Sandbox3D()
+    :   Layer("Sandbox3D"), m_SquareColor({0.0f, 0.407f, 0.48f, 1.0f})
 {        
     auto& window = Lucky::Application::Get().GetWindow();
 
     Lucky::CameraSettings settings;
     settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
     settings.EnableRotation = true;
-    settings.Position = {0.0f, 0.0f, 2.0f}; //Perspective camera position
+    settings.Position = {0.0f, 0.0f, 2.0f};
     settings.TranslationSpeed = 2.0f;
     settings.RotationSpeed = 90.0f;
     settings.ZoomSpeed = 0.25f;
@@ -36,9 +30,9 @@ ExampleLayer::ExampleLayer()
 
     float vertices[3 * 7] = 
     {
-        -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
-        0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-        0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+        -0.5f,  -0.5f,  0.0f,   0.8f,   0.2f,   0.8f,   1.0f,
+        0.5f,   -0.5f,  0.0f,   0.2f,   0.3f,   0.8f,   1.0f,
+        0.0f,   0.5f,   0.0f,   0.8f,   0.8f,   0.2f,   1.0f
     };
     Lucky::Ref<Lucky::VertexBuffer> vertexBuffer;
     vertexBuffer= Lucky::VertexBuffer::Create(vertices, sizeof(vertices));
@@ -58,10 +52,10 @@ ExampleLayer::ExampleLayer()
 
     float squareVertices[5 * 4] = 
     {
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f
+        -0.5f,  -0.5f,  0.0f,   0.0f,   0.0f,
+        0.5f,   -0.5f,  0.0f,   1.0f,   0.0f,
+        0.5f,   0.5f,   0.0f,   1.0f,   1.0f,
+        -0.5f,  0.5f,   0.0f,   0.0f,   1.0f
     };
 
     Lucky::Ref<Lucky::VertexBuffer> squareVB;
@@ -78,20 +72,20 @@ ExampleLayer::ExampleLayer()
     m_squareVA->SetIndexBuffer(squareIB);
 
     // Shaders
-    m_ShaderLibrary.Load(fmt::format("assets/shaders/VertexPosColor.{0}", GLSL_EXTENSION));
-    m_ShaderLibrary.Load(fmt::format("assets/shaders/FlatColor.{0}", GLSL_EXTENSION));
-    m_ShaderLibrary.Load(fmt::format("assets/shaders/Texture.{0}", GLSL_EXTENSION));
+    m_ShaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
+    m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
+    m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
     // Textures
     m_Texture = Lucky::Texture2D::Create("assets/textures/Checkerboard.png");
     m_TexturePlane = Lucky::Texture2D::Create("assets/textures/f14-tomcat.png");
 }
 
-ExampleLayer::~ExampleLayer()
+Sandbox3D::~Sandbox3D()
 {
 }
 
-void ExampleLayer::OnUpdate(Lucky::Timestep ts)
+void Sandbox3D::OnUpdate(Lucky::Timestep ts)
 {
      // Background color
     Lucky::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
@@ -106,7 +100,7 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
 
     static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
     std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->Bind();
-    std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
+    std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->UploadUniformFloat4("u_Color", m_SquareColor);
 
     for(int y = -10; y < 10; y++)
     {
@@ -134,16 +128,16 @@ void ExampleLayer::OnUpdate(Lucky::Timestep ts)
     Lucky::Renderer::EndScene();
 }
 
-void ExampleLayer::OnImGuiRender()
+void Sandbox3D::OnImGuiRender()
 {
     m_CameraController->OnImGuiRender();
 
     ImGui::Begin("Squares");
-    ImGui::ColorEdit3("", glm::value_ptr(m_SquareColor));
+    ImGui::ColorEdit4("", glm::value_ptr(m_SquareColor));
     ImGui::End();
 }
 
-void ExampleLayer::OnEvent(Lucky::Event &event)
+void Sandbox3D::OnEvent(Lucky::Event &event)
 {
     m_CameraController->OnEvent(event);
 }
