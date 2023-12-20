@@ -13,7 +13,7 @@ includeDir["GLM"]="../Vendors/GLM"
 includeDir["stb"]="../Vendors/stb"
 
 libDir = {}
-libDir["GLFW"]="../Vendors/GLFW/lib-static-ucrt"
+libDir["GLFW"]= iif(_ACTION == "gmake2", "../Vendors/GLFW/lib-static-ucrt", "../Vendors/GLFW/lib-vc2022")
 
 include "Vendors/GLAD/premake5.lua"
 include "Vendors/ImGui/premake5.lua"

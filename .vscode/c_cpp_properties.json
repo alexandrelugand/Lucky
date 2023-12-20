@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/Lucky/src",
+                "${workspaceFolder}/Sandbox/src",
                 "${workspaceFolder}/Vendors/spdlog/include",
                 "${workspaceFolder}/Vendors/GLFW/include",
                 "${workspaceFolder}/Vendors/ImGui",

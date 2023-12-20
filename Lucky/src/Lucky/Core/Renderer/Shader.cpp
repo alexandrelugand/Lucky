@@ -15,7 +15,7 @@ namespace Lucky
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
 		case RendererApi::Api::OpenGL:
-			return std::make_shared<OpenGLShader>(filepath);
+			return CreateRef<OpenGLShader>(filepath);
 		}
 
 		LK_CORE_ASSERT(false, "Unknown renderer API!");
@@ -30,7 +30,7 @@ namespace Lucky
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
 		case RendererApi::Api::OpenGL:
-			return std::make_shared<OpenGLShader>(name, vertexSrc, fragmentSrc);
+			return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
 		}
 
 		LK_CORE_ASSERT(false, "Unknown renderer API!");

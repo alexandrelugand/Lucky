@@ -88,7 +88,7 @@ namespace Lucky
 
 	void OrthographicCameraController::OnImGuiRender()
 	{
-		ImGui::Begin("Camera");
+		ImGui::Begin("Orthographic Camera");
 		ImGui::Text("Position: %.1f, %.1f", m_Position.x, m_Position.y);
 		ImGui::Text("Zoom: %.1f", m_ZoomLevel);
 		ImGui::Text("Rotation: %.1f", m_Rotation);

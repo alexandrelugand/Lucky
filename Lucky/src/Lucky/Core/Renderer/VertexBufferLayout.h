@@ -27,7 +27,7 @@ namespace Lucky
 			case ShaderDataType::Bool: return sizeof(bool);
 		}
 
-		LK_CORE_ASSERT(false, "Unknown ShaderDataType!")
+		LK_CORE_ASSERT(false, "Unknown ShaderDataType!");
 		return 0;
 	}
 
@@ -62,7 +62,7 @@ namespace Lucky
 				case ShaderDataType::Bool: return 1;
 			}
 
-			LK_CORE_ASSERT(false, "Unknown ShaderDataType!")
+			LK_CORE_ASSERT(false, "Unknown ShaderDataType!");
 			return 0;
 		}
 	};

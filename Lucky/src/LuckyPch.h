@@ -1,3 +1,7 @@
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <stdint.h>
 #include <iostream>
 #include <utility>
@@ -16,7 +20,7 @@
 #include <unordered_set>
 
 #ifdef PLATFORM_WINDOWS
-	#include <Window.h>
+	#include <Windows.h>
 #endif
 
 #ifdef __EMSCRIPTEN__
@@ -34,5 +38,6 @@
 
 #include "Lucky/Core/Core.h"
 #include "Lucky/Core/Log.h"
+#include "Lucky/Core/Assert.h"
 
 #include "stb/stb_image.h"

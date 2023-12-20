@@ -14,7 +14,6 @@ public:
 private:
     Lucky::Ref<Lucky::VertexArray> m_VertexArray;
     Lucky::Ref<Lucky::VertexArray> m_squareVA;
-    Lucky::ShaderLibrary m_ShaderLibrary;
     Lucky::Ref<Lucky::Texture> m_Texture;
     Lucky::Ref<Lucky::Texture> m_TexturePlane;
     Lucky::Scope<Lucky::CameraController> m_CameraController;

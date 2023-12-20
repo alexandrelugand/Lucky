@@ -90,9 +90,9 @@ endif
 
 CPPFLAGS += $(INCLUDE_FLAGS) $(INCLUDE_LIB_FLAGS) -s USE_SDL=2 -s USE_SDL_IMAGE=2
 ifeq ($(CONFIG), DEBUG)
-CPPFLAGS += -O0 -g 
+CPPFLAGS += -O0 -g -DDEBUG
 else
-CPPFLAGS += -Os
+CPPFLAGS += -Os -DNDEBUG
 endif
 CPPFLAGS += -Wall -Wformat $(EMS)
 # LDFLAGS += --shell-file ../libs/emscripten/shell_minimal.html

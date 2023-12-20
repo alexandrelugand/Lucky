@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# Logs
+*.log
+
 # Folders
 bin
 bin-int
@@ -41,3 +44,9 @@ bin-int
 # Makefiles
 Makefile
 !Makefile.**.mk
+
+# Visual studio
+.vs
+*.sln
+*.vcxproj
+*.vcxproj.*

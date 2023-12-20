@@ -12,6 +12,7 @@ namespace Lucky
 	{
 	public:
 		static void Init();
+		static void Shutdown();
 
 		static void BeginScene(const Scope<CameraController>& cameraController);
 		static void EndScene();

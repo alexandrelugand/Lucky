@@ -66,7 +66,7 @@ namespace Lucky
 
     void Application::RenderFrame() 
     {
-        float time = glfwGetTime();
+        float time = (float)glfwGetTime();
         Timestep timestep = time - m_LastFrameTime;
         m_LastFrameTime = time;
 

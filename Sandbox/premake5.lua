@@ -1,7 +1,7 @@
 project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	architecture "x64"
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
@@ -37,18 +37,25 @@ project "Sandbox"
 	{
 		"Lucky",
 		"opengl32",
-		"GLFW3",
 		"GLAD",
 		"ImGui"
 	}
 
 	-- Precompile header
 	pchheader "SandboxPch.h"
-	-- Using ccache to accelerate compilation time (not mandatory)
-	makesettings [[CXX = ccache g++]]
+	pchsource "src/SandboxPch.cpp"
 
-	filter { "action:gmake2" }
+	filter "action:gmake2"
 		buildoptions { "-Wall" }
+		links { "glfw3" }
+		-- Using ccache to accelerate compilation time (not mandatory)
+		-- makesettings [[CXX = ccache g++]]
+
+	filter "action:vs2022"
+		defines { "_CRT_SECURE_NO_WARNINGS" }
+		disablewarnings { "4996" }
+		ignoredefaultlibraries { "LIBCMT" }
+		links { "glfw3_mt" }
 
 	filter "configurations:Debug"
 		defines { "DEBUG" }
@@ -62,7 +69,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
-
 		defines { "PLATFORM_WINDOWS" }
 
 		postbuildcommands 

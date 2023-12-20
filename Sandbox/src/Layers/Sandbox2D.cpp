@@ -1,13 +1,9 @@
 #include "SandboxPch.h"
 #include "Sandbox2D.h"
 
-#include <imgui.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <Lucky/Platforms/OpenGL/OpenGLShader.h>
-
 Sandbox2D::Sandbox2D()
-    :   Layer("Sandbox2D"), m_SquareColor({0.0f, 0.407f, 0.48f, 1.0f})
+    :   Layer("Sandbox2D"), 
+        m_SquareColor({0.0f, 0.407f, 0.48f, 1.0f})
 {        
     auto& window = Lucky::Application::Get().GetWindow();
 
@@ -20,31 +16,8 @@ Sandbox2D::Sandbox2D()
 
     m_CameraController = Lucky::CameraController::Create(Lucky::CameraType::Orthographic, settings);
 
-    m_squareVA = Lucky::VertexArray::Create();
-    m_squareVA->Bind();
-
-    float squareVertices[3 * 4] = 
-    {
-        -0.5f,  -0.5f,  0.0f,
-        0.5f,   -0.5f,  0.0f,
-        0.5f,   0.5f,   0.0f,
-        -0.5f,  0.5f,   0.0f
-    };
-
-    Lucky::Ref<Lucky::VertexBuffer> squareVB;
-    squareVB = Lucky::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
-    squareVB->SetLayout({
-        { Lucky::ShaderDataType::Float3, "a_Position" }
-    });
-    m_squareVA->AddVertexBuffer(squareVB);
-
-    unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-    Lucky::Ref<Lucky::IndexBuffer> squareIB;
-    squareIB = Lucky::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
-    m_squareVA->SetIndexBuffer(squareIB);
-
-    // Shaders
-    m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
+    // Textures
+    m_Texture = Lucky::Texture2D::Create("assets/textures/Checkerboard.png");
 }
 
 Sandbox2D::~Sandbox2D()
@@ -53,23 +26,18 @@ Sandbox2D::~Sandbox2D()
 
 void Sandbox2D::OnUpdate(Lucky::Timestep ts)
 {
-     // Background color
+    m_CameraController->OnUpdate(ts);
+
+    // Background color
     Lucky::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
     Lucky::RenderCommand::Clear();
 
-    m_CameraController->OnUpdate(ts);
+    Lucky::Renderer2D::BeginScene(m_CameraController);
 
-    //Lucky::Renderer::BeginScene(m_Camera);
-    Lucky::Renderer::BeginScene(m_CameraController);
+    Lucky::Renderer2D::DrawQuad(m_SquarePosition, m_SquareSize, m_SquareRotation, m_SquareColor);
+    Lucky::Renderer2D::DrawQuad({0.0f, 0.0f, -0.1f}, {4.0f, 4.0f}, 0.0f, m_Texture);
 
-    auto flatColorShader = m_ShaderLibrary.Get("FlatColor");
-
-    std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->Bind();
-    std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->UploadUniformFloat4("u_Color", m_SquareColor);
-
-    Lucky::Renderer::Submit(flatColorShader, m_squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
-
-    Lucky::Renderer::EndScene();
+    Lucky::Renderer2D::EndScene();
 }
 
 void Sandbox2D::OnImGuiRender()
@@ -77,7 +45,10 @@ void Sandbox2D::OnImGuiRender()
     m_CameraController->OnImGuiRender();
 
     ImGui::Begin("Squares");
-    ImGui::ColorEdit4("", glm::value_ptr(m_SquareColor));
+    ImGui::ColorEdit4("Color", glm::value_ptr(m_SquareColor));
+    ImGui::DragFloat2("Position", glm::value_ptr(m_SquarePosition), 0.1f, -100.0f, 100.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::DragFloat("Rotation", &m_SquareRotation, 1.0f, -360.0f, 360.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::DragFloat2("Size", glm::value_ptr(m_SquareSize), 0.1f, 0.1f, 100.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
     ImGui::End();
 }
 

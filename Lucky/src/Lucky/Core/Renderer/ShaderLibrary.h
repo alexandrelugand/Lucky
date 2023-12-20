@@ -8,6 +8,8 @@ namespace Lucky
 	class ShaderLibrary
 	{
 	public:
+		inline static ShaderLibrary& GetInstance() { return s_Instance; };
+
 		void Add(const std::string& name, const Ref<Shader>& shader);
 		void Add(const Ref<Shader>& shader);
 
@@ -19,6 +21,9 @@ namespace Lucky
 		const Ref<Shader>& Get(const std::string& name);
 
 	private:
+		ShaderLibrary() = default;
+
+		static ShaderLibrary s_Instance;
 		std::unordered_map<std::string, Ref<Shader>> m_Shaders;
 
 	};

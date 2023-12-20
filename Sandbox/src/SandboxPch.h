@@ -1,3 +1,7 @@
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <stdint.h>
 #include <iostream>
 #include <utility>
@@ -14,6 +18,10 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#ifdef PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+
 #ifdef __EMSCRIPTEN__
 	#include <emscripten.h>
 	#include <GLES3/gl3.h>
@@ -21,6 +29,7 @@
 	#include <glad/glad.h>
 #endif
 #include <GLFW/glfw3.h>
+#include <imgui.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

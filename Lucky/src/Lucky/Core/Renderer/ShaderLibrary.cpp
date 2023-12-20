@@ -3,6 +3,8 @@
 
 namespace Lucky
 {
+	ShaderLibrary ShaderLibrary::s_Instance;
+
 	void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
 	{
 		LK_CORE_ASSERT(!Exists(name), "Shader already exists!");

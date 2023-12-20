@@ -1,11 +1,6 @@
 #include "SandboxPch.h"
 #include "Sandbox3D.h"
 
-#include <imgui.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <Lucky/Platforms/OpenGL/OpenGLShader.h>
-
 Sandbox3D::Sandbox3D()
     :   Layer("Sandbox3D"), m_SquareColor({0.0f, 0.407f, 0.48f, 1.0f})
 {        
@@ -72,9 +67,10 @@ Sandbox3D::Sandbox3D()
     m_squareVA->SetIndexBuffer(squareIB);
 
     // Shaders
-    m_ShaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
-    m_ShaderLibrary.Load("assets/shaders/FlatColor.glsl");
-    m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
+    auto shaderLibrary = Lucky::ShaderLibrary::GetInstance();
+    shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
+    shaderLibrary.Load("assets/shaders/FlatColor.glsl");
+    shaderLibrary.Load("assets/shaders/Texture.glsl");
 
     // Textures
     m_Texture = Lucky::Texture2D::Create("assets/textures/Checkerboard.png");
@@ -87,6 +83,8 @@ Sandbox3D::~Sandbox3D()
 
 void Sandbox3D::OnUpdate(Lucky::Timestep ts)
 {
+    auto& shaderLibrary = Lucky::ShaderLibrary::GetInstance();
+
      // Background color
     Lucky::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
     Lucky::RenderCommand::Clear();
@@ -96,11 +94,11 @@ void Sandbox3D::OnUpdate(Lucky::Timestep ts)
     //Lucky::Renderer::BeginScene(m_Camera);
     Lucky::Renderer::BeginScene(m_CameraController);
 
-    auto flatColorShader = m_ShaderLibrary.Get("FlatColor");
+    auto flatColorShader = shaderLibrary.Get("FlatColor");
 
     static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-    std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->Bind();
-    std::dynamic_pointer_cast<Lucky::OpenGLShader>(flatColorShader)->UploadUniformFloat4("u_Color", m_SquareColor);
+    flatColorShader->Bind();
+    flatColorShader->SetFloat4("u_Color", m_SquareColor);
 
     for(int y = -10; y < 10; y++)
     {
@@ -111,7 +109,7 @@ void Sandbox3D::OnUpdate(Lucky::Timestep ts)
         }
     }
     
-    auto textureShader = m_ShaderLibrary.Get("Texture");
+    auto textureShader = shaderLibrary.Get("Texture");
 
     m_Texture->Bind();
     Lucky::Renderer::Submit(textureShader, m_squareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));

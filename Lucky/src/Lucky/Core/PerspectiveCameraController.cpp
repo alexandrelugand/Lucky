@@ -91,7 +91,7 @@ namespace Lucky
 
 	void PerspectiveCameraController::OnImGuiRender()
 	{
-		ImGui::Begin("Camera");
+		ImGui::Begin("Perspective Camera");
 		ImGui::Text("Position: %.1f, %.1f", m_Position.x, m_Position.y);
 		ImGui::Text("Zoom: %.1f", m_Position.z);
 		ImGui::Text("Rotation: %.1f", m_Rotation);

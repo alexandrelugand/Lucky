@@ -11,10 +11,10 @@ namespace Lucky
 		switch (type)
 		{
 		case CameraType::Orthographic:
-			return std::make_unique<OrthographicCameraController>(settings);
+			return CreateScope<OrthographicCameraController>(settings);
 
 		case CameraType::Perspective:
-			return std::make_unique<PerspectiveCameraController>(settings);
+			return CreateScope<PerspectiveCameraController>(settings);
 		}
 
 		LK_CORE_ASSERT(false, "Unknown camera type!");

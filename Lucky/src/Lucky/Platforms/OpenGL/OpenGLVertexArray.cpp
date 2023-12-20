@@ -49,8 +49,12 @@ namespace Lucky
 		glBindVertexArray(m_VertexArrayId);
 		vertexBuffer->Bind();
 
+#ifdef COMPILER_MSVC
+#pragma warning( push, 0)
+#else
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+#endif
         uint32_t index = 0;
 		const auto& layout = vertexBuffer->GetLayout();
         for(const auto& element : layout)
@@ -64,7 +68,11 @@ namespace Lucky
                 (const void*) element.Offset);
             index++;
         }
+#ifdef COMPILER_MSVC
+#pragma warning(pop)
+#else
 #pragma GCC diagnostic pop
+#endif
 
 		m_VertexBuffers.push_back(vertexBuffer);
 	}

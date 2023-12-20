@@ -3,6 +3,22 @@
 
 namespace Lucky
 {
+	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
+	:	m_Width(width), m_Height(height)
+	{
+		m_InternalFormat = GL_RGBA8;
+		m_DataFormat = GL_RGBA;
+
+		glGenTextures(1, &m_TextureId);
+		glBindTexture(GL_TEXTURE_2D, m_TextureId);
+		glTexStorage2D(GL_TEXTURE_2D, 1, m_InternalFormat, m_Width, m_Height);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+
 	OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
 	{
 		int width, height;
@@ -13,33 +29,32 @@ namespace Lucky
 
 		m_Width = width;
 		m_Height = height;
-		GLenum internalFormat = 0, dataFormat = 0;
 		if(channels == 4)
 		{
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
+			m_InternalFormat = GL_RGBA8;
+			m_DataFormat = GL_RGBA;
 		}
 		else if(channels == 3)
 		{
-			internalFormat = GL_RGB8;
-			dataFormat = GL_RGB;
+			m_InternalFormat = GL_RGB8;
+			m_DataFormat = GL_RGB;
 		}
 
-		LK_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
+		LK_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
 
 		LK_CORE_TRACE("Image path: {0}", path);
 		LK_CORE_TRACE("Image {0}x{1} pixels", m_Width, m_Height);
 
 		glGenTextures(1, &m_TextureId);
 		glBindTexture(GL_TEXTURE_2D, m_TextureId);
-		glTexStorage2D(GL_TEXTURE_2D, 1, internalFormat, m_Width, m_Height);
+		glTexStorage2D(GL_TEXTURE_2D, 1, m_InternalFormat, m_Width, m_Height);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		stbi_image_free(data);
@@ -54,6 +69,13 @@ namespace Lucky
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_TextureId);
+	}
+
+	void OpenGLTexture2D::SetData(void *data, uint32_t size)
+	{
+		LK_CORE_ASSERT(size == m_Width * m_Height * (m_DataFormat == GL_RGBA ? 4 : 3), "Data must be entire texture!")
+		glBindTexture(GL_TEXTURE_2D, m_TextureId);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
 } // namespace Lucky

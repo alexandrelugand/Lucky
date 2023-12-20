@@ -15,7 +15,7 @@ namespace Lucky
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
 		case RendererApi::Api::OpenGL:
-			return std::make_shared<OpenGLIndexBuffer>(indices, count);
+			return CreateRef<OpenGLIndexBuffer>(indices, count);
 		}
 
 		LK_CORE_ASSERT(false, "Unknown renderer API!");

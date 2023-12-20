@@ -1,7 +1,7 @@
 project "Lucky"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	architecture "x64"
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
@@ -39,7 +39,6 @@ project "Lucky"
 	links
 	{
 		"opengl32",
-		"GLFW3",
 		"GLAD",
 		"ImGui"
 	}
@@ -51,11 +50,18 @@ project "Lucky"
 
 	-- Precompile header
 	pchheader "LuckyPch.h"
-	-- Using ccache to accelerate compilation time (not mandatory)
-	makesettings [[CXX = ccache g++]]
+	pchsource "src/LuckyPch.cpp"
 
-	filter { "action:gmake2" }
-  		buildoptions { "-Wall" }
+	filter "action:gmake2"
+		buildoptions { "-Wall" }
+		links { "glfw3" }
+		-- Using ccache to accelerate compilation time (not mandatory)
+		-- makesettings [[CXX = ccache g++]]
+
+	filter "action:vs2022"
+		defines { "_CRT_SECURE_NO_WARNINGS" }
+		disablewarnings { "4996" }
+		links { "glfw3_mt" }
 
 	filter "configurations:Debug"
 		defines { "DEBUG" }
@@ -68,4 +74,4 @@ project "Lucky"
 		optimize "On" 
 
 	filter "system:windows"
-		defines { "PLATFORM_WINDOW" }
+		defines { "PLATFORM_WINDOWS" }
