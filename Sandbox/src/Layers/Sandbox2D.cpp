@@ -46,8 +46,8 @@ void Sandbox2D::OnUpdate(Lucky::Timestep ts)
 		LK_PROFILE_SCOPE("void Sandbox2D::OnUpdate() - Render");
 		Lucky::Renderer2D::BeginScene(m_CameraController);
 
-		Lucky::Renderer2D::DrawQuad(m_SquarePosition, m_SquareSize, m_SquareRotation, m_SquareColor);
-		Lucky::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 4.0f, 4.0f }, 0.0f, m_Texture);
+		Lucky::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 4.0f, 4.0f },m_Texture, 10.0f, { 0.8f, 1.0f, 0.8f, 1.0f});
+		Lucky::Renderer2D::DrawRotateQuad(m_SquarePosition, m_SquareSize, m_SquareRotation, m_SquareColor);
 
 		Lucky::Renderer2D::EndScene();
 	}
@@ -57,7 +57,7 @@ void Sandbox2D::OnImGuiRender()
 {
     m_CameraController->OnImGuiRender();
 
-    ImGui::Begin("Squares");
+    ImGui::Begin("Square");
     ImGui::ColorEdit4("Color", glm::value_ptr(m_SquareColor));
     ImGui::DragFloat2("Position", glm::value_ptr(m_SquarePosition), 0.1f, -100.0f, 100.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
     ImGui::DragFloat("Rotation", &m_SquareRotation, 1.0f, -360.0f, 360.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
