@@ -26,26 +26,31 @@ namespace Lucky
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
+		LK_PROFILE_FUNCTION();
 		glGenVertexArrays(1, &m_VertexArrayId);
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
 	{
+		LK_PROFILE_FUNCTION();
 		glDeleteVertexArrays(1, &m_VertexArrayId);
 	}
 
 	void OpenGLVertexArray::Bind() const
 	{
+		LK_PROFILE_FUNCTION();
 		glBindVertexArray(m_VertexArrayId);
 	}
 
 	void OpenGLVertexArray::Unbind() const
 	{
+		LK_PROFILE_FUNCTION();
 		glBindVertexArray(0);
 	}
 
 	void OpenGLVertexArray::AddVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 	{
+		LK_PROFILE_FUNCTION();
 		glBindVertexArray(m_VertexArrayId);
 		vertexBuffer->Bind();
 
@@ -79,6 +84,7 @@ namespace Lucky
 
 	void OpenGLVertexArray::SetIndexBuffer(Ref<IndexBuffer> indexBuffer)
 	{
+		LK_PROFILE_FUNCTION();
 		glBindVertexArray(m_VertexArrayId);
 		indexBuffer->Bind();
 		m_IndexBuffer = indexBuffer;

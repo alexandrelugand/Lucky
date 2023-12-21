@@ -33,6 +33,7 @@
 
 # Logs
 *.log
+Sandbox/**/*.json
 
 # Folders
 bin

@@ -19,6 +19,7 @@ namespace Lucky
 
 	void Renderer2D::Init()
 	{
+		LK_PROFILE_FUNCTION();
 		s_Data= new Renderer2DData();
 		s_Data->squareVA = Lucky::VertexArray::Create();
 		s_Data->squareVA->Bind();
@@ -55,26 +56,31 @@ namespace Lucky
 
 	void Renderer2D::Shutdown()
 	{
+		LK_PROFILE_FUNCTION();
 		delete s_Data;
 	}
 
 	void Renderer2D::BeginScene(const Scope<CameraController>& cameraController)
 	{
+		LK_PROFILE_FUNCTION();
 		s_Data->TextureShader->Bind();
 		s_Data->TextureShader->SetMat4("u_ViewProjection", cameraController->GetCamera().GetViewProjectionMatrix());
 	}
 
 	void Renderer2D::EndScene()
 	{
+		LK_PROFILE_FUNCTION();
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, float rotation, const glm::vec4 &color)
 	{
+		LK_PROFILE_FUNCTION();
 		DrawQuad({ position.x, position.y, 0.0f}, size, rotation, color);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, float rotation, const glm::vec4 &color)
 	{
+		LK_PROFILE_FUNCTION();
 		s_Data->WhiteTexture->Bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
@@ -91,11 +97,13 @@ namespace Lucky
 
 	void Renderer2D::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, float rotation, const Ref<Texture>& texture)
 	{
+		LK_PROFILE_FUNCTION();
 		DrawQuad({ position.x, position.y, 0.0f}, size, rotation, texture);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, float rotation, const Ref<Texture>& texture)
 	{
+		LK_PROFILE_FUNCTION();
 		texture->Bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 

@@ -5,8 +5,9 @@ class Sandbox2D : public Lucky::Layer
 {
 public:
     Sandbox2D();
-    ~Sandbox2D();
 
+	void OnAttach() override;
+	void OnDetach() override;
     void OnUpdate(Lucky::Timestep ts) override;
     void OnImGuiRender() override;
     void OnEvent(Lucky::Event& event) override;

@@ -39,5 +39,6 @@
 #include "Lucky/Core/Core.h"
 #include "Lucky/Core/Log.h"
 #include "Lucky/Core/Assert.h"
+#include "Lucky/Debug/Instrumentation.h"
 
 #include "stb/stb_image.h"

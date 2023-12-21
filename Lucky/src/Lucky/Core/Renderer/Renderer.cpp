@@ -10,6 +10,7 @@ namespace Lucky
 
 	void Renderer::Init()
 	{
+		LK_PROFILE_FUNCTION();
 		RenderCommand::Init();
 		Renderer2D::Init();
 	}

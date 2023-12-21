@@ -19,6 +19,7 @@ namespace Lucky
 
 	void ImGuiLayer::OnAttach()
 	{
+		LK_PROFILE_FUNCTION();
 		LK_CORE_TRACE("ImGui create context");
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -63,6 +64,7 @@ namespace Lucky
 
 	void ImGuiLayer::OnDetach()
 	{
+		LK_PROFILE_FUNCTION();
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -70,6 +72,7 @@ namespace Lucky
 
 	void ImGuiLayer::Begin()
 	{
+		LK_PROFILE_FUNCTION();
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -77,6 +80,7 @@ namespace Lucky
 
 	void ImGuiLayer::End()
 	{
+		LK_PROFILE_FUNCTION();
 		ImGuiIO &io = ImGui::GetIO();
 		Application &app = Application::Get();
 		Window &win = app.GetWindow();

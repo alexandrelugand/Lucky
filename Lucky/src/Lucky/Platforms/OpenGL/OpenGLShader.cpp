@@ -16,6 +16,7 @@ namespace Lucky
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 	{
+		LK_PROFILE_FUNCTION();
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
@@ -31,6 +32,7 @@ namespace Lucky
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string &vertexSrc, const std::string &fragmentSrc)
 		: m_Name(name)
 	{
+		LK_PROFILE_FUNCTION();
 		std::unordered_map<GLenum, std::string> shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSrc;
 		shaderSources[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -39,63 +41,74 @@ namespace Lucky
 
 	OpenGLShader::~OpenGLShader()
 	{
+		LK_PROFILE_FUNCTION();
 		glDeleteProgram(m_ProgramId);
 	}
 
 	void OpenGLShader::Bind() const
 	{
+		LK_PROFILE_FUNCTION();
 		glUseProgram(m_ProgramId);
 	}
 
 	void OpenGLShader::Unbind() const
 	{
+		LK_PROFILE_FUNCTION();
 		glUseProgram(0);
 	}
 
 	void OpenGLShader::SetInt(const std::string &name, int value)
 	{
+		LK_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(m_ProgramId, name.c_str());
 		glUniform1i(location, value);
 	}
 
 	void OpenGLShader::SetFloat(const std::string &name, float value)
 	{
+		LK_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(m_ProgramId, name.c_str());
 		glUniform1f(location, value);
 	}
 
 	void OpenGLShader::SetFloat2(const std::string &name, const glm::vec2& value)
 	{
+		LK_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(m_ProgramId, name.c_str());
 		glUniform2f(location, value.x, value.y);
 	}
 
 	void OpenGLShader::SetFloat3(const std::string &name, const glm::vec3& value)
 	{
+		LK_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(m_ProgramId, name.c_str());
 		glUniform3f(location, value.x, value.y, value.z);
 	}
 
 	void OpenGLShader::SetFloat4(const std::string &name, const glm::vec4& value)
 	{
+		LK_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(m_ProgramId, name.c_str());
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
 	void OpenGLShader::SetMat3(const std::string &name, const glm::mat3& value)
 	{
+		LK_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(m_ProgramId, name.c_str());
 		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
 	void OpenGLShader::SetMat4(const std::string &name, const glm::mat4& value)
 	{
+		LK_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(m_ProgramId, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 
 	std::string OpenGLShader::ReadFile(const std::string &filepath)
 	{
+		LK_PROFILE_FUNCTION();
 		std::string content;
 		std::ifstream in(filepath.c_str(), std::ios::in | std::ios::binary);
 		if(in)
@@ -116,6 +129,7 @@ namespace Lucky
 	
 	std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
 	{
+		LK_PROFILE_FUNCTION();
 		std::unordered_map<uint32_t, std::string> shaderSources;
 		
 		const char* typeToken = "#type";
@@ -150,6 +164,7 @@ namespace Lucky
 
 	void OpenGLShader::Compile(const std::unordered_map<uint32_t, std::string> &shaderSources)
 	{
+		LK_PROFILE_FUNCTION();
 		// Vertex and fragment shaders are successfully compiled.
 		// Now time to link them together into a program.
 		// Get a program object.

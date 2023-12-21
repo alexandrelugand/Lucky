@@ -4,7 +4,7 @@
 Sandbox3D::Sandbox3D()
     :   Layer("Sandbox3D"), m_SquareColor({0.0f, 0.407f, 0.48f, 1.0f})
 {        
-    auto& window = Lucky::Application::Get().GetWindow();
+	auto& window = Lucky::Application::Get().GetWindow();
 
     Lucky::CameraSettings settings;
     settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
@@ -19,66 +19,71 @@ Sandbox3D::Sandbox3D()
     settings.ZFar = 10.0f;
 
     m_CameraController = Lucky::CameraController::Create(Lucky::CameraType::Perspective, settings);
-
-    m_VertexArray = Lucky::VertexArray::Create();
-    m_VertexArray->Bind();
-
-    float vertices[3 * 7] = 
-    {
-        -0.5f,  -0.5f,  0.0f,   0.8f,   0.2f,   0.8f,   1.0f,
-        0.5f,   -0.5f,  0.0f,   0.2f,   0.3f,   0.8f,   1.0f,
-        0.0f,   0.5f,   0.0f,   0.8f,   0.8f,   0.2f,   1.0f
-    };
-    Lucky::Ref<Lucky::VertexBuffer> vertexBuffer;
-    vertexBuffer= Lucky::VertexBuffer::Create(vertices, sizeof(vertices));
-    vertexBuffer->SetLayout({
-        { Lucky::ShaderDataType::Float3, "a_Position" },
-        { Lucky::ShaderDataType::Float4, "a_Color" }
-    });
-    m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-    unsigned int indices[3] = { 0, 1, 2 };
-    Lucky::Ref<Lucky::IndexBuffer> indexBuffer;
-    indexBuffer = Lucky::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
-    m_VertexArray->SetIndexBuffer(indexBuffer);
-
-    m_squareVA = Lucky::VertexArray::Create();
-    m_squareVA->Bind();
-
-    float squareVertices[5 * 4] = 
-    {
-        -0.5f,  -0.5f,  0.0f,   0.0f,   0.0f,
-        0.5f,   -0.5f,  0.0f,   1.0f,   0.0f,
-        0.5f,   0.5f,   0.0f,   1.0f,   1.0f,
-        -0.5f,  0.5f,   0.0f,   0.0f,   1.0f
-    };
-
-    Lucky::Ref<Lucky::VertexBuffer> squareVB;
-    squareVB = Lucky::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
-    squareVB->SetLayout({
-        { Lucky::ShaderDataType::Float3, "a_Position" },
-        { Lucky::ShaderDataType::Float2, "a_TexCoord" }
-    });
-    m_squareVA->AddVertexBuffer(squareVB);
-
-    unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-    Lucky::Ref<Lucky::IndexBuffer> squareIB;
-    squareIB = Lucky::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
-    m_squareVA->SetIndexBuffer(squareIB);
-
-    // Shaders
-    auto shaderLibrary = Lucky::ShaderLibrary::GetInstance();
-    shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
-    shaderLibrary.Load("assets/shaders/FlatColor.glsl");
-    shaderLibrary.Load("assets/shaders/Texture.glsl");
-
-    // Textures
-    m_Texture = Lucky::Texture2D::Create("assets/textures/Checkerboard.png");
-    m_TexturePlane = Lucky::Texture2D::Create("assets/textures/f14-tomcat.png");
 }
 
-Sandbox3D::~Sandbox3D()
+void Sandbox3D::OnAttach()
 {
+	LK_PROFILE_FUNCTION();
+	m_VertexArray = Lucky::VertexArray::Create();
+	m_VertexArray->Bind();
+
+	float vertices[3 * 7] =
+	{
+		-0.5f,  -0.5f,  0.0f,   0.8f,   0.2f,   0.8f,   1.0f,
+		0.5f,   -0.5f,  0.0f,   0.2f,   0.3f,   0.8f,   1.0f,
+		0.0f,   0.5f,   0.0f,   0.8f,   0.8f,   0.2f,   1.0f
+	};
+	Lucky::Ref<Lucky::VertexBuffer> vertexBuffer;
+	vertexBuffer = Lucky::VertexBuffer::Create(vertices, sizeof(vertices));
+	vertexBuffer->SetLayout({
+		{ Lucky::ShaderDataType::Float3, "a_Position" },
+		{ Lucky::ShaderDataType::Float4, "a_Color" }
+		});
+	m_VertexArray->AddVertexBuffer(vertexBuffer);
+
+	unsigned int indices[3] = { 0, 1, 2 };
+	Lucky::Ref<Lucky::IndexBuffer> indexBuffer;
+	indexBuffer = Lucky::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
+	m_VertexArray->SetIndexBuffer(indexBuffer);
+
+	m_squareVA = Lucky::VertexArray::Create();
+	m_squareVA->Bind();
+
+	float squareVertices[5 * 4] =
+	{
+		-0.5f,  -0.5f,  0.0f,   0.0f,   0.0f,
+		0.5f,   -0.5f,  0.0f,   1.0f,   0.0f,
+		0.5f,   0.5f,   0.0f,   1.0f,   1.0f,
+		-0.5f,  0.5f,   0.0f,   0.0f,   1.0f
+	};
+
+	Lucky::Ref<Lucky::VertexBuffer> squareVB;
+	squareVB = Lucky::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
+	squareVB->SetLayout({
+		{ Lucky::ShaderDataType::Float3, "a_Position" },
+		{ Lucky::ShaderDataType::Float2, "a_TexCoord" }
+		});
+	m_squareVA->AddVertexBuffer(squareVB);
+
+	unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+	Lucky::Ref<Lucky::IndexBuffer> squareIB;
+	squareIB = Lucky::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
+	m_squareVA->SetIndexBuffer(squareIB);
+
+	// Shaders
+	auto shaderLibrary = Lucky::ShaderLibrary::GetInstance();
+	shaderLibrary.Load("assets/shaders/VertexPosColor.glsl");
+	shaderLibrary.Load("assets/shaders/FlatColor.glsl");
+	shaderLibrary.Load("assets/shaders/Texture.glsl");
+
+	// Textures
+	m_Texture = Lucky::Texture2D::Create("assets/textures/Checkerboard.png");
+	m_TexturePlane = Lucky::Texture2D::Create("assets/textures/f14-tomcat.png");
+}
+
+void Sandbox3D::OnDetach()
+{
+	LK_PROFILE_FUNCTION();
 }
 
 void Sandbox3D::OnUpdate(Lucky::Timestep ts)

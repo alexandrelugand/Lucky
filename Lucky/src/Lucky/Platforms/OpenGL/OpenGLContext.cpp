@@ -11,6 +11,7 @@ namespace Lucky
 
 	void OpenGLContext::Init()
 	{
+		LK_PROFILE_FUNCTION();
 		glfwMakeContextCurrent(m_Window);
 #ifndef __EMSCRIPTEN__
         bool status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) != 0;
@@ -43,6 +44,7 @@ namespace Lucky
 
 	void OpenGLContext::SwapBuffers()
 	{
-        glfwSwapBuffers(m_Window);
+		LK_PROFILE_FUNCTION();
+		glfwSwapBuffers(m_Window);
 	}
 } // namespace Lucky

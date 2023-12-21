@@ -28,7 +28,7 @@ namespace Lucky
 
     private:
         static Application* s_Instance;
-        WASM_API std::unique_ptr<Window> m_Window;
+        WASM_API Scope<Window> m_Window;
         WASM_API ImGuiLayer* m_ImGuiLayer;
         WASM_API LayerStack m_LayerStack;
         WASM_API float m_LastFrameTime;

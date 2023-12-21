@@ -23,6 +23,6 @@ namespace Lucky
         virtual void SetEventCallback(const EventCallbackFn& fn) = 0;
         virtual void SetVSync(bool enabled) = 0;
 
-        static Window* Create(const WindowProps& props = WindowProps());
+        static Scope<Window> Create(const WindowProps& props = WindowProps());
     };
 } // namespace Lucky

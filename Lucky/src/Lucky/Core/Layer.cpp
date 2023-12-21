@@ -7,8 +7,4 @@ namespace Lucky
         : m_DebugName(name)
     {
     }
-
-    Layer::~Layer()
-    {
-    }
 } // namespace Lucky

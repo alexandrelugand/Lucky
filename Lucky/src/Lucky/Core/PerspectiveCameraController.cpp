@@ -21,11 +21,12 @@ namespace Lucky
 
 	void PerspectiveCameraController::OnUpdate(Timestep ts)
 	{
-		#ifndef __EMSCRIPTEN__
+		LK_PROFILE_FUNCTION();
+#ifndef __EMSCRIPTEN__
 		if(Input::IsKeyPressed(LK_KEY_A))
-		#else
+#else
 		if(Input::IsKeyPressed(LK_KEY_Q))
-		#endif
+#endif
 		{
 			m_Position.x -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 			m_Position.y -= sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
@@ -43,11 +44,11 @@ namespace Lucky
 			m_Position.y -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 		else 
-		#ifndef __EMSCRIPTEN__
+#ifndef __EMSCRIPTEN__
 		if(Input::IsKeyPressed(LK_KEY_W))
-		#else
+#else
 		if(Input::IsKeyPressed(LK_KEY_Z))
-		#endif
+#endif
 		{
 			m_Position.x += -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 			m_Position.y += cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
@@ -58,11 +59,11 @@ namespace Lucky
 			if(Input::IsKeyPressed(LK_KEY_E))
 				m_Rotation -= m_Settings.RotationSpeed * ts;
 			else
-			#ifndef __EMSCRIPTEN__
+#ifndef __EMSCRIPTEN__
 			if(Input::IsKeyPressed(LK_KEY_Q))
-			#else
+#else
 			if(Input::IsKeyPressed(LK_KEY_A))
-			#endif
+#endif
 				m_Rotation += m_Settings.RotationSpeed * ts;
 
 			if(m_Rotation > 180.0f)
@@ -84,6 +85,7 @@ namespace Lucky
 
 	void PerspectiveCameraController::OnEvent(Event &e)
 	{
+		LK_PROFILE_FUNCTION();
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FN(PerspectiveCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
@@ -91,6 +93,7 @@ namespace Lucky
 
 	void PerspectiveCameraController::OnImGuiRender()
 	{
+		LK_PROFILE_FUNCTION();
 		ImGui::Begin("Perspective Camera");
 		ImGui::Text("Position: %.1f, %.1f", m_Position.x, m_Position.y);
 		ImGui::Text("Zoom: %.1f", m_Position.z);
@@ -100,6 +103,7 @@ namespace Lucky
 
 	bool PerspectiveCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 	{
+		LK_PROFILE_FUNCTION();
 		m_Position.z -= e.GetYOffset() * m_Settings.ZoomSpeed;
 		m_Position.z = std::max(m_Position.z, 0.2f);
 		return false;
@@ -107,6 +111,7 @@ namespace Lucky
 
 	bool PerspectiveCameraController::OnWindowResized(WindowResizeEvent &e)
 	{
+		LK_PROFILE_FUNCTION();
 		m_Camera.SetProjection(m_Settings.Fov, (float)e.GetWidth() / (float)e.GetHeight(), m_Settings.ZNear, m_Settings.ZFar);
 		return false;
 	}

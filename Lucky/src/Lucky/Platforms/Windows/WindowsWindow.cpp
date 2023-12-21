@@ -11,32 +11,34 @@ namespace Lucky
 {
     static bool s_GLFWInitialized = false;
 
-    Window *Window::Create(const WindowProps &props)
+    Scope<Window> Window::Create(const WindowProps &props)
     {
-        return new WindowsWindow(props);
+        return CreateScope<WindowsWindow>(props);
     }
 
     WindowsWindow::WindowsWindow(const WindowProps &props)
     {
-        Init(props);
+		LK_PROFILE_FUNCTION();
+		Init(props);
     }
 
     WindowsWindow::~WindowsWindow()
     {
-        Shutdown();
+		LK_PROFILE_FUNCTION();
+		Shutdown();
     }
 
     void WindowsWindow::OnUpdate()
     {
-        // Handle any events
+		LK_PROFILE_FUNCTION();
         glfwPollEvents();
-        // Flip the double buffer
         m_Context->SwapBuffers();
     }
 
     void WindowsWindow::SetVSync(bool enabled)
     {
-        if (enabled)
+		LK_PROFILE_FUNCTION();
+		if (enabled)
             glfwSwapInterval(1);
         else
             glfwSwapInterval(0);
@@ -46,7 +48,8 @@ namespace Lucky
 
     void WindowsWindow::Init(const WindowProps &props)
     {
-        m_Data.Title = props.Title;
+		LK_PROFILE_FUNCTION();
+		m_Data.Title = props.Title;
         m_Data.Width = props.Width;
         m_Data.Height = props.Height;
 
@@ -174,7 +177,8 @@ namespace Lucky
 
     void WindowsWindow::Shutdown()
     {
-        glfwDestroyWindow(m_Window);
+		LK_PROFILE_FUNCTION();
+		glfwDestroyWindow(m_Window);
         glfwTerminate();
     }
 } // namespace Lucky

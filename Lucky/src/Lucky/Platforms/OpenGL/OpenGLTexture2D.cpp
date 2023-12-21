@@ -6,6 +6,7 @@ namespace Lucky
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
 	:	m_Width(width), m_Height(height)
 	{
+		LK_PROFILE_FUNCTION();
 		m_InternalFormat = GL_RGBA8;
 		m_DataFormat = GL_RGBA;
 
@@ -21,10 +22,15 @@ namespace Lucky
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
 	{
+		LK_PROFILE_FUNCTION();
 		int width, height;
 		int channels;
 		stbi_set_flip_vertically_on_load(1);
-		auto data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+		stbi_uc* data = nullptr;
+		{
+			LK_PROFILE_SCOPE("OpenGLTexture2D::OpenGLTexture2D - stbi_load");
+			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+		}
 		LK_CORE_ASSERT(data, "Failed to load image!");
 
 		m_Width = width;
@@ -62,17 +68,20 @@ namespace Lucky
 
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
+		LK_PROFILE_FUNCTION();
 		glDeleteTextures(1, &m_TextureId);
 	}
 
 	void OpenGLTexture2D::Bind(uint32_t slot)
 	{
+		LK_PROFILE_FUNCTION();
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_TextureId);
 	}
 
 	void OpenGLTexture2D::SetData(void *data, uint32_t size)
 	{
+		LK_PROFILE_FUNCTION();
 		LK_CORE_ASSERT(size == m_Width * m_Height * (m_DataFormat == GL_RGBA ? 4 : 3), "Data must be entire texture!")
 		glBindTexture(GL_TEXTURE_2D, m_TextureId);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);

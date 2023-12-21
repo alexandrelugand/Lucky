@@ -18,12 +18,13 @@ namespace Lucky
 
     Application::Application(const WindowProps &props)
     {
-        LK_CORE_ASSERT(s_Instance == nullptr, "Application instance alreay set");
+		LK_PROFILE_FUNCTION();
+
+		LK_CORE_ASSERT(s_Instance == nullptr, "Application instance alreay set");
         s_Instance = this;
         m_Minimized = false;
         
-        Log::Init();
-        m_Window = std::unique_ptr<Window>(Window::Create(props));
+        m_Window = Window::Create(props);
         m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
         Renderer::Init();
@@ -34,11 +35,13 @@ namespace Lucky
 
     Application::~Application()
     {
+		LK_PROFILE_FUNCTION();
     }
 
     void Application::Run()
     {
-        LK_CORE_INFO("Application is running");
+		LK_PROFILE_FUNCTION();
+		LK_CORE_INFO("Application is running");
 
         // Run the loop correctly for the target environment
 #ifdef __EMSCRIPTEN__
@@ -47,46 +50,55 @@ namespace Lucky
         // Display the window until ESC is pressed
         while (m_Running) 
         {
-            RenderFrame();
+			LK_PROFILE_SCOPE("void Application::Run() - RunLoop");
+			RenderFrame();
         }
 #endif
     }
 
     void Application::PushLayer(Layer *layer)
     {
-        m_LayerStack.PushLayer(layer);
+		LK_PROFILE_FUNCTION();
+		m_LayerStack.PushLayer(layer);
         layer->OnAttach();
     }
 
     void Application::PushOverlay(Layer *overlay)
     {
-        m_LayerStack.PushOverlay(overlay);
+		LK_PROFILE_FUNCTION();
+		m_LayerStack.PushOverlay(overlay);
         overlay->OnAttach();
     }
 
     void Application::RenderFrame() 
     {
-        float time = (float)glfwGetTime();
+		LK_PROFILE_FUNCTION();
+		float time = (float)glfwGetTime();
         Timestep timestep = time - m_LastFrameTime;
         m_LastFrameTime = time;
 
         if(!m_Minimized)
         {
-            for(auto layer : m_LayerStack)
+			LK_PROFILE_SCOPE("void Application::RenderFrame() - Layers update");
+			for(auto layer : m_LayerStack)
                 layer->OnUpdate(timestep);
         }
 
-        m_ImGuiLayer->Begin();
-        for(auto layer : m_LayerStack)
-            layer->OnImGuiRender();
-        m_ImGuiLayer->End();
+		{
+			LK_PROFILE_SCOPE("void Application::RenderFrame() - ImGui Layers rendering");
+			m_ImGuiLayer->Begin();
+			for (auto layer : m_LayerStack)
+				layer->OnImGuiRender();
+			m_ImGuiLayer->End();
+		}
 
         m_Window->OnUpdate();
     }
 
     void Application::OnEvent(Event &e)
     {
-        EventDispatcher dispatcher(e);
+		LK_PROFILE_FUNCTION();
+		EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
         dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 
@@ -106,7 +118,8 @@ namespace Lucky
 
     bool Application::OnWindowResize(WindowResizeEvent& e)
     {
-        if(e.GetWidth() == 0 || e.GetHeight() == 0)
+		LK_PROFILE_FUNCTION();
+		if(e.GetWidth() == 0 || e.GetHeight() == 0)
         {
             m_Minimized = true;
             return false;

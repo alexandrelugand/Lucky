@@ -6,10 +6,32 @@ int main(int argc, char** argv)
 {
     try
     {
-        Lucky::Application* application = CreateApplication();
-        application->Run();
-        delete application;
-        return 0;
+		Lucky::Log::Init();
+
+// #ifdef __EMSCRIPTEN__    
+// 		EM_ASM(
+// 			debugger;
+// 			FS.mkdir('/data');
+// 			FS.mount(IDBFS, {}, '/data');
+
+// 			FS.syncfs(true, function (err) {
+// 				console.log("syncfs:" + err);
+// 			});
+// 		);
+// #endif
+
+		LK_PROFILE_BEGIN_SESSION("Startup", "Startup.json");
+		Lucky::Application* application = CreateApplication();
+		LK_PROFILE_END_SESSION();
+
+		LK_PROFILE_BEGIN_SESSION("Runtime", "Runtime.json");
+		application->Run();
+		LK_PROFILE_END_SESSION();
+
+		LK_PROFILE_BEGIN_SESSION("Shutdown", "Shutdown.json");
+		delete application;
+		LK_PROFILE_END_SESSION();
+		return 0;
     }
     catch(const std::exception& e)
     {
