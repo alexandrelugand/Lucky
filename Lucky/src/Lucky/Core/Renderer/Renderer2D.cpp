@@ -568,7 +568,8 @@ namespace Lucky
 
 	void Renderer2D::ResetStats()
 	{
-		memset(&s_Data.Stats, 0, sizeof(Statictics));
+		s_Data.Stats.DrawCalls = 0;
+		s_Data.Stats.QuadCount = 0;
 	}
 
 	Renderer2D::Statictics Renderer2D::GetStats()

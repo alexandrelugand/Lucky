@@ -50,7 +50,7 @@ namespace Lucky
 
 	void ParticleSystem::Emit(const ParticleProps &particleProps)
 	{
-		Particle &particle = m_ParticlePool[m_PoolIndex];
+		Particle &particle = m_ParticlePool[--m_PoolIndex];
 		particle.Active = true;
 		particle.Position = particleProps.Position;
 		particle.Rotation = Random::Float() * 2.0f * glm::pi<float>();
@@ -69,6 +69,6 @@ namespace Lucky
 		particle.SizeBegin = particleProps.SizeBegin + particleProps.SizeVariation * (Random::Float() - 0.5f);
 		particle.SizeEnd = particleProps.SizeEnd;
 
-		m_PoolIndex = --m_PoolIndex % m_ParticlePool.size();
+		m_PoolIndex = m_PoolIndex % m_ParticlePool.size();
 	}
 } // namespace Lucky

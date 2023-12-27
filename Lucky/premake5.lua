@@ -52,17 +52,23 @@ project "Lucky"
 	pchheader "LuckyPch.h"
 	pchsource "src/LuckyPch.cpp"
 
+	-- G++
 	filter "action:gmake2"
 		buildoptions { "-Wall" }
 		links { "glfw3" }
 		-- Using ccache to accelerate compilation time (not mandatory)
 		-- makesettings [[CXX = ccache g++]]
 
+	filter { "action:gmake2", "configurations:Release"}
+		buildoptions { "-O3" }
+
+	-- VS 2022
 	filter "action:vs2022"
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 		disablewarnings { "4996" }
 		links { "glfw3_mt" }
 
+	-- Configurations
 	filter "configurations:Debug"
 		defines { "DEBUG" }
 		runtime "Debug"
@@ -73,5 +79,6 @@ project "Lucky"
 		runtime "Release"
 		optimize "On" 
 
+	-- Platforms
 	filter "system:windows"
 		defines { "PLATFORM_WINDOWS" }
