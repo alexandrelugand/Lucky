@@ -16,11 +16,21 @@ namespace Lucky
 		float TranslationSpeed;
 		float RotationSpeed;
 		float ZoomSpeed;
+		float ZoomLevel;
 
 		// Perspective properties
 		float Fov;
 		float ZNear;
 		float ZFar;
+	};
+
+	struct CameraBounds
+	{
+		float Left, Right;
+		float Bottom, Top;
+
+		float GetWidth() { return Right - Left; }
+		float GetHeight() { return Top - Bottom; }
 	};
 
 	class CameraController
@@ -34,6 +44,10 @@ namespace Lucky
 
 		virtual Camera& GetCamera() = 0;
 		virtual const Camera& GetCamera() const = 0;
+		virtual const CameraBounds& GetBounds() const = 0;
+
+		virtual float GetZoomLevel() const = 0;
+		virtual void SetZoomLevel(float value) = 0;
 
 		static Scope<CameraController> Create(CameraType type, const CameraSettings& settings);
 	};

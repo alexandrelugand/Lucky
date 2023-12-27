@@ -7,7 +7,7 @@
 SandBox::SandBox(const Lucky::WindowProps& props) :
     Application(props)
 {    
-    // PushLayer(new Sandbox3D());
+    //PushLayer(new Sandbox3D());
     PushLayer(new Sandbox2D());
     LK_INFO("Application initialized");
 }

@@ -14,9 +14,15 @@ namespace Lucky
 		m_Rotation(settings.Rotation)
 	{
 		LK_CORE_ASSERT(settings.Fov != 0, "Fov is not defined!")
-		LK_CORE_ASSERT(settings.AspectRatio != 0, "Aspect ratio is not defined!")
-		LK_CORE_ASSERT(settings.ZNear != 0, "ZNear is not defined!")
-		LK_CORE_ASSERT(settings.ZFar != 0, "ZFar is not defined!")
+			LK_CORE_ASSERT(settings.AspectRatio != 0, "Aspect ratio is not defined!")
+			LK_CORE_ASSERT(settings.ZNear != 0, "ZNear is not defined!")
+			LK_CORE_ASSERT(settings.ZFar != 0, "ZFar is not defined!")
+
+		m_Position.z = m_Settings.ZoomLevel;
+
+		float frustumHeight = 2.0f * abs(m_Position.z) * tan(m_Settings.Fov * 0.5f * (glm::pi<float>() / 180.0f));
+		float frustumWidth = frustumHeight * m_Settings.AspectRatio;
+		m_Bounds = { 0.0f, frustumWidth, 0.0f, frustumHeight };
 	}
 
 	void PerspectiveCameraController::OnUpdate(Timestep ts)
@@ -78,6 +84,7 @@ namespace Lucky
 		{
 			m_Position = m_Settings.Position;
 			m_Rotation = m_Settings.Rotation;
+			m_Position.z = m_Settings.ZoomLevel;
 		}
 
 		m_Camera.SetPosition(m_Position);

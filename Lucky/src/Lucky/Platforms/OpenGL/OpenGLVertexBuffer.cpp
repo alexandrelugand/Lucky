@@ -3,6 +3,14 @@
 
 namespace Lucky
 {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+	{
+		LK_PROFILE_FUNCTION();
+		glGenBuffers(1, &m_VertexBufferId);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId);
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+	}
+
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float *vertices, uint32_t size)
 	{
 		LK_PROFILE_FUNCTION();
@@ -27,5 +35,12 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	void OpenGLVertexBuffer::SetData(const void* data, uint32_t size)
+	{
+		LK_PROFILE_FUNCTION();
+		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 } // namespace Lucky

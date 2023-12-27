@@ -3,6 +3,7 @@
 
 #include "Lucky/Core/Timestep.h"
 #include "Lucky/Core/Renderer/Renderer.h"
+#include "Lucky/Core/Renderer/Renderer2D.h"
 
 namespace Lucky
 {
@@ -10,7 +11,7 @@ namespace Lucky
         std::unique_ptr<Window> Application::m_Window;
         ImGuiLayer* Application::m_ImGuiLayer;
         LayerStack Application::m_LayerStack;
-        float Application::m_LastFrameTime = 0.0f;
+        float Application::m_LastFrameTime;
         bool Application::m_Minimized = false;
     #endif 
 
@@ -23,11 +24,13 @@ namespace Lucky
 		LK_CORE_ASSERT(s_Instance == nullptr, "Application instance alreay set");
         s_Instance = this;
         m_Minimized = false;
+		m_LastFrameTime = 0.0f;
         
         m_Window = Window::Create(props);
         m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
         Renderer::Init();
+		Renderer2D::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -102,11 +105,11 @@ namespace Lucky
         dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
         dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 
-        for(auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+        for(auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend();++it)
         {
-            (*--it)->OnEvent(e);
-            if(e.Handled())
-                break;
+			if (e.Handled())
+				break;
+            (*it)->OnEvent(e);
         }
     }
 

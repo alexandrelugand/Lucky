@@ -8,7 +8,7 @@ namespace Lucky
 	class ShaderLibrary
 	{
 	public:
-		inline static ShaderLibrary& GetInstance() { return s_Instance; };
+		static ShaderLibrary& GetInstance() { return s_Instance; }
 
 		void Add(const std::string& name, const Ref<Shader>& shader);
 		void Add(const Ref<Shader>& shader);

@@ -19,14 +19,19 @@ namespace Lucky
 		void OnEvent(Event& e) override;
 		void OnImGuiRender() override;
 
-		inline Camera& GetCamera() override { return m_Camera; }
-		inline const Camera& GetCamera() const override { return m_Camera; }
+		Camera& GetCamera() override { return m_Camera; }
+		const Camera& GetCamera() const override { return m_Camera; }
+		const CameraBounds& GetBounds() const override { return m_Bounds; }
+
+		float GetZoomLevel() const override { return m_Position.z; }
+		void SetZoomLevel(float value) override { m_Position.z = value; }
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
 
 		CameraSettings m_Settings;
+		CameraBounds m_Bounds;
 		PerspectiveCamera m_Camera;
 		glm::vec3 m_Position;
 		float m_Rotation;

@@ -9,7 +9,9 @@ namespace Lucky
 {
 	OrthographicCameraController::OrthographicCameraController(const CameraSettings& settings)
 	:	m_Settings(settings),
-		m_Camera(-m_Settings.AspectRatio * m_ZoomLevel, m_Settings.AspectRatio * m_ZoomLevel, m_ZoomLevel, -m_ZoomLevel),
+		m_ZoomLevel(settings.ZoomLevel),
+		m_Bounds({ -m_Settings.AspectRatio * m_ZoomLevel, m_Settings.AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel }),
+		m_Camera(m_Bounds.Left, m_Bounds.Right, m_Bounds.Top, m_Bounds.Bottom),
 		m_Position(settings.Position),
 		m_Rotation(settings.Rotation)
 	{
@@ -75,6 +77,8 @@ namespace Lucky
 		{
 			m_Position = m_Settings.Position;
 			m_Rotation = m_Settings.Rotation;
+			m_ZoomLevel = m_Settings.ZoomLevel;
+			CalculateView();
 		}
 
 		m_Camera.SetPosition(m_Position);
@@ -103,7 +107,7 @@ namespace Lucky
 		LK_PROFILE_FUNCTION();
 		m_ZoomLevel -= e.GetYOffset() * m_Settings.ZoomSpeed;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
-		m_Camera.SetProjection(-m_Settings.AspectRatio * m_ZoomLevel, m_Settings.AspectRatio * m_ZoomLevel, m_ZoomLevel, -m_ZoomLevel);
+		CalculateView();
 		return false;
 	}
 
@@ -111,8 +115,13 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 		m_Settings.AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
-		m_Camera.SetProjection(-m_Settings.AspectRatio * m_ZoomLevel, m_Settings.AspectRatio * m_ZoomLevel, m_ZoomLevel, -m_ZoomLevel);
+		CalculateView();
 		return false;
 	}
 
+	void OrthographicCameraController::CalculateView()
+	{
+		m_Bounds = { -m_Settings.AspectRatio * m_ZoomLevel, m_Settings.AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel };
+		m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Top, m_Bounds.Bottom);
+	}
 } // namespace Lucky

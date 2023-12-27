@@ -54,8 +54,10 @@ project "Sandbox"
 	filter "action:vs2022"
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 		disablewarnings { "4996" }
-		ignoredefaultlibraries { "LIBCMT" }
 		links { "glfw3_mt" }
+
+	filter { "action:vs2022", "configurations:Debug" }
+		ignoredefaultlibraries { "LIBCMT" }
 
 	filter "configurations:Debug"
 		defines { "DEBUG" }

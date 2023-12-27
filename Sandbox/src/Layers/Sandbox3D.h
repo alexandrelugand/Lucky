@@ -1,6 +1,8 @@
 #pragma once
 #include <Lucky.h>
 
+#define TRIANGLE
+
 class Sandbox3D : public Lucky::Layer
 {
 public:
@@ -13,12 +15,14 @@ public:
     void OnEvent(Lucky::Event& event) override;
 
 private:
-    Lucky::Ref<Lucky::VertexArray> m_VertexArray;
+#ifdef TRIANGLE
+    Lucky::Ref<Lucky::VertexArray> m_triangleVA;
+	float m_triangleRotation = 0.0f;
+	float m_triangleRotationSpeed = 45.0f;
+#endif
     Lucky::Ref<Lucky::VertexArray> m_squareVA;
-    Lucky::Ref<Lucky::Texture> m_Texture;
+	glm::vec4 m_SquareColor;
+	Lucky::Ref<Lucky::Texture> m_Texture;
     Lucky::Ref<Lucky::Texture> m_TexturePlane;
     Lucky::Scope<Lucky::CameraController> m_CameraController;
-    /*float m_triangleRotation = 0.0f;
-    float m_triangleRotationSpeed = 45.0f;*/
-    glm::vec4 m_SquareColor;
 };

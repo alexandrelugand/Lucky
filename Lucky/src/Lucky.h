@@ -20,6 +20,7 @@
 #include "Lucky/Core/Layer.h"
 #include "Lucky/Core/ImGui/ImGuiLayer.h"
 #include "Lucky/Core/CameraController.h"
+#include "Lucky/Core/ParticleSystem.h"
 // ---------------------------------------
 
 // --- Renderer --------------------------
@@ -31,6 +32,7 @@
 #include "Lucky/Core/Renderer/IndexBuffer.h"
 #include "Lucky/Core/Renderer/Shader.h"
 #include "Lucky/Core/Renderer/Texture.h"
+#include "Lucky/Core/Renderer/SubTexture2D.h"
 #include "Lucky/Core/Renderer/Camera.h"
 #include "Lucky/Core/Renderer/OrthographicCamera.h"
 #include "Lucky/Core/Renderer/PerspectiveCamera.h"

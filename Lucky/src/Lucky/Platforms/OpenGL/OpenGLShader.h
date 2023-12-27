@@ -17,6 +17,7 @@ namespace Lucky
 		void Unbind() const override;
 
 		void SetInt(const std::string& name, int value) override;
+		void SetIntArray(const std::string& name, int* values, uint32_t count) override;
 
 		void SetFloat(const std::string& name, float value) override;
 		void SetFloat2(const std::string& name, const glm::vec2& value) override;

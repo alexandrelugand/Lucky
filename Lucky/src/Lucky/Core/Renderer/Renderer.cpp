@@ -12,7 +12,6 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 		RenderCommand::Init();
-		Renderer2D::Init();
 	}
 
 	void Renderer::Shutdown()
