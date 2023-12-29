@@ -3,7 +3,7 @@
 
 #include "Lucky/Application/Input.h"
 #include "Lucky/Application/KeyCodes.h"
-#include "Lucky/Core/Core.h"
+#include "Lucky/Core/Base.h"
 
 namespace Lucky
 {
@@ -22,31 +22,31 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 #ifndef __EMSCRIPTEN__
-		if(Input::IsKeyPressed(LK_KEY_A))
+		if(Input::IsKeyPressed(Key::A))
 #else
-		if(Input::IsKeyPressed(LK_KEY_Q))
+		if(Input::IsKeyPressed(Key::Q))
 #endif
 		{
 			m_Position.x -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 			m_Position.y -= sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 		else
-		if(Input::IsKeyPressed(LK_KEY_D))
+		if(Input::IsKeyPressed(Key::D))
 		{
 			m_Position.x += cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 			m_Position.y += sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 
-		if(Input::IsKeyPressed(LK_KEY_S))
+		if(Input::IsKeyPressed(Key::S))
 		{
 			m_Position.x -= -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 			m_Position.y -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 		else 
 #ifndef __EMSCRIPTEN__
-		if(Input::IsKeyPressed(LK_KEY_W))
+		if(Input::IsKeyPressed(Key::W))
 #else
-		if(Input::IsKeyPressed(LK_KEY_Z))
+		if(Input::IsKeyPressed(Key::Z))
 #endif
 		{
 			m_Position.x += -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
@@ -55,13 +55,13 @@ namespace Lucky
 
 		if(m_Settings.EnableRotation)
 		{
-			if(Input::IsKeyPressed(LK_KEY_E))
+			if(Input::IsKeyPressed(Key::E))
 				m_Rotation -= m_Settings.RotationSpeed * ts;
 			else
 #ifndef __EMSCRIPTEN__
-			if(Input::IsKeyPressed(LK_KEY_Q))
+			if(Input::IsKeyPressed(Key::Q))
 #else
-			if(Input::IsKeyPressed(LK_KEY_A))
+			if(Input::IsKeyPressed(Key::A))
 #endif
 				m_Rotation += m_Settings.RotationSpeed * ts;
 
@@ -73,7 +73,7 @@ namespace Lucky
 			m_Camera.SetRotation(m_Rotation);
 		}
 
-		if(Input::IsKeyPressed(LK_KEY_SPACE))
+		if(Input::IsKeyPressed(Key::Space))
 		{
 			m_Position = m_Settings.Position;
 			m_Rotation = m_Settings.Rotation;
@@ -102,6 +102,13 @@ namespace Lucky
 		ImGui::End();
 	}
 
+	void OrthographicCameraController::OnResize(float width, float height)
+	{
+		LK_PROFILE_FUNCTION();
+		m_Settings.AspectRatio = width / height;
+		CalculateView();
+	}
+
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 	{
 		LK_PROFILE_FUNCTION();
@@ -114,8 +121,7 @@ namespace Lucky
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent &e)
 	{
 		LK_PROFILE_FUNCTION();
-		m_Settings.AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
-		CalculateView();
+		OnResize((float)e.GetWidth(), (float)e.GetHeight());
 		return false;
 	}
 

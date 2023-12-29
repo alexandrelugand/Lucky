@@ -15,6 +15,7 @@ namespace Lucky
 
 	ImGuiLayer::~ImGuiLayer()
 	{
+		ImGuiLayer::OnDetach();
 	}
 
 	void ImGuiLayer::OnAttach()
@@ -48,13 +49,11 @@ namespace Lucky
 		ImGui_ImplGlfw_InitForOpenGL(glWin, true);
 
 #ifdef __EMSCRIPTEN__
-		// For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
-		// You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
-		io.IniFilename = nullptr;
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 		ImGui_ImplOpenGL3_Init("#version 300 es");
+		io.IniFilename = "/data/imgui.ini";
 #else
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -65,6 +64,17 @@ namespace Lucky
 	void ImGuiLayer::OnDetach()
 	{
 		LK_PROFILE_FUNCTION();
+#ifdef __EMSCRIPTEN__
+		LK_CORE_INFO("Save layout on detach");
+		ImGuiIO &io = ImGui::GetIO();
+		ImGui::SaveIniSettingsToDisk(io.IniFilename);
+		EM_ASM(
+			FS.syncfs(function (err) {
+				if(err != undefined)
+					console.log("Save layout on detach failed. " + err);
+			});
+		);
+#endif
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
@@ -107,4 +117,41 @@ namespace Lucky
 #endif		
 	}
 
+	void ImGuiLayer::OnEvent(Event& event)
+	{
+		if(m_BlockEvents)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			event.Handled |= event.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+			event.Handled |= event.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		}
+	}
+
+	void ImGuiLayer::Load()
+	{
+		LK_CORE_TRACE("Load layout");
+		ImGuiIO &io = ImGui::GetIO();
+#ifdef __EMSCRIPTEN__
+		ImGui::LoadIniSettingsFromDisk(io.IniFilename);
+#else		
+		ImGui::LoadIniSettingsFromDisk(io.IniFilename);
+#endif		
+	}
+
+	void ImGuiLayer::Save()
+	{
+		LK_CORE_TRACE("Save layout");
+		ImGuiIO &io = ImGui::GetIO();
+#ifdef __EMSCRIPTEN__
+		ImGui::SaveIniSettingsToDisk(io.IniFilename);
+		EM_ASM(
+			FS.syncfs(function (err) {
+				if(err != undefined)
+					console.log("Save layout failed. " + err);
+			});
+		);
+#else		
+		ImGui::SaveIniSettingsToDisk(io.IniFilename);
+#endif	
+	}
 } // namespace Lucky

@@ -45,7 +45,7 @@ void Sandbox3D::OnAttach()
 		});
 	m_triangleVA->AddVertexBuffer(vertexBuffer);
 
-	unsigned int indices[3] = { 0, 1, 2 };
+	uint32_t indices[3] = { 0, 1, 2 };
 	indexBuffer = Lucky::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 	m_triangleVA->SetIndexBuffer(indexBuffer);
 #endif
@@ -69,7 +69,7 @@ void Sandbox3D::OnAttach()
 		});
 	m_squareVA->AddVertexBuffer(squareVB);
 
-	unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 	Lucky::Ref<Lucky::IndexBuffer> squareIB;
 	squareIB = Lucky::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 	m_squareVA->SetIndexBuffer(squareIB);

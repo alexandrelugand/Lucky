@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lucky/Core/Renderer/Shader.h"
+#include "Lucky/Renderer/Shader.h"
 
 namespace Lucky
 {

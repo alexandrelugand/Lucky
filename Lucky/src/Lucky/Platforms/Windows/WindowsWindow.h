@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Lucky/Application/Window.h"
-#include "Lucky/Core/Renderer/Context.h"
+#include "Lucky/Renderer/Context.h"
 
 namespace Lucky
 {
@@ -13,13 +13,13 @@ namespace Lucky
 
         void OnUpdate() override;
 
-        inline unsigned int GetWidth() const override { return m_Data.Width; }
-        inline unsigned int GetHeight() const override { return m_Data.Height; }
-        inline bool IsVSync() const override { return m_Data.VSync; }
-        inline void* GetNativeWindow() const override { return (void*)m_Window; }
+        uint32_t GetWidth() const override { return m_Data.Width; }
+        uint32_t GetHeight() const override { return m_Data.Height; }
+        bool IsVSync() const override { return m_Data.VSync; }
+        void* GetNativeWindow() const override { return (void*)m_Window; }
 
         //Window attributes
-        inline void SetEventCallback(const EventCallbackFn& fn) override { m_Data.EventCallback = fn; }
+        void SetEventCallback(const EventCallbackFn& fn) override { m_Data.EventCallback = fn; }
         void SetVSync(bool enabled) override;
 
     private:
@@ -32,7 +32,7 @@ namespace Lucky
         struct WindowData
         {
             std::string Title;
-            unsigned int Width, Height;
+            uint32_t Width, Height;
             bool VSync;
 
             EventCallbackFn EventCallback;

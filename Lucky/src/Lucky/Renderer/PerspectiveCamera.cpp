@@ -1,6 +1,8 @@
 #include "LuckyPch.h"
 #include "PerspectiveCamera.h"
 
+#include "Lucky/Core/CameraController.h"
+
 namespace Lucky
 {
 	PerspectiveCamera::PerspectiveCamera(const CameraSettings& settings)

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Lucky.h>
 #include <Lucky/EntryPoint.h>
 

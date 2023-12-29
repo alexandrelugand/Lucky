@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "Lucky/Core/Renderer/IndexBuffer.h"
+#include "Lucky/Renderer/IndexBuffer.h"
 
 namespace Lucky
 {

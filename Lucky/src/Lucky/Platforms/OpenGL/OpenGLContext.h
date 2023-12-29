@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lucky/Core/Renderer/Context.h"
+#include "Lucky/Renderer/Context.h"
 
 namespace Lucky
 {

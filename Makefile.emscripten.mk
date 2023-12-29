@@ -7,18 +7,20 @@ endif
 ifeq ($(config),debug)
   ImGui_config = Debug
   Lucky_config = Debug
+  LuckyEditor_config = Debug
   SandBox_config = Debug
 
 else ifeq ($(config),release)
   ImGui_config = Release
   Lucky_config = Release
+  LuckyEditor_config = Release
   SandBox_config = Release
 
 else
   $(error "invalid configuration $(config)")
 endif
 
-PROJECTS := Lucky SandBox
+PROJECTS := Lucky LuckyEditor SandBox
 
 .PHONY: all clean help $(PROJECTS) 
 
@@ -36,9 +38,15 @@ ifneq (,$(Lucky_config))
 	@${MAKE} --no-print-directory -C Lucky -f Makefile.emscripten.mk CONFIG=$(Lucky_config)
 endif
 
+LuckyEditor: ImGui Lucky
+ifneq (,$(LuckyEditor_config))
+	@echo "==== Building Lucky Editor ($(LuckyEditor_config)) ===="
+	@${MAKE} --no-print-directory -C LuckyEditor -f Makefile.emscripten.mk CONFIG=$(LuckyEditor_config)
+endif
+
 SandBox: ImGui Lucky
 ifneq (,$(SandBox_config))
-	@echo "==== Building App ($(SandBox_config)) ===="
+	@echo "==== Building SandBox ($(SandBox_config)) ===="
 	@${MAKE} --no-print-directory -C SandBox -f Makefile.emscripten.mk CONFIG=$(SandBox_config)
 endif
 

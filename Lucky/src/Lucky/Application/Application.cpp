@@ -2,8 +2,8 @@
 #include "Application.h"
 
 #include "Lucky/Core/Timestep.h"
-#include "Lucky/Core/Renderer/Renderer.h"
-#include "Lucky/Core/Renderer/Renderer2D.h"
+#include "Lucky/Renderer/Renderer.h"
+#include "Lucky/Renderer/Renderer2D.h"
 
 namespace Lucky
 {
@@ -59,6 +59,11 @@ namespace Lucky
 #endif
     }
 
+    void Application::Close()
+    {
+		m_Running = false;
+    }
+
     void Application::PushLayer(Layer *layer)
     {
 		LK_PROFILE_FUNCTION();
@@ -107,7 +112,7 @@ namespace Lucky
 
         for(auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend();++it)
         {
-			if (e.Handled())
+			if (e.Handled)
 				break;
             (*it)->OnEvent(e);
         }
@@ -115,7 +120,7 @@ namespace Lucky
 
     bool Application::OnWindowClose(WindowCloseEvent& e)
     {
-        m_Running = false;
+		Close();
         return true;
     }
 

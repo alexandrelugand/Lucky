@@ -3,7 +3,7 @@
 
 #include "Lucky/Application/Input.h"
 #include "Lucky/Application/KeyCodes.h"
-#include "Lucky/Core/Core.h"
+#include "Lucky/Core/Base.h"
 
 namespace Lucky
 {
@@ -108,6 +108,11 @@ namespace Lucky
 		ImGui::End();
 	}
 
+	void PerspectiveCameraController::OnResize(float width, float height)
+	{
+		m_Camera.SetProjection(m_Settings.Fov, width / height, m_Settings.ZNear, m_Settings.ZFar);
+	}
+
 	bool PerspectiveCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 	{
 		LK_PROFILE_FUNCTION();
@@ -119,7 +124,7 @@ namespace Lucky
 	bool PerspectiveCameraController::OnWindowResized(WindowResizeEvent &e)
 	{
 		LK_PROFILE_FUNCTION();
-		m_Camera.SetProjection(m_Settings.Fov, (float)e.GetWidth() / (float)e.GetHeight(), m_Settings.ZNear, m_Settings.ZFar);
+		OnResize((float)e.GetWidth(), (float)e.GetHeight());
 		return false;
 	}
 

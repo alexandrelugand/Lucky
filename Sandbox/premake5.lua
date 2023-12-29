@@ -17,6 +17,16 @@ project "Sandbox"
 		"%{includeDir.GLM}/glm/**.inl" 
 	}
 
+	vpaths 
+	{
+		["Vendors/*"] = 
+		{ 
+			"%{includeDir.GLM}/glm/**.hpp", 
+			"%{includeDir.GLM}/glm/**.inl"
+		}
+	}
+
+
 	includedirs
 	{
 		"src",

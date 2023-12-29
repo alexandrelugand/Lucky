@@ -19,12 +19,15 @@ namespace Lucky
         Application(const WindowProps& props);
         virtual ~Application();
 
-        static inline Application& Get() { return *s_Instance; }
+        static Application& Get() { return *s_Instance; }
 
-        void Run();
+		void Run();
+		void Close();
+
         void PushLayer(Layer* layer);
         void PushOverlay(Layer* overlay);
-        inline Window& GetWindow() const { return *m_Window; }
+        Window& GetWindow() const { return *m_Window; }
+		ImGuiLayer* GetImGuiLayer() const { return m_ImGuiLayer; }
 
     private:
         static Application* s_Instance;

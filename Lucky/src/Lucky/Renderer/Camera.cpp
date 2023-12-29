@@ -1,9 +1,6 @@
 #include "LuckyPch.h"
 #include "Camera.h"
 
-#include "OrthographicCamera.h"
-#include "PerspectiveCamera.h"
-
 namespace Lucky
 {
 	void Camera::RecalculateViewMatrix()

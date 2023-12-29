@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Camera.h"
-#include "Lucky/Core/CameraController.h"
 
 namespace Lucky
 {

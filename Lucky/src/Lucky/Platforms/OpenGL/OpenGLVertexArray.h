@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lucky/Core/Renderer/VertexArray.h"
+#include "Lucky/Renderer/VertexArray.h"
 
 namespace Lucky
 {

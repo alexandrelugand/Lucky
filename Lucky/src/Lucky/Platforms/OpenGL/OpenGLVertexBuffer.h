@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Lucky/Core/Renderer/VertexBuffer.h"
-#include "Lucky/Core/Renderer/VertexBufferLayout.h"
+#include "Lucky/Renderer/VertexBuffer.h"
+#include "Lucky/Renderer/VertexBufferLayout.h"
 
 namespace Lucky
 {

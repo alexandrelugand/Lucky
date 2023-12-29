@@ -12,7 +12,9 @@ namespace Lucky
 			None = 0,
 			OpenGL
 		};
-		
+
+		~RendererApi() = default;
+
 		virtual void Init() = 0;
 		
 		virtual void SetClearColor(const glm::vec4& color) = 0;

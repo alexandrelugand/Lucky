@@ -2,7 +2,7 @@
 #include "ParticleSystem.h"
 
 #include "Random.h"
-#include "Lucky/Core/Renderer/Renderer2D.h"
+#include "Lucky/Renderer/Renderer2D.h"
 
 namespace Lucky
 {

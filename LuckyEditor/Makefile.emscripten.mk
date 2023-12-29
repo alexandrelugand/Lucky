@@ -17,43 +17,36 @@ CC = emcc
 CXX = em++
 AR = emar
 
-# verbose=1
 ifndef verbose
-  SILENT = @
+	SILENT = @
 endif
 
 CONFIG ?= Debug
-PRJNAME = Lucky
+PRJNAME = Editor
 
 OUTDIR = ../bin/browser/$(CONFIG)
 OBJDIR  = ../bin-int/browser/$(CONFIG)/$(PRJNAME)
-SRCDIR = ./src/Lucky
+SRCDIR = ./src
 VENDORS = ../Vendors
 
-EXE = $(OUTDIR)/$(PRJNAME).html
+EXE = $(OUTDIR)/Editor.html
 LIB = $(OUTDIR)/$(PRJNAME).a
 
-INCLUDE_FLAGS = -I./src
-INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/ImGui/backends -I$(VENDORS)/GLM -I$(VENDORS)/stb
+INCLUDE_FLAGS = -I./src -I../Lucky/src
+INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/GLM -I$(VENDORS)/stb
 
 SUBDIRS = $(SRCDIR)
-SUBDIRS += $(SRCDIR)/Application
-SUBDIRS += $(SRCDIR)/Core
-SUBDIRS += $(SRCDIR)/Core/ImGui
-SUBDIRS += $(SRCDIR)/Renderer
-SUBDIRS += $(SRCDIR)/Platforms/OpenGL
-SUBDIRS += $(SRCDIR)/Platforms/Windows
-SUBDIRS += $(SRCDIR)/Platforms/Windows
-SUBDIRS += $(VENDORS)/stb/stb
+SUBDIRS += $(SRCDIR)/Layers
 VPATH := $(SUBDIRS)
 
 SOURCES = $(shell cd $(SRCDIR) && dir /s/b *.cpp)
-SOURCES += $(shell cd ../Vendors/stb && dir /s/b *.cpp)
 OBJS    = $(patsubst %.cpp,$(OBJDIR)/%.o,$(notdir $(SOURCES)))
+LIBS = $(OUTDIR)/Lucky.a $(OUTDIR)/ImGui.a
 
 CPPFLAGS =
 LDFLAGS =
 EMS =
+DEFINES = 
 
 ##---------------------------------------------------------------------
 ## EMSCRIPTEN OPTIONS
@@ -76,10 +69,10 @@ ifeq ($(USE_FILE_SYSTEM), 0)
 LDFLAGS += -s NO_FILESYSTEM=1
 endif
 ifeq ($(USE_FILE_SYSTEM), 1)
-LDFLAGS += --no-heap-copy -s FORCE_FILESYSTEM=1
+LDFLAGS += --no-heap-copy --preload-file assets -s FORCE_FILESYSTEM=1
 endif
 
-USE_INDEX_DB_FILE_SYSTEM ?= 0
+USE_INDEX_DB_FILE_SYSTEM ?= 1
 ifeq ($(USE_INDEX_DB_FILE_SYSTEM), 1)
 LDFLAGS += -lidbfs.js
 endif
@@ -88,7 +81,7 @@ endif
 ## FINAL BUILD FLAGS
 ##---------------------------------------------------------------------
 
-CPPFLAGS += $(INCLUDE_FLAGS) $(INCLUDE_LIB_FLAGS) -s USE_SDL=2 -s USE_SDL_IMAGE=2
+CPPFLAGS += $(DEFINES) $(INCLUDE_FLAGS) $(INCLUDE_LIB_FLAGS) -s USE_SDL=2 -s USE_SDL_IMAGE=2
 ifeq ($(CONFIG), Debug)
 CPPFLAGS += -O0 -g -DDEBUG
 else
@@ -106,8 +99,8 @@ $(OBJDIR)/%.o: %.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@ 
 
-all: $(LIB)
-	@echo Build complete for $(LIB)
+all: $(EXE)
+	@echo Build complete for $(EXE)
 
 $(OBJDIR):
 	$(SILENT) mkdir "$@"

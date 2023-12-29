@@ -7,13 +7,13 @@ namespace Lucky
     class WindowResizeEvent : public Event
     {
     public:
-        WindowResizeEvent(unsigned int width, unsigned int height)
+        WindowResizeEvent(uint32_t width, uint32_t height)
             : m_Width(width), m_Height(height)
         {
         }
 
-        inline unsigned int GetWidth() const { return m_Width; }
-        inline unsigned int GetHeight() const { return m_Height; }
+        uint32_t GetWidth() const { return m_Width; }
+        uint32_t GetHeight() const { return m_Height; }
 
         std::string ToString() const override
         {
@@ -26,19 +26,19 @@ namespace Lucky
         EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
 
     private:
-        unsigned int m_Width, m_Height;
+        uint32_t m_Width, m_Height;
     };
 
     class WindowMovedEvent : public Event
     {
     public:
-        WindowMovedEvent(unsigned int xPos, unsigned int yPos)
+        WindowMovedEvent(uint32_t xPos, uint32_t yPos)
             : m_XPos(xPos), m_YPos(yPos)
         {
         }
 
-        inline unsigned int GetXPos() const { return m_XPos; }
-        inline unsigned int GetYPos() const { return m_YPos; }
+        uint32_t GetXPos() const { return m_XPos; }
+        uint32_t GetYPos() const { return m_YPos; }
 
         std::string ToString() const override
         {
@@ -51,7 +51,7 @@ namespace Lucky
         EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
 
     private:
-        unsigned int m_XPos, m_YPos;
+        uint32_t m_XPos, m_YPos;
     };
 
     class WindowCloseEvent : public Event

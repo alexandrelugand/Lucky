@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Lucky/Core/CameraController.h"
-#include "Lucky/Core/Renderer/Camera.h"
-#include "Lucky/Core/Renderer/Texture.h"
-#include "Lucky/Core/Renderer/SubTexture2D.h"
+#include "Lucky/Renderer/Camera.h"
+#include "Lucky/Renderer/Texture.h"
+#include "Lucky/Renderer/SubTexture2D.h"
 
 namespace Lucky
 {

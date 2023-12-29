@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Lucky/Core/Core.h"
-
 namespace Lucky
 {
 	struct CameraSettings;

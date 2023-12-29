@@ -72,7 +72,7 @@ ifeq ($(USE_FILE_SYSTEM), 1)
 LDFLAGS += --no-heap-copy --preload-file assets -s FORCE_FILESYSTEM=1
 endif
 
-USE_INDEX_DB_FILE_SYSTEM ?= 0
+USE_INDEX_DB_FILE_SYSTEM ?= 1
 ifeq ($(USE_INDEX_DB_FILE_SYSTEM), 1)
 LDFLAGS += -lidbfs.js
 endif
@@ -82,7 +82,7 @@ endif
 ##---------------------------------------------------------------------
 
 CPPFLAGS += $(DEFINES) $(INCLUDE_FLAGS) $(INCLUDE_LIB_FLAGS) -s USE_SDL=2 -s USE_SDL_IMAGE=2
-ifeq ($(CONFIG), DEBUG)
+ifeq ($(CONFIG), Debug)
 CPPFLAGS += -O0 -g -DDEBUG
 else
 CPPFLAGS += -Os -DNDEBUG

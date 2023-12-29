@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "Timestep.h"
 #include "Lucky/Core/Events/Event.h"
-#include "Lucky/Core/Renderer/Camera.h"
+#include "Lucky/Renderer/Camera.h"
 
 namespace Lucky
 {
@@ -48,6 +48,7 @@ namespace Lucky
 
 		virtual float GetZoomLevel() const = 0;
 		virtual void SetZoomLevel(float value) = 0;
+		virtual void OnResize(float width, float height) = 0;
 
 		static Scope<CameraController> Create(CameraType type, const CameraSettings& settings);
 	};

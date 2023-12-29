@@ -13,8 +13,16 @@ namespace Lucky
         void OnAttach() override;
         void OnDetach() override;
         void OnImGuiRender() override;
+		void OnEvent(Event& event) override;
 
+		void BlockEvents(bool block) { m_BlockEvents = block; }
+        void Load();
+        void Save();
+        
         void Begin();
         void End();
+
+    private:
+		bool m_BlockEvents = false;
     };
 } // namespace Lucky

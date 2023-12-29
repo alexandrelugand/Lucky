@@ -1,5 +1,5 @@
-project "Lucky"
-	kind "StaticLib"
+project "LuckyEditor"
+	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
 	architecture "x64"
@@ -7,39 +7,34 @@ project "Lucky"
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
 	staticruntime "on"
 
-	dependson { "GLAD", "ImGui" }
+	dependson { "GLAD", "ImGui", "Lucky" }
 
 	files
 	{ 
 		"**.h", 
 		"**.cpp", 
 		"%{includeDir.GLM}/glm/**.hpp", 
-		"%{includeDir.GLM}/glm/**.inl",
-		"%{includeDir.stb}/**.h", 
-		"%{includeDir.stb}/**.cpp", 
+		"%{includeDir.GLM}/glm/**.inl" 
 	}
 
 	vpaths 
-	{ 
+	{
 		["Vendors/*"] = 
 		{ 
 			"%{includeDir.GLM}/glm/**.hpp", 
-			"%{includeDir.GLM}/glm/**.inl",
-			"%{includeDir.stb}/**.h",
-			"%{includeDir.stb}/**.cpp"
-		} 
+			"%{includeDir.GLM}/glm/**.inl"
+		}
 	}
 
 	includedirs
 	{
 		"src",
+		"../Lucky/src",
 		"%{includeDir.spdlog}",
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",
-		"%{includeDir.ImGui}/backends",
-		"%{includeDir.GLM}",
-		"%{includeDir.stb}"
+		"%{includeDir.GLM}"
 	}
 
 	libdirs 
@@ -49,19 +44,15 @@ project "Lucky"
 
 	links
 	{
+		"Lucky",
 		"opengl32",
 		"GLAD",
 		"ImGui"
 	}
 
-	defines
-	{
-		"GLFW_INCLUDE_NONE"
-	}
-
 	-- Precompile header
-	pchheader "LuckyPch.h"
-	pchsource "src/LuckyPch.cpp"
+	pchheader "LuckyEditorPch.h"
+	pchsource "src/LuckyEditorPch.cpp"
 
 	-- G++
 	filter "action:gmake2"
@@ -69,7 +60,7 @@ project "Lucky"
 		links { "glfw3" }
 		-- Using ccache to accelerate compilation time (not mandatory)
 		-- makesettings [[CXX = ccache g++]]
-
+	
 	filter { "action:gmake2", "configurations:Release"}
 		buildoptions { "-O3" }
 
@@ -79,17 +70,27 @@ project "Lucky"
 		disablewarnings { "4996" }
 		links { "glfw3_mt" }
 
+	filter { "action:vs2022", "configurations:Debug" }
+		ignoredefaultlibraries { "LIBCMT" }
+
 	-- Configurations
 	filter "configurations:Debug"
 		defines { "DEBUG" }
 		runtime "Debug"
 		symbols "On" 
 
-	filter "configurations:Release"
+	filter "configurations:Release"  
 		defines { "NDEBUG" }
 		runtime "Release"
 		optimize "On" 
 
 	-- Platforms
 	filter "system:windows"
+		systemversion "latest"
 		defines { "PLATFORM_WINDOWS" }
+
+	-- Post builds
+	postbuildcommands 
+	{
+		'{COPY} "../Vendors/GLFW/lib-static-ucrt/glfw3.dll" "%{cfg.targetdir}"',
+	}

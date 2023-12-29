@@ -9,7 +9,7 @@
 // ---------------------------------------
 
 // --- Core ------------------------------
-#include "Lucky/Core/Core.h"
+#include "Lucky/Core/Base.h"
 #include "Lucky/Core/Log.h"
 #include "Lucky/Core/Assert.h"
 #include "Lucky/Core/Timestep.h"
@@ -24,19 +24,20 @@
 // ---------------------------------------
 
 // --- Renderer --------------------------
-#include "Lucky/Core/Renderer/Renderer.h"
-#include "Lucky/Core/Renderer/Renderer2D.h"
-#include "Lucky/Core/Renderer/RenderCommand.h"
-#include "Lucky/Core/Renderer/VertexArray.h"
-#include "Lucky/Core/Renderer/VertexBuffer.h"
-#include "Lucky/Core/Renderer/IndexBuffer.h"
-#include "Lucky/Core/Renderer/Shader.h"
-#include "Lucky/Core/Renderer/Texture.h"
-#include "Lucky/Core/Renderer/SubTexture2D.h"
-#include "Lucky/Core/Renderer/Camera.h"
-#include "Lucky/Core/Renderer/OrthographicCamera.h"
-#include "Lucky/Core/Renderer/PerspectiveCamera.h"
-#include "Lucky/Core/Renderer/ShaderLibrary.h"
+#include "Lucky/Renderer/Renderer.h"
+#include "Lucky/Renderer/Renderer2D.h"
+#include "Lucky/Renderer/RenderCommand.h"
+#include "Lucky/Renderer/VertexArray.h"
+#include "Lucky/Renderer/VertexBuffer.h"
+#include "Lucky/Renderer/IndexBuffer.h"
+#include "Lucky/Renderer/Shader.h"
+#include "Lucky/Renderer/Texture.h"
+#include "Lucky/Renderer/SubTexture2D.h"
+#include "Lucky/Renderer/Camera.h"
+#include "Lucky/Renderer/OrthographicCamera.h"
+#include "Lucky/Renderer/PerspectiveCamera.h"
+#include "Lucky/Renderer/ShaderLibrary.h"
+#include "Lucky/Renderer/Framebuffer.h"
 // ---------------------------------------
 
 // --- Debug -----------------------------

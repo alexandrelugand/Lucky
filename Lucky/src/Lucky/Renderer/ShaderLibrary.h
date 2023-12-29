@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Shader.h"
-#include "Lucky/Core/Core.h"
+#include "Lucky/Core/Base.h"
 
 namespace Lucky
 {

@@ -2,7 +2,7 @@
 #pragma once
 #endif
 
-#include <cstdint>
+#include <stdint.h>
 #include <iostream>
 #include <utility>
 #include <algorithm>
@@ -13,14 +13,13 @@
 
 #include <string>
 #include <sstream>
-#include <array>
 #include <vector>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
 
 #ifdef PLATFORM_WINDOWS
-	#include <Windows.h>
+#include <Windows.h>
 #endif
 
 #ifdef __EMSCRIPTEN__
@@ -35,13 +34,3 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/constants.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/compatibility.hpp>
-
-#include "Lucky/Core/Base.h"
-#include "Lucky/Core/Log.h"
-#include "Lucky/Core/Assert.h"
-#include "Lucky/Debug/Instrumentation.h"
-
-#include "stb/stb_image.h"

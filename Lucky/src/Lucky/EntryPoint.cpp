@@ -8,17 +8,17 @@ int main(int argc, char** argv)
     {
 		Lucky::Log::Init();
 
-// #ifdef __EMSCRIPTEN__    
-// 		EM_ASM(
-// 			debugger;
-// 			FS.mkdir('/data');
-// 			FS.mount(IDBFS, {}, '/data');
+#ifdef __EMSCRIPTEN__    
+		MAIN_THREAD_EM_ASM(
+			FS.mkdir('/data');
+			FS.mount(IDBFS, {}, '/data');
 
-// 			FS.syncfs(true, function (err) {
-// 				console.log("syncfs:" + err);
-// 			});
-// 		);
-// #endif
+			FS.syncfs(true, function (err) {
+				if(err != undefined)
+					console.log("Mount IDBFS database failed. " + err);
+			})
+		);
+#endif
 
 		LK_PROFILE_BEGIN_SESSION("Startup", "Startup.json");
 		Lucky::Application* application = CreateApplication();

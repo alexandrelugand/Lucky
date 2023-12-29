@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CameraController.h"
-#include "Lucky/Core/Renderer/OrthographicCamera.h"
+#include "Lucky/Renderer/OrthographicCamera.h"
 #include "Lucky/Core/Timestep.h"
 #include "Lucky/Core/Events/Event.h"
 #include "Lucky/Core/Events/ApplicationEvent.h"
@@ -25,6 +25,7 @@ namespace Lucky
 
 		float GetZoomLevel() const override { return m_ZoomLevel; }
 		void SetZoomLevel(float value) override { m_ZoomLevel = value; CalculateView(); }
+		void OnResize(float width, float height) override;
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent& e);
