@@ -22,6 +22,7 @@ includeDir["GLAD"]="../Vendors/GLAD/include"
 includeDir["ImGui"]="../Vendors/ImGui"
 includeDir["GLM"]="../Vendors/GLM"
 includeDir["stb"]="../Vendors/stb"
+includeDir["entt"]="../Vendors/entt/include"
 
 libDir = {}
 libDir["GLFW"]= iif(_ACTION == "gmake2", "../Vendors/GLFW/lib-static-ucrt", "../Vendors/GLFW/lib-vc2022")

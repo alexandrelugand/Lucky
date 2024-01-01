@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Camera.h"
+#include "BaseCamera.h"
 
 namespace Lucky
 {
-	class OrthographicCamera : public Camera
+	class OrthographicCamera : public BaseCamera
 	{
 	public:
 		OrthographicCamera(float left, float right, float top, float bottom);

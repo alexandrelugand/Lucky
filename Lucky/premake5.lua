@@ -39,7 +39,8 @@ project "Lucky"
 		"%{includeDir.ImGui}",
 		"%{includeDir.ImGui}/backends",
 		"%{includeDir.GLM}",
-		"%{includeDir.stb}"
+		"%{includeDir.stb}",
+		"%{includeDir.entt}"
 	}
 
 	libdirs 

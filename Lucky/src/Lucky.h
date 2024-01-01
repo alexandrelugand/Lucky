@@ -33,11 +33,17 @@
 #include "Lucky/Renderer/Shader.h"
 #include "Lucky/Renderer/Texture.h"
 #include "Lucky/Renderer/SubTexture2D.h"
-#include "Lucky/Renderer/Camera.h"
+#include "Lucky/Renderer/BaseCamera.h"
 #include "Lucky/Renderer/OrthographicCamera.h"
 #include "Lucky/Renderer/PerspectiveCamera.h"
 #include "Lucky/Renderer/ShaderLibrary.h"
 #include "Lucky/Renderer/Framebuffer.h"
+// ---------------------------------------
+
+// --- Scene -----------------------------
+#include "Lucky/Scene/Scene.h"
+#include "Lucky/Scene/Entity.h"
+#include "Lucky/Scene/Components.h"
 // ---------------------------------------
 
 // --- Debug -----------------------------

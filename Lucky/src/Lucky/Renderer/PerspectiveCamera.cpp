@@ -7,7 +7,7 @@ namespace Lucky
 {
 	PerspectiveCamera::PerspectiveCamera(const CameraSettings& settings)
 	{
-		SetProjection(settings.Fov, settings.AspectRatio, settings.ZNear, settings.ZFar);
+		SetProjection(settings.Fov, settings.AspectRatio, settings.NearClip, settings.FarClip);
 	}
 
 	void PerspectiveCamera::SetProjection(float fov, float aspectRatio, float zNear, float zFar)

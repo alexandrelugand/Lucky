@@ -35,7 +35,8 @@ project "Sandbox"
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",
-		"%{includeDir.GLM}"
+		"%{includeDir.GLM}",
+		"%{includeDir.entt}"
 	}
 
 	libdirs 

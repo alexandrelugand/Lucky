@@ -33,7 +33,7 @@ EXE = $(OUTDIR)/Editor.html
 LIB = $(OUTDIR)/$(PRJNAME).a
 
 INCLUDE_FLAGS = -I./src -I../Lucky/src
-INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/GLM -I$(VENDORS)/stb
+INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/GLM -I$(VENDORS)/stb -I$(VENDORS)/entt/include
 
 SUBDIRS = $(SRCDIR)
 SUBDIRS += $(SRCDIR)/Layers

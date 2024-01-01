@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "Timestep.h"
 #include "Lucky/Core/Events/Event.h"
-#include "Lucky/Renderer/Camera.h"
+#include "Lucky/Renderer/BaseCamera.h"
 
 namespace Lucky
 {
@@ -18,10 +18,13 @@ namespace Lucky
 		float ZoomSpeed;
 		float ZoomLevel;
 
+		// Orthographic properties
+		float Size;
+
 		// Perspective properties
 		float Fov;
-		float ZNear;
-		float ZFar;
+		float NearClip;
+		float FarClip;
 	};
 
 	struct CameraBounds
@@ -42,8 +45,8 @@ namespace Lucky
 		virtual void OnEvent(Event& e) = 0;
 		virtual void OnImGuiRender() = 0;
 
-		virtual Camera& GetCamera() = 0;
-		virtual const Camera& GetCamera() const = 0;
+		virtual BaseCamera& GetCamera() = 0;
+		virtual const BaseCamera& GetCamera() const = 0;
 		virtual const CameraBounds& GetBounds() const = 0;
 
 		virtual float GetZoomLevel() const = 0;

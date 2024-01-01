@@ -15,8 +15,8 @@ namespace Lucky
 	{
 		LK_CORE_ASSERT(settings.Fov != 0, "Fov is not defined!")
 			LK_CORE_ASSERT(settings.AspectRatio != 0, "Aspect ratio is not defined!")
-			LK_CORE_ASSERT(settings.ZNear != 0, "ZNear is not defined!")
-			LK_CORE_ASSERT(settings.ZFar != 0, "ZFar is not defined!")
+			LK_CORE_ASSERT(settings.NearClip != 0, "ZNear is not defined!")
+			LK_CORE_ASSERT(settings.FarClip != 0, "ZFar is not defined!")
 
 		m_Position.z = m_Settings.ZoomLevel;
 
@@ -110,7 +110,7 @@ namespace Lucky
 
 	void PerspectiveCameraController::OnResize(float width, float height)
 	{
-		m_Camera.SetProjection(m_Settings.Fov, width / height, m_Settings.ZNear, m_Settings.ZFar);
+		m_Camera.SetProjection(m_Settings.Fov, width / height, m_Settings.NearClip, m_Settings.FarClip);
 	}
 
 	bool PerspectiveCameraController::OnMouseScrolled(MouseScrolledEvent &e)

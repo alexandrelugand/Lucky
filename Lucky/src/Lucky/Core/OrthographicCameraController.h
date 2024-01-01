@@ -19,8 +19,8 @@ namespace Lucky
 		void OnEvent(Event& e) override;
 		void OnImGuiRender() override;
 
-		Camera& GetCamera() override { return m_Camera; }
-		const Camera& GetCamera() const override { return m_Camera; }
+		BaseCamera& GetCamera() override { return m_Camera; }
+		const BaseCamera& GetCamera() const override { return m_Camera; }
 		const CameraBounds& GetBounds() const override { return m_Bounds; }
 
 		float GetZoomLevel() const override { return m_ZoomLevel; }

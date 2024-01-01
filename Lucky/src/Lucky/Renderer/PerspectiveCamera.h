@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Camera.h"
+#include "BaseCamera.h"
 
 namespace Lucky
 {
-	class PerspectiveCamera : public Camera
+	class PerspectiveCamera : public BaseCamera
 	{
 	public:
 		PerspectiveCamera(const CameraSettings& settings);

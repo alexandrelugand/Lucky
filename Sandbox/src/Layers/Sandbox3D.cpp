@@ -16,8 +16,8 @@ Sandbox3D::Sandbox3D()
 	settings.ZoomLevel = 2.0f;
 
 	settings.Fov = 60.0f;
-	settings.ZNear = 0.1f;
-	settings.ZFar = 10.0f;
+	settings.NearClip = 0.1f;
+	settings.FarClip = 10.0f;
 
 	m_CameraController = Lucky::CameraController::Create(Lucky::CameraType::Perspective, settings);
 }

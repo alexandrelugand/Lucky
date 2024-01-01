@@ -1,12 +1,21 @@
 ﻿#include "LuckyEditorPch.h"
 #include "EditorLayer.h"
 
+#include <glm/gtx/matrix_decompose.hpp>
+
 namespace Lucky
 {
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
-		auto &window = Application::Get().GetWindow();
+		m_ActiveScene = CreateScope<Scene>();
+	}
+
+	void EditorLayer::OnAttach()
+	{
+		LK_PROFILE_FUNCTION();
+
+		auto& window = Application::Get().GetWindow();
 
 		CameraSettings settings;
 		settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
@@ -14,20 +23,117 @@ namespace Lucky
 		settings.TranslationSpeed = 10.0f;
 		settings.RotationSpeed = 90.0f;
 		settings.ZoomSpeed = 0.5f;
-		settings.ZoomLevel = 10.0f;
+		settings.ZoomLevel = 1.0f;
+		settings.Size = 10.0f;
+		settings.NearClip = -1.0f;
+		settings.FarClip = 1.0f;
 
-		m_CameraController = CameraController::Create(CameraType::Orthographic, settings);
-	}
-
-	void EditorLayer::OnAttach()
-	{
-		LK_PROFILE_FUNCTION();
-
-		auto &window = Application::Get().GetWindow();
 		FramebufferSpecification fbSpec;
 		fbSpec.Width = window.GetWidth();
 		fbSpec.Height = window.GetHeight();
 		m_Framebuffer = Framebuffer::Create(fbSpec);
+
+		class CameraController : public ScriptableEntity
+		{
+			const float c_TranslationSpeed = 5.0f;
+			const float c_RotationSpeed = 90.0f;
+
+		public:
+			void OnCreate()
+			{				
+			}
+
+			void OnDestroy()
+			{
+			}
+
+			void OnUpdate(Timestep ts)
+			{
+				auto& transform = GetComponent<TransformComponent>().Transform;
+
+				glm::vec3 scale;
+				glm::quat rotation;
+				glm::vec3 translation;
+				glm::vec3 skew;
+				glm::vec4 perspective;
+				glm::decompose(transform, scale, rotation, translation, skew, perspective);
+				rotation = glm::conjugate(rotation);
+				glm::vec3 angles = glm::eulerAngles(rotation);
+				float angle = -glm::degrees(angles.z);
+
+#ifndef __EMSCRIPTEN__
+				if (Input::IsKeyPressed(KeyCode::A))
+#else
+				if (Input::IsKeyPressed(KeyCode::Q))
+#endif
+				{
+					translation.x -= cos(glm::radians(angle)) * c_TranslationSpeed * ts;
+					translation.y -= sin(glm::radians(angle)) * c_TranslationSpeed * ts;
+				}
+				else
+					if (Input::IsKeyPressed(KeyCode::D))
+					{
+						translation.x += cos(glm::radians(angle)) * c_TranslationSpeed * ts;
+						translation.y += sin(glm::radians(angle)) * c_TranslationSpeed * ts;
+					}
+
+				if (Input::IsKeyPressed(KeyCode::S))
+				{
+					translation.x -= -sin(glm::radians(angle)) * c_TranslationSpeed * ts;
+					translation.y -= cos(glm::radians(angle)) * c_TranslationSpeed * ts;
+				}
+				else
+#ifndef __EMSCRIPTEN__
+					if (Input::IsKeyPressed(KeyCode::W))
+#else
+					if (Input::IsKeyPressed(KeyCode::Z))
+#endif
+					{
+						translation.x += -sin(glm::radians(angle)) * c_TranslationSpeed * ts;
+						translation.y += cos(glm::radians(angle)) * c_TranslationSpeed * ts;
+					}
+
+
+					if (Input::IsKeyPressed(KeyCode::E))
+						angle -= c_RotationSpeed * ts;
+					else
+#ifndef __EMSCRIPTEN__
+						if (Input::IsKeyPressed(KeyCode::Q))
+#else
+						if (Input::IsKeyPressed(KeyCode::A))
+#endif
+							angle += c_RotationSpeed * ts;
+
+					if (angle > 180.0f)
+						angle -= 360.0f;
+					else if (angle <= -180.0f)
+						angle += 360.0f;
+
+				if (Input::IsKeyPressed(KeyCode::Space))
+				{
+					translation = glm::vec3(0.0f);
+					angle = 0.0f;
+				}
+
+				transform = glm::translate(glm::mat4(1.0f), translation) *
+					glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3{ 0.0f, 0.0f, 1.0f }) *
+					glm::scale(glm::mat4(1.0f), glm::vec3{ scale.x, scale.y, 1.0f });
+			}
+
+			void OnEvent(Event& e)
+			{
+			}
+		};
+
+		m_CameraAEntity = m_ActiveScene->CreateEntity("Camera A");
+		m_CameraAEntity.AddComponent<CameraComponent>(settings).Primary = true;
+		m_CameraAEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+		m_CameraBEntity = m_ActiveScene->CreateEntity("Camera B");
+		m_CameraBEntity.AddComponent<CameraComponent>(settings);
+
+		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
+		m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
 
 #ifdef __EMSCRIPTEN__ 
 		LK_TRACE("Load default layout");
@@ -44,38 +150,22 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 
-		if(m_ViewportFocused)
-			m_CameraController->OnUpdate(ts);
+		auto fbSpec = m_Framebuffer->GetSpecification();
+		if (m_ViewportSize.x > 0 && m_ViewportSize.y > 0 &&
+			(fbSpec.Width != m_ViewportSize.x || fbSpec.Height != m_ViewportSize.y))
+		{
+			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		}
 
 		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
 
 		// Prepare scene
-		{
-			LK_PROFILE_SCOPE("void EditorLayer::OnUpdate() - Prepare");
-			RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
-			RenderCommand::Clear();
-		}
+		RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+		RenderCommand::Clear();
 
-		// Example scene
-		{
-			LK_PROFILE_SCOPE("void EditorLayer::OnUpdate() - Example scene");
-			Renderer2D::BeginScene(m_CameraController);
-
-			Renderer2D::DrawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
-			Renderer2D::DrawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, {0.2f, 0.3f, 0.8f, 1.0f});
-
-			for (float y = -5.0f; y < 5.0f; y += 0.5f)
-			{
-				for (float x = -5.0f; x < 5.0f; x += 0.5f)
-				{
-					glm::vec4 color = {(x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f};
-					Renderer2D::DrawQuad({x, y, -0.4f}, {0.45f, 0.45f}, color);
-				}
-			}
-
-			Renderer2D::EndScene();
-		}
+		m_ActiveScene->OnUpdate(ts);
 
 		m_Framebuffer->Unbind();
 	}
@@ -138,7 +228,46 @@ namespace Lucky
 			ImGui::EndMenuBar();
 		}
 
-		m_CameraController->OnImGuiRender();
+		ImGui::Begin("Settings");
+		if(m_SquareEntity)
+		{			
+			ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag.c_str());
+			const auto& [transform, sprite] = m_SquareEntity.GetComponent<TransformComponent, SpriteRendererComponent>();
+			ImGui::ColorEdit4("Color", glm::value_ptr(sprite.Color));
+
+			glm::vec3 scale;
+			glm::quat rotation;
+			glm::vec3 translation;
+			glm::vec3 skew;
+			glm::vec4 perspective;
+			glm::decompose(transform.Transform, scale, rotation, translation, skew, perspective);
+			rotation = glm::conjugate(rotation);
+			glm::vec3 angles = glm::eulerAngles(rotation);
+			float angle = -glm::degrees(angles.z);
+
+			ImGui::DragFloat2("Position", glm::value_ptr(translation), 0.1f, -100.0f, 100.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+			ImGui::DragFloat("Rotation", &angle, 1.0f, -360.0f, 360.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+			ImGui::DragFloat2("Size", glm::value_ptr(scale), 0.1f, 0.1f, 100.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+
+			transform = glm::translate(glm::mat4(1.0f), translation) *
+				glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3{ 0.0f, 0.0f, 1.0f }) *
+				glm::scale(glm::mat4(1.0f), glm::vec3{ scale.x, scale.y, 1.0f });
+		}
+
+		ImGui::DragFloat3("Camera transform", glm::value_ptr(m_CameraAEntity.GetComponent<TransformComponent>().Transform[3]));
+
+		if(ImGui::Checkbox("Camera A", &m_CameraA))
+		{
+			m_CameraAEntity.GetComponent<CameraComponent>().Primary = m_CameraA;
+			m_CameraBEntity.GetComponent<CameraComponent>().Primary = !m_CameraA;
+		}
+
+		auto& camera = m_CameraBEntity.GetComponent<CameraComponent>().Camera;
+		float orthoSize = camera.GetOrthographicSize();
+		if (ImGui::DragFloat("CamB ortho size", &orthoSize))
+			camera.SetOrthographicSize(orthoSize);
+
+		ImGui::End();
 
 		auto stats = Renderer2D::GetStats();
 		ImGui::Begin("Stats");
@@ -156,12 +285,8 @@ namespace Lucky
 		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-		if(m_ViewportSize != *((glm::vec2*)&viewportPanelSize) && viewportPanelSize.x > 0 && viewportPanelSize.y > 0)
-		{
-			m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-			m_CameraController->OnResize(m_ViewportSize.x, m_ViewportSize.y);
-		}
+		m_ViewportSize = *((glm::vec2*)&viewportPanelSize);
+		
 		ImGui::Image((ImTextureID)(intptr_t)m_Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2 { 0, 1 }, ImVec2 { 1, 0 });
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -184,6 +309,6 @@ namespace Lucky
 
 	void EditorLayer::OnEvent(Event &event)
 	{
-		m_CameraController->OnEvent(event);
+		m_ActiveScene->OnEvent(event);
 	}
 } // namespace Lucky
