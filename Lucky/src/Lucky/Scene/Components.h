@@ -64,24 +64,14 @@ namespace Lucky
 
 		ScriptableEntity* Instance = nullptr;
 
-		std::function<void()> CreateInstanceFunc;
-		std::function<void()> DestroyInstanceFunc;
-
-		std::function<void()> OnCreateFunc;
-		std::function<void()> OnDestroyFunc;
-		std::function<void(Timestep)> OnUpdateFunc;
-		std::function<void(Event&)> OnEventFunc;
+		std::function<ScriptableEntity*(Entity&&)> InitScript;
+		std::function<void()> DestroyScript;
 
 		template<typename T>
 		void Bind()
 		{
-			CreateInstanceFunc = [&]() { Instance = new T(); };
-			DestroyInstanceFunc = [&]() { delete (T*)Instance; Instance = nullptr; };
-
-			OnCreateFunc = [&]() { ((T*)Instance)->OnCreate(); };
-			OnDestroyFunc = [&]() { ((T*)Instance)->OnDestroy(); };
-			OnUpdateFunc = [&](Timestep ts) { ((T*)Instance)->OnUpdate(ts); };
-			OnEventFunc = [&](Event& e) { ((T*)Instance)->OnEvent(e); };
+			InitScript = [&](const Entity& entity) { return Instance = static_cast<ScriptableEntity*>(new T(entity)); };
+			DestroyScript = [&]() { delete Instance; Instance = nullptr; };
 		}
 	};
 }

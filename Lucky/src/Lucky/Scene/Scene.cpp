@@ -29,16 +29,15 @@ namespace Lucky
 	{
 		// Update Native scripts
 		{
-			m_Registry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& nsc)
+			m_Registry.view<NativeScriptComponent>().each([&](auto entity, NativeScriptComponent& nsc)
 			{
 				if (!nsc.Instance)
 				{
-					nsc.CreateInstanceFunc();
-					nsc.Instance->m_Entity = Entity{ entity, this };
-					nsc.OnCreateFunc();
+					nsc.InitScript(Entity{ entity, this });
+					nsc.Instance->OnCreate();
 				}
 
-				nsc.OnUpdateFunc(ts);
+				nsc.Instance->OnUpdate(ts);
 			});
 		}
 
@@ -48,7 +47,7 @@ namespace Lucky
 		auto view = m_Registry.view<CameraComponent, TransformComponent>();
 		for(auto entity : view)
 		{
-			const auto& [cameraCmp, transformCmp] = view.get<CameraComponent, TransformComponent>(entity);
+			auto [cameraCmp, transformCmp] = view.get<CameraComponent, TransformComponent>(entity);
 			if(cameraCmp.Primary)
 			{
 				mainCamera = &cameraCmp.Camera;
@@ -74,15 +73,15 @@ namespace Lucky
 
 	void Scene::OnEvent(Event& e)
 	{
-		m_Registry.view<CameraComponent>().each([&](auto entity, CameraComponent& cc)
+		m_Registry.view<CameraComponent>().each([&](CameraComponent& cc)
 		{
 			cc.Camera.OnEvent(e);
 		});
 
-		m_Registry.view<NativeScriptComponent>().each([&](auto entity, NativeScriptComponent& nsc)
-			{
-				nsc.OnEventFunc(e);
-			});
+		m_Registry.view<NativeScriptComponent>().each([&](NativeScriptComponent& nsc)
+		{
+			nsc.Instance->OnEvent(e);
+		});
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)

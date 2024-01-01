@@ -39,15 +39,20 @@ namespace Lucky
 			const float c_RotationSpeed = 90.0f;
 
 		public:
-			void OnCreate()
-			{				
-			}
-
-			void OnDestroy()
+			CameraController(const Entity& entity)
+				: ScriptableEntity(entity)
 			{
 			}
 
-			void OnUpdate(Timestep ts)
+			void OnCreate() override
+			{				
+			}
+
+			void OnDestroy() override
+			{
+			}
+
+			void OnUpdate(Timestep ts) override
 			{
 				auto& transform = GetComponent<TransformComponent>().Transform;
 
@@ -120,7 +125,7 @@ namespace Lucky
 					glm::scale(glm::mat4(1.0f), glm::vec3{ scale.x, scale.y, 1.0f });
 			}
 
-			void OnEvent(Event& e)
+			void OnEvent(Event& e) override
 			{
 			}
 		};
