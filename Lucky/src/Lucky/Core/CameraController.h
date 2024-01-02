@@ -1,32 +1,12 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include "Timestep.h"
 #include "Lucky/Core/Events/Event.h"
 #include "Lucky/Renderer/BaseCamera.h"
+#include "Lucky/Renderer/Camera.h"
 
 namespace Lucky
 {
-	struct CameraSettings
-	{
-		float AspectRatio;
-		bool EnableRotation;
-		glm::vec3 Position = {0.0f, 0.0f, 0.0f};
-		float Rotation = 0.0f;
-		float TranslationSpeed;
-		float RotationSpeed;
-		float ZoomSpeed;
-		float ZoomLevel;
-
-		// Orthographic properties
-		float Size;
-
-		// Perspective properties
-		float Fov;
-		float NearClip;
-		float FarClip;
-	};
-
 	struct CameraBounds
 	{
 		float Left, Right;
@@ -53,6 +33,6 @@ namespace Lucky
 		virtual void SetZoomLevel(float value) = 0;
 		virtual void OnResize(float width, float height) = 0;
 
-		static Scope<CameraController> Create(CameraType type, const CameraSettings& settings);
+		static Scope<CameraController> Create(CameraType type, const Camera::Settings& settings);
 	};
 } // namespace Lucky

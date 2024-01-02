@@ -3,17 +3,9 @@
 
 namespace Lucky
 {
-	SceneCamera::SceneCamera(const CameraSettings& settings)
-		: m_Settings(settings)
+	SceneCamera::SceneCamera(const Camera::Settings& settings)
+		: Camera(settings)
 	{
-		RecalculateProjection();
-	}
-
-	void SceneCamera::SetOrthographic(float size, float nearClip, float farClip)
-	{
-		m_Settings.Size = size;
-		m_Settings.NearClip = nearClip;
-		m_Settings.FarClip = farClip;
 		RecalculateProjection();
 	}
 
@@ -23,26 +15,37 @@ namespace Lucky
 		RecalculateProjection();
 	}
 
-	void SceneCamera::OnEvent(Event& e)
+	void SceneCamera::SetPerspective(float fov, float nearClip, float farClip)
 	{
-		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FN(SceneCamera::OnMouseScrolled));
+		m_Settings.ProjectionType = ProjectionType::Perspective;
+		m_Settings.PerspectiveFov = fov;
+		m_Settings.PerspectiveNearClip = nearClip;
+		m_Settings.PerspectiveFarClip = farClip;
+		RecalculateProjection();
+	}
+
+	void SceneCamera::SetOrthographic(float size, float nearClip, float farClip)
+	{
+		m_Settings.ProjectionType = ProjectionType::Perspective;
+		m_Settings.OrthographicSize = size;
+		m_Settings.OrthographicNearClip = nearClip;
+		m_Settings.OrthographicFarClip = farClip;
+		RecalculateProjection();
 	}
 
 	void SceneCamera::RecalculateProjection()
 	{
-		float orthoLeft = -m_Settings.Size * m_Settings.AspectRatio * 0.5f;
-		float orthoRight = m_Settings.Size * m_Settings.AspectRatio * 0.5f;
-		float orthoBottom = -m_Settings.Size * 0.5f;
-		float orthoTop = m_Settings.Size * 0.5f;
-
-		m_Projection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_Settings.NearClip, m_Settings.FarClip);
-	}
-
-	bool SceneCamera::OnMouseScrolled(MouseScrolledEvent& e)
-	{
-		m_Settings.Size -= e.GetYOffset() * m_Settings.ZoomSpeed;
-		RecalculateProjection();
-		return false;
+		if(m_Settings.ProjectionType == Camera::ProjectionType::Perspective)
+		{
+			m_Projection = glm::perspective(glm::radians(m_Settings.PerspectiveFov), m_Settings.AspectRatio, m_Settings.PerspectiveNearClip, m_Settings.PerspectiveFarClip);
+		}
+		else
+		{
+			float orthoLeft = -m_Settings.OrthographicSize * m_Settings.AspectRatio * 0.5f;
+			float orthoRight = m_Settings.OrthographicSize * m_Settings.AspectRatio * 0.5f;
+			float orthoBottom = -m_Settings.OrthographicSize * 0.5f;
+			float orthoTop = m_Settings.OrthographicSize * 0.5f;
+			m_Projection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_Settings.OrthographicNearClip, m_Settings.OrthographicFarClip);
+		}
 	}
 }

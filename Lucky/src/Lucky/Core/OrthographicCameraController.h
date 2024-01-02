@@ -6,13 +6,14 @@
 #include "Lucky/Core/Events/Event.h"
 #include "Lucky/Core/Events/ApplicationEvent.h"
 #include "Lucky/Core/Events/MouseEvent.h"
+#include "Lucky/Renderer/Camera.h"
 
 namespace Lucky
 {
 	class OrthographicCameraController : public CameraController
 	{
 	public:
-		OrthographicCameraController(const CameraSettings& settings);
+		OrthographicCameraController(const Camera::Settings& settings);
 		virtual ~OrthographicCameraController() = default;
 
 		void OnUpdate(Timestep ts) override;
@@ -23,8 +24,8 @@ namespace Lucky
 		const BaseCamera& GetCamera() const override { return m_Camera; }
 		const CameraBounds& GetBounds() const override { return m_Bounds; }
 
-		float GetZoomLevel() const override { return m_ZoomLevel; }
-		void SetZoomLevel(float value) override { m_ZoomLevel = value; CalculateView(); }
+		float GetZoomLevel() const override { return m_Settings.ZoomLevel; }
+		void SetZoomLevel(float value) override { m_Settings.ZoomLevel = value; CalculateView(); }
 		void OnResize(float width, float height) override;
 
 	private:
@@ -32,11 +33,8 @@ namespace Lucky
 		bool OnWindowResized(WindowResizeEvent& e);
 		void CalculateView();
 
-		CameraSettings m_Settings;
-		float m_ZoomLevel = 1.0f;
+		Camera::Settings m_Settings;
 		CameraBounds m_Bounds;
 		OrthographicCamera m_Camera;
-		glm::vec3 m_Position;
-		float m_Rotation;
 	};
 } // namespace Lucky

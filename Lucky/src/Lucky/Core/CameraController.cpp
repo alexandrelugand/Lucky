@@ -6,7 +6,7 @@
 
 namespace Lucky
 {
-	Scope<CameraController> CameraController::Create(CameraType type, const CameraSettings &settings)
+	Scope<CameraController> CameraController::Create(CameraType type, const Camera::Settings &settings)
 	{
 		switch (type)
 		{

@@ -1,14 +1,13 @@
 ﻿#include "LuckyEditorPch.h"
 #include "EditorLayer.h"
 
-#include <glm/gtx/matrix_decompose.hpp>
 
 namespace Lucky
 {
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
-		m_ActiveScene = CreateScope<Scene>();
+		m_ActiveScene = CreateRef<Scene>();
 	}
 
 	void EditorLayer::OnAttach()
@@ -17,16 +16,17 @@ namespace Lucky
 
 		auto& window = Application::Get().GetWindow();
 
-		CameraSettings settings;
+		Camera::Settings settings;
+		settings.ProjectionType = Camera::ProjectionType::Orthographic;
 		settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
 		settings.EnableRotation = true;
 		settings.TranslationSpeed = 10.0f;
 		settings.RotationSpeed = 90.0f;
 		settings.ZoomSpeed = 0.5f;
 		settings.ZoomLevel = 1.0f;
-		settings.Size = 10.0f;
-		settings.NearClip = -1.0f;
-		settings.FarClip = 1.0f;
+		settings.OrthographicSize = 10.0f;
+		settings.OrthographicNearClip = -100.0f;
+		settings.OrthographicFarClip = 100.0f;
 
 		FramebufferSpecification fbSpec;
 		fbSpec.Width = window.GetWidth();
@@ -35,8 +35,7 @@ namespace Lucky
 
 		class CameraController : public ScriptableEntity
 		{
-			const float c_TranslationSpeed = 5.0f;
-			const float c_RotationSpeed = 90.0f;
+			const Camera::Settings c_Settings;
 
 		public:
 			CameraController(const Entity& entity)
@@ -54,17 +53,7 @@ namespace Lucky
 
 			void OnUpdate(Timestep ts) override
 			{
-				auto& transform = GetComponent<TransformComponent>().Transform;
-
-				glm::vec3 scale;
-				glm::quat rotation;
-				glm::vec3 translation;
-				glm::vec3 skew;
-				glm::vec4 perspective;
-				glm::decompose(transform, scale, rotation, translation, skew, perspective);
-				rotation = glm::conjugate(rotation);
-				glm::vec3 angles = glm::eulerAngles(rotation);
-				float angle = -glm::degrees(angles.z);
+				auto& tc = GetComponent<TransformComponent>();
 
 #ifndef __EMSCRIPTEN__
 				if (Input::IsKeyPressed(KeyCode::A))
@@ -72,20 +61,20 @@ namespace Lucky
 				if (Input::IsKeyPressed(KeyCode::Q))
 #endif
 				{
-					translation.x -= cos(glm::radians(angle)) * c_TranslationSpeed * ts;
-					translation.y -= sin(glm::radians(angle)) * c_TranslationSpeed * ts;
+					tc.Translation.x -= cos(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
+					tc.Translation.y -= sin(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
 				}
 				else
 					if (Input::IsKeyPressed(KeyCode::D))
 					{
-						translation.x += cos(glm::radians(angle)) * c_TranslationSpeed * ts;
-						translation.y += sin(glm::radians(angle)) * c_TranslationSpeed * ts;
+						tc.Translation.x += cos(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
+						tc.Translation.y += sin(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
 					}
 
 				if (Input::IsKeyPressed(KeyCode::S))
 				{
-					translation.x -= -sin(glm::radians(angle)) * c_TranslationSpeed * ts;
-					translation.y -= cos(glm::radians(angle)) * c_TranslationSpeed * ts;
+					tc.Translation.x -= -sin(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
+					tc.Translation.y -= cos(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
 				}
 				else
 #ifndef __EMSCRIPTEN__
@@ -94,39 +83,48 @@ namespace Lucky
 					if (Input::IsKeyPressed(KeyCode::Z))
 #endif
 					{
-						translation.x += -sin(glm::radians(angle)) * c_TranslationSpeed * ts;
-						translation.y += cos(glm::radians(angle)) * c_TranslationSpeed * ts;
+						tc.Translation.x += -sin(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
+						tc.Translation.y += cos(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
 					}
 
 
 					if (Input::IsKeyPressed(KeyCode::E))
-						angle -= c_RotationSpeed * ts;
+						tc.Rotation.z -= c_Settings.RotationSpeed * ts;
 					else
 #ifndef __EMSCRIPTEN__
 						if (Input::IsKeyPressed(KeyCode::Q))
 #else
 						if (Input::IsKeyPressed(KeyCode::A))
 #endif
-							angle += c_RotationSpeed * ts;
-
-					if (angle > 180.0f)
-						angle -= 360.0f;
-					else if (angle <= -180.0f)
-						angle += 360.0f;
+							tc.Rotation.z += c_Settings.RotationSpeed * ts;
 
 				if (Input::IsKeyPressed(KeyCode::Space))
 				{
-					translation = glm::vec3(0.0f);
-					angle = 0.0f;
+					tc.Translation = glm::vec3(0.0f);
+					tc.Rotation.z = 0.0f;
 				}
-
-				transform = glm::translate(glm::mat4(1.0f), translation) *
-					glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3{ 0.0f, 0.0f, 1.0f }) *
-					glm::scale(glm::mat4(1.0f), glm::vec3{ scale.x, scale.y, 1.0f });
 			}
 
 			void OnEvent(Event& e) override
 			{
+				EventDispatcher dispatcher(e);
+				dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FN(CameraController::OnMouseScrolled));
+			}
+
+			bool OnMouseScrolled(MouseScrolledEvent& e)
+			{
+				auto [tc, cc] = GetComponent<TransformComponent, CameraComponent>();
+				auto& settings = cc.Camera.GetSettings();
+
+				if (settings.ProjectionType == Camera::ProjectionType::Perspective)
+				{
+					tc.Translation.z -= e.GetYOffset() * settings.ZoomSpeed;
+				}
+				else
+				{
+					cc.Camera.SetOrthographicSize(cc.Camera.GetOrthographicSize() - e.GetYOffset() * settings.ZoomSpeed);
+				}
+				return false;
 			}
 		};
 
@@ -137,8 +135,15 @@ namespace Lucky
 		m_CameraBEntity = m_ActiveScene->CreateEntity("Camera B");
 		m_CameraBEntity.AddComponent<CameraComponent>(settings);
 
-		m_SquareEntity = m_ActiveScene->CreateEntity("Square");
-		m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+		auto greenSquare = m_ActiveScene->CreateEntity("Green Square");
+		greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+		greenSquare.GetComponent<TransformComponent>().Translation = glm::vec3{ -2.0f, 0.0f, 0.0f };
+
+		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
+		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
+		redSquare.GetComponent<TransformComponent>().Translation = glm::vec3{ 2.0f, 0.0f, -10.0f };
+
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 #ifdef __EMSCRIPTEN__ 
 		LK_TRACE("Load default layout");
@@ -204,11 +209,16 @@ namespace Lucky
 
 		// Submit the DockSpace
 		ImGuiIO& io = ImGui::GetIO();
+		ImGuiStyle& style = ImGui::GetStyle();
+		float minWinSizeX = style.WindowMinSize.x;
+		style.WindowMinSize.x = 370.0f;
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
 			ImGuiID dockspace_id = ImGui::GetID("EditorDockSpace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockSpace_flags);
 		}
+
+		style.WindowMinSize.x = minWinSizeX;
 
 		if (ImGui::BeginMenuBar())
 		{
@@ -233,44 +243,16 @@ namespace Lucky
 			ImGui::EndMenuBar();
 		}
 
+		m_SceneHierarchyPanel.OnImGuiRenderer();
+
 		ImGui::Begin("Settings");
-		if(m_SquareEntity)
-		{			
-			ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag.c_str());
-			const auto& [transform, sprite] = m_SquareEntity.GetComponent<TransformComponent, SpriteRendererComponent>();
-			ImGui::ColorEdit4("Color", glm::value_ptr(sprite.Color));
+		
 
-			glm::vec3 scale;
-			glm::quat rotation;
-			glm::vec3 translation;
-			glm::vec3 skew;
-			glm::vec4 perspective;
-			glm::decompose(transform.Transform, scale, rotation, translation, skew, perspective);
-			rotation = glm::conjugate(rotation);
-			glm::vec3 angles = glm::eulerAngles(rotation);
-			float angle = -glm::degrees(angles.z);
-
-			ImGui::DragFloat2("Position", glm::value_ptr(translation), 0.1f, -100.0f, 100.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
-			ImGui::DragFloat("Rotation", &angle, 1.0f, -360.0f, 360.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
-			ImGui::DragFloat2("Size", glm::value_ptr(scale), 0.1f, 0.1f, 100.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
-
-			transform = glm::translate(glm::mat4(1.0f), translation) *
-				glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3{ 0.0f, 0.0f, 1.0f }) *
-				glm::scale(glm::mat4(1.0f), glm::vec3{ scale.x, scale.y, 1.0f });
-		}
-
-		ImGui::DragFloat3("Camera transform", glm::value_ptr(m_CameraAEntity.GetComponent<TransformComponent>().Transform[3]));
-
-		if(ImGui::Checkbox("Camera A", &m_CameraA))
+		if(ImGui::Checkbox("Show Camera A", &m_CameraA))
 		{
 			m_CameraAEntity.GetComponent<CameraComponent>().Primary = m_CameraA;
 			m_CameraBEntity.GetComponent<CameraComponent>().Primary = !m_CameraA;
 		}
-
-		auto& camera = m_CameraBEntity.GetComponent<CameraComponent>().Camera;
-		float orthoSize = camera.GetOrthographicSize();
-		if (ImGui::DragFloat("CamB ortho size", &orthoSize))
-			camera.SetOrthographicSize(orthoSize);
 
 		ImGui::End();
 

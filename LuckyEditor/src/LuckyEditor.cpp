@@ -19,5 +19,5 @@ namespace Lucky
 
 Lucky::Application* CreateApplication()
 {
-	return new Lucky::LuckyEditor({ "Lucky Editor", 1280, 720, false });
+	return new Lucky::LuckyEditor({ "Lucky Editor", 1600, 900, false });
 }

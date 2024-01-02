@@ -7,15 +7,12 @@
 
 namespace Lucky
 {
-	OrthographicCameraController::OrthographicCameraController(const CameraSettings& settings)
+	OrthographicCameraController::OrthographicCameraController(const Camera::Settings& settings)
 	:	m_Settings(settings),
-		m_ZoomLevel(settings.ZoomLevel),
-		m_Bounds({ -m_Settings.AspectRatio * m_ZoomLevel, m_Settings.AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel }),
-		m_Camera(m_Bounds.Left, m_Bounds.Right, m_Bounds.Top, m_Bounds.Bottom),
-		m_Position(settings.Position),
-		m_Rotation(settings.Rotation)
+		m_Bounds({ -m_Settings.AspectRatio * m_Settings.ZoomLevel, m_Settings.AspectRatio * m_Settings.ZoomLevel, -m_Settings.ZoomLevel, m_Settings.ZoomLevel }),
+		m_Camera(m_Bounds.Left, m_Bounds.Right, m_Bounds.Top, m_Bounds.Bottom)
 	{
-		LK_CORE_ASSERT(settings.AspectRatio != 0, "Aspect ratio is not defined!")
+		LK_CORE_ASSERT(m_Settings.AspectRatio != 0, "Aspect ratio is not defined!")
 	}
 
 	void OrthographicCameraController::OnUpdate(Timestep ts)
@@ -27,20 +24,20 @@ namespace Lucky
 		if(Input::IsKeyPressed(Key::Q))
 #endif
 		{
-			m_Position.x -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
-			m_Position.y -= sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.x -= cos(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.y -= sin(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 		else
 		if(Input::IsKeyPressed(Key::D))
 		{
-			m_Position.x += cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
-			m_Position.y += sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.x += cos(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.y += sin(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 
 		if(Input::IsKeyPressed(Key::S))
 		{
-			m_Position.x -= -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
-			m_Position.y -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.x -= -sin(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.y -= cos(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 		else 
 #ifndef __EMSCRIPTEN__
@@ -49,39 +46,39 @@ namespace Lucky
 		if(Input::IsKeyPressed(Key::Z))
 #endif
 		{
-			m_Position.x += -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
-			m_Position.y += cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.x += -sin(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.y += cos(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 
 		if(m_Settings.EnableRotation)
 		{
 			if(Input::IsKeyPressed(Key::E))
-				m_Rotation -= m_Settings.RotationSpeed * ts;
+				m_Settings.Rotation -= m_Settings.RotationSpeed * ts;
 			else
 #ifndef __EMSCRIPTEN__
 			if(Input::IsKeyPressed(Key::Q))
 #else
 			if(Input::IsKeyPressed(Key::A))
 #endif
-				m_Rotation += m_Settings.RotationSpeed * ts;
+				m_Settings.Rotation += m_Settings.RotationSpeed * ts;
 
-			if(m_Rotation > 180.0f)
-				m_Rotation -= 360.0f;
-			else if(m_Rotation <= -180.0f)
-				m_Rotation += 360.0f;
+			if(m_Settings.Rotation > 180.0f)
+				m_Settings.Rotation -= 360.0f;
+			else if(m_Settings.Rotation <= -180.0f)
+				m_Settings.Rotation += 360.0f;
 
-			m_Camera.SetRotation(m_Rotation);
+			m_Camera.SetRotation(m_Settings.Rotation);
 		}
 
 		if(Input::IsKeyPressed(Key::Space))
 		{
-			m_Position = m_Settings.Position;
-			m_Rotation = m_Settings.Rotation;
-			m_ZoomLevel = m_Settings.ZoomLevel;
+			m_Settings.Position = glm::vec3(0.0f);
+			m_Settings.Rotation = 0.0f;
+			m_Settings.ZoomLevel = 1.0f;
 			CalculateView();
 		}
 
-		m_Camera.SetPosition(m_Position);
+		m_Camera.SetPosition(m_Settings.Position);
 	}
 
 	void OrthographicCameraController::OnEvent(Event &e)
@@ -96,9 +93,9 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 		ImGui::Begin("Orthographic Camera");
-		ImGui::Text("Position: %.1f, %.1f", m_Position.x, m_Position.y);
-		ImGui::Text("Zoom: %.1f", m_ZoomLevel);
-		ImGui::Text("Rotation: %.1f", m_Rotation);
+		ImGui::Text("Position: %.1f, %.1f", m_Settings.Position.x, m_Settings.Position.y);
+		ImGui::Text("Zoom: %.1f", m_Settings.ZoomLevel);
+		ImGui::Text("Rotation: %.1f", m_Settings.Rotation);
 		ImGui::End();
 	}
 
@@ -112,8 +109,8 @@ namespace Lucky
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 	{
 		LK_PROFILE_FUNCTION();
-		m_ZoomLevel -= e.GetYOffset() * m_Settings.ZoomSpeed;
-		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+		m_Settings.ZoomLevel -= e.GetYOffset() * m_Settings.ZoomSpeed;
+		m_Settings.ZoomLevel = std::max(m_Settings.ZoomLevel, 0.25f);
 		CalculateView();
 		return false;
 	}
@@ -127,7 +124,7 @@ namespace Lucky
 
 	void OrthographicCameraController::CalculateView()
 	{
-		m_Bounds = { -m_Settings.AspectRatio * m_ZoomLevel, m_Settings.AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel };
+		m_Bounds = { -m_Settings.AspectRatio * m_Settings.ZoomLevel, m_Settings.AspectRatio * m_Settings.ZoomLevel, -m_Settings.ZoomLevel, m_Settings.ZoomLevel };
 		m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Top, m_Bounds.Bottom);
 	}
 } // namespace Lucky

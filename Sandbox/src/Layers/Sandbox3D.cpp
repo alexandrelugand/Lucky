@@ -6,7 +6,7 @@ Sandbox3D::Sandbox3D()
 {
 	auto& window = Lucky::Application::Get().GetWindow();
 
-	Lucky::CameraSettings settings;
+	Lucky::Camera::Settings settings;
 	settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
 	settings.EnableRotation = true;
 	settings.Position = { 0.0f, 0.0f, 0.0f };
@@ -15,9 +15,9 @@ Sandbox3D::Sandbox3D()
 	settings.ZoomSpeed = 0.25f;
 	settings.ZoomLevel = 2.0f;
 
-	settings.Fov = 60.0f;
-	settings.NearClip = 0.1f;
-	settings.FarClip = 10.0f;
+	settings.PerspectiveFov = 60.0f;
+	settings.PerspectiveNearClip = 0.1f;
+	settings.PerspectiveFarClip = 10.0f;
 
 	m_CameraController = Lucky::CameraController::Create(Lucky::CameraType::Perspective, settings);
 }

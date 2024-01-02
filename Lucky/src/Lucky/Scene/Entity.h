@@ -16,7 +16,9 @@ namespace Lucky
 		T& AddComponent(Args&&... args)
 		{
 			LK_CORE_ASSERT(!HasComponent<T>(), "Entity already has component");
-			return m_Scene->m_Registry.emplace<T>(m_Handle, std::forward<Args>(args)...);
+			T& component = m_Scene->m_Registry.emplace<T>(m_Handle, std::forward<Args>(args)...);
+			m_Scene->OnComponentAdded(*this, component);
+			return component;
 		}
 
 		template<typename... Args>
@@ -39,6 +41,11 @@ namespace Lucky
 		}
 
 		operator bool() const { return m_Handle != entt::null; }
+		operator entt::entity() const { return m_Handle; }
+		operator uint32_t() const { return (uint32_t)m_Handle; }
+
+		bool operator ==(const Entity& other) const { return m_Handle == other.m_Handle && m_Scene == other.m_Scene; }
+		bool operator !=(const Entity& other) const { return !(*this == other); }
 
 	private:
 		entt::entity m_Handle = entt::null;

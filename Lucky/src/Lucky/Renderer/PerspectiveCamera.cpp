@@ -1,13 +1,11 @@
 #include "LuckyPch.h"
 #include "PerspectiveCamera.h"
 
-#include "Lucky/Core/CameraController.h"
-
 namespace Lucky
 {
-	PerspectiveCamera::PerspectiveCamera(const CameraSettings& settings)
+	PerspectiveCamera::PerspectiveCamera(const Camera::Settings& settings)
 	{
-		SetProjection(settings.Fov, settings.AspectRatio, settings.NearClip, settings.FarClip);
+		SetProjection(settings.PerspectiveFov, settings.AspectRatio, settings.PerspectiveNearClip, settings.PerspectiveFarClip);
 	}
 
 	void PerspectiveCamera::SetProjection(float fov, float aspectRatio, float zNear, float zFar)

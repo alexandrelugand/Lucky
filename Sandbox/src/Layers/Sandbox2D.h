@@ -26,7 +26,7 @@ private:
 	Lucky::Ref<Lucky::Texture2D> m_NumberSheet;
 	Lucky::Ref<Lucky::Texture2D> m_EmptySheet;
 	Lucky::Ref<Lucky::SubTexture2D> m_EmptySprite;
-	Lucky::ParticleProps m_Particle;
+	Lucky::ParticleProps m_Particle{};
 	Lucky::ParticleSystem m_ParticleSystem;
 	static std::unordered_map<char, Lucky::Ref<Lucky::SubTexture2D>> s_TextureMap;
 	static std::unordered_map<uint32_t, Lucky::Ref<Lucky::SubTexture2D>> s_SpriteSheetMap;

@@ -6,13 +6,14 @@
 #include "Lucky/Core/Events/Event.h"
 #include "Lucky/Core/Events/ApplicationEvent.h"
 #include "Lucky/Core/Events/MouseEvent.h"
+#include "Lucky/Renderer/Camera.h"
 
 namespace Lucky
 {
 	class PerspectiveCameraController : public CameraController
 	{
 	public:
-		PerspectiveCameraController(const CameraSettings& settings);
+		PerspectiveCameraController(const Camera::Settings& settings);
 		virtual ~PerspectiveCameraController() = default;
 
 		void OnUpdate(Timestep ts) override;
@@ -23,18 +24,16 @@ namespace Lucky
 		const BaseCamera& GetCamera() const override { return m_Camera; }
 		const CameraBounds& GetBounds() const override { return m_Bounds; }
 
-		float GetZoomLevel() const override { return m_Position.z; }
-		void SetZoomLevel(float value) override { m_Position.z = value; }
+		float GetZoomLevel() const override { return m_Settings.Position.z; }
+		void SetZoomLevel(float value) override { m_Settings.Position.z = value; }
 		void OnResize(float width, float height) override;
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
 
-		CameraSettings m_Settings;
+		Camera::Settings m_Settings;
 		CameraBounds m_Bounds;
 		PerspectiveCamera m_Camera;
-		glm::vec3 m_Position;
-		float m_Rotation;
 	};
 } // namespace Lucky

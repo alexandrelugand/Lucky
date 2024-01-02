@@ -37,6 +37,7 @@ INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VEN
 
 SUBDIRS = $(SRCDIR)
 SUBDIRS += $(SRCDIR)/Layers
+SUBDIRS += $(SRCDIR)/Panels
 VPATH := $(SUBDIRS)
 
 SOURCES = $(shell cd $(SRCDIR) && dir /s/b *.cpp)

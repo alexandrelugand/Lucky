@@ -24,13 +24,23 @@ namespace Lucky
 	{
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent& other) = default;
-		TransformComponent(const glm::mat4& transform)
-			: Transform(transform) { }
+		TransformComponent(const glm::vec3& translation)
+			: Translation(translation) { }
 
-		glm::mat4 Transform{ 1.0f };
+		glm::vec3 Translation{ 0.0f, 0.0f, 0.0f };
+		glm::vec3 Rotation{ 0.0f, 0.0f, 0.0f };
+		glm::vec3 Scale{ 1.0f, 1.0f, 1.0f };
 
-		operator glm::mat4& () { return Transform; }
-		operator const glm::mat4& () const { return Transform; }
+		glm::mat4 GetTransform() const
+		{
+			auto rotation = glm::rotate(glm::mat4(1.0f), Rotation.x, glm::vec3{ 1.0f, 0.0f, 0.0f }) *
+				glm::rotate(glm::mat4(1.0f), Rotation.y, glm::vec3{ 0.0f, 1.0f, 0.0f }) *
+				glm::rotate(glm::mat4(1.0f), Rotation.z, glm::vec3{ 0.0f, 0.0f, 1.0f });
+
+			return glm::translate(glm::mat4(1.0f), Translation) *
+				rotation *
+				glm::scale(glm::mat4(1.0f), Scale);
+		}
 	};
 
 	struct SpriteRendererComponent
@@ -48,7 +58,9 @@ namespace Lucky
 
 	struct CameraComponent
 	{
-		CameraComponent(const CameraSettings& settings)
+		CameraComponent()
+			: Camera({}) {}
+		CameraComponent(const Camera::Settings& settings)
 			: Camera(settings) {}
 		CameraComponent(const CameraComponent& other) = default;
 

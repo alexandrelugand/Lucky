@@ -18,5 +18,5 @@ SandBox::~SandBox()
 
 Lucky::Application* CreateApplication()
 {
-    return new SandBox({"Lucky Sandbox", 1280, 720, false});
+    return new SandBox({"Lucky Sandbox", 1600, 900, false});
 }

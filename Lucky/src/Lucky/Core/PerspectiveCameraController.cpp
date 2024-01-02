@@ -7,20 +7,18 @@
 
 namespace Lucky
 {
-	PerspectiveCameraController::PerspectiveCameraController(const CameraSettings &settings)
+	PerspectiveCameraController::PerspectiveCameraController(const Camera::Settings &settings)
 	:	m_Settings(settings),
-		m_Camera(settings),
-		m_Position(settings.Position),
-		m_Rotation(settings.Rotation)
+		m_Camera(settings)
 	{
-		LK_CORE_ASSERT(settings.Fov != 0, "Fov is not defined!")
+		LK_CORE_ASSERT(m_Settings.PerspectiveFov != 0, "Fov is not defined!")
 			LK_CORE_ASSERT(settings.AspectRatio != 0, "Aspect ratio is not defined!")
-			LK_CORE_ASSERT(settings.NearClip != 0, "ZNear is not defined!")
-			LK_CORE_ASSERT(settings.FarClip != 0, "ZFar is not defined!")
+			LK_CORE_ASSERT(settings.PerspectiveNearClip != 0, "ZNear is not defined!")
+			LK_CORE_ASSERT(settings.PerspectiveFarClip != 0, "ZFar is not defined!")
 
-		m_Position.z = m_Settings.ZoomLevel;
+		m_Settings.Position.z = m_Settings.ZoomLevel;
 
-		float frustumHeight = 2.0f * abs(m_Position.z) * tan(m_Settings.Fov * 0.5f * (glm::pi<float>() / 180.0f));
+		float frustumHeight = 2.0f * abs(m_Settings.Position.z) * tan(m_Settings.PerspectiveFov * 0.5f * (glm::pi<float>() / 180.0f));
 		float frustumWidth = frustumHeight * m_Settings.AspectRatio;
 		m_Bounds = { 0.0f, frustumWidth, 0.0f, frustumHeight };
 	}
@@ -34,20 +32,20 @@ namespace Lucky
 		if(Input::IsKeyPressed(LK_KEY_Q))
 #endif
 		{
-			m_Position.x -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
-			m_Position.y -= sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.x -= cos(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.y -= sin(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 		else
 		if(Input::IsKeyPressed(LK_KEY_D))
 		{
-			m_Position.x += cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
-			m_Position.y += sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.x += cos(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.y += sin(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 
 		if(Input::IsKeyPressed(LK_KEY_S))
 		{
-			m_Position.x -= -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
-			m_Position.y -= cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.x -= -sin(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.y -= cos(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 		else 
 #ifndef __EMSCRIPTEN__
@@ -56,38 +54,38 @@ namespace Lucky
 		if(Input::IsKeyPressed(LK_KEY_Z))
 #endif
 		{
-			m_Position.x += -sin(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
-			m_Position.y += cos(glm::radians(m_Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.x += -sin(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
+			m_Settings.Position.y += cos(glm::radians(m_Settings.Rotation)) *  m_Settings.TranslationSpeed * ts;
 		}	
 
 		if(m_Settings.EnableRotation)
 		{
 			if(Input::IsKeyPressed(LK_KEY_E))
-				m_Rotation -= m_Settings.RotationSpeed * ts;
+				m_Settings.Rotation -= m_Settings.RotationSpeed * ts;
 			else
 #ifndef __EMSCRIPTEN__
 			if(Input::IsKeyPressed(LK_KEY_Q))
 #else
 			if(Input::IsKeyPressed(LK_KEY_A))
 #endif
-				m_Rotation += m_Settings.RotationSpeed * ts;
+				m_Settings.Rotation += m_Settings.RotationSpeed * ts;
 
-			if(m_Rotation > 180.0f)
-				m_Rotation -= 360.0f;
-			else if(m_Rotation <= -180.0f)
-				m_Rotation += 360.0f;
+			if(m_Settings.Rotation > 180.0f)
+				m_Settings.Rotation -= 360.0f;
+			else if(m_Settings.Rotation <= -180.0f)
+				m_Settings.Rotation += 360.0f;
 
-			m_Camera.SetRotation(m_Rotation);
+			m_Camera.SetRotation(m_Settings.Rotation);
 		}
 
 		if(Input::IsKeyPressed(LK_KEY_SPACE))
 		{
-			m_Position = m_Settings.Position;
-			m_Rotation = m_Settings.Rotation;
-			m_Position.z = m_Settings.ZoomLevel;
+			m_Settings.Position = m_Settings.Position;
+			m_Settings.Rotation = m_Settings.Rotation;
+			m_Settings.Position.z = m_Settings.ZoomLevel;
 		}
 
-		m_Camera.SetPosition(m_Position);
+		m_Camera.SetPosition(m_Settings.Position);
 	}
 
 	void PerspectiveCameraController::OnEvent(Event &e)
@@ -102,22 +100,22 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 		ImGui::Begin("Perspective Camera");
-		ImGui::Text("Position: %.1f, %.1f", m_Position.x, m_Position.y);
-		ImGui::Text("Zoom: %.1f", m_Position.z);
-		ImGui::Text("Rotation: %.1f", m_Rotation);
+		ImGui::Text("Position: %.1f, %.1f", m_Settings.Position.x, m_Settings.Position.y);
+		ImGui::Text("Zoom: %.1f", m_Settings.Position.z);
+		ImGui::Text("Rotation: %.1f", m_Settings.Rotation);
 		ImGui::End();
 	}
 
 	void PerspectiveCameraController::OnResize(float width, float height)
 	{
-		m_Camera.SetProjection(m_Settings.Fov, width / height, m_Settings.NearClip, m_Settings.FarClip);
+		m_Camera.SetProjection(m_Settings.PerspectiveFov, width / height, m_Settings.PerspectiveNearClip, m_Settings.PerspectiveFarClip);
 	}
 
 	bool PerspectiveCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 	{
 		LK_PROFILE_FUNCTION();
-		m_Position.z -= e.GetYOffset() * m_Settings.ZoomSpeed;
-		m_Position.z = std::max(m_Position.z, 0.2f);
+		m_Settings.Position.z -= e.GetYOffset() * m_Settings.ZoomSpeed;
+		m_Settings.Position.z = std::max(m_Settings.Position.z, 0.2f);
 		return false;
 	}
 

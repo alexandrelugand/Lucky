@@ -23,6 +23,8 @@ namespace Lucky
         void End();
 
     private:
+		void SetDartThemeColors();
+
 		bool m_BlockEvents = false;
     };
 } // namespace Lucky
