@@ -39,7 +39,6 @@ project "Lucky"
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",
 		"%{includeDir.ImGui}/backends",
-		-- "%{includeDir.ImGuiFileDialog}",
 		"%{includeDir.GLM}",
 		"%{includeDir.stb}",
 		"%{includeDir.entt}",
@@ -56,7 +55,6 @@ project "Lucky"
 		"opengl32",
 		"GLAD",
 		"ImGui",
-		-- "ImGuiFileDialog",
 		"yaml-cpp"
 	}
 
@@ -73,12 +71,19 @@ project "Lucky"
 	-- G++
 	filter "action:gmake2"
 		buildoptions { "-Wall" }
-		links { "glfw3" }
+		links 
+		{
+			"glfw3"
+		}
 		-- Using ccache to accelerate compilation time (not mandatory)
 		-- makesettings [[CXX = ccache g++]]
 
 	filter { "action:gmake2", "configurations:Release"}
 		buildoptions { "-O3" }
+		links 
+		{
+			"comdlg32"
+		}
 
 	-- VS 2022
 	filter "action:vs2022"

@@ -26,10 +26,21 @@ namespace Lucky
 	{
 		ImGui::Begin("Scene Hierarchy");
 
+#ifdef COMPILER_MSVC
+#pragma warning( push, 0)
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 		m_Context->m_Registry.each([&](entt::entity entity)
 		{
 			DrawEntityNode(Entity(entity, m_Context.get()));
 		});
+#ifdef COMPILER_MSVC
+#pragma warning(pop)
+#else
+#pragma GCC diagnostic pop
+#endif		
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			m_SelectedEntity = {};

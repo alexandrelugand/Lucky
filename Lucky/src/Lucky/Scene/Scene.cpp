@@ -32,16 +32,33 @@ namespace Lucky
 
 	void Scene::Clean()
 	{
+#ifdef COMPILER_MSVC
+#pragma warning( push, 0)
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 		m_Registry.each([&](auto entity)
 		{
 			m_Registry.destroy(entity);
 		});
+#ifdef COMPILER_MSVC
+#pragma warning(pop)
+#else
+#pragma GCC diagnostic pop
+#endif
 	}
 
 	void Scene::OnUpdate(Timestep ts)
 	{
 		// Update Native scripts
 		{
+#ifdef COMPILER_MSVC
+#pragma warning( push, 0)
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 			m_Registry.view<NativeScriptComponent>().each([&](auto entity, NativeScriptComponent& nsc)
 			{
 				if (!nsc.Instance)
@@ -52,6 +69,11 @@ namespace Lucky
 
 				nsc.Instance->OnUpdate(ts);
 			});
+#ifdef COMPILER_MSVC
+#pragma warning(pop)
+#else
+#pragma GCC diagnostic pop
+#endif
 		}
 
 		Camera* mainCamera = nullptr;

@@ -184,6 +184,13 @@ namespace Lucky
 		out << YAML::BeginMap;
 		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
+
+#ifdef COMPILER_MSVC
+#pragma warning( push, 0)
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 		m_Scene->m_Registry.each([&](auto entityId)
 		{
 			Entity entity{ entityId, m_Scene.get() };
@@ -192,6 +199,12 @@ namespace Lucky
 
 			SerializeEntity(out, entity);
 		});
+#ifdef COMPILER_MSVC
+#pragma warning(pop)
+#else
+#pragma GCC diagnostic pop
+#endif
+		
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 

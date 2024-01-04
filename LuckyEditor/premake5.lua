@@ -55,7 +55,15 @@ project "LuckyEditor"
 	-- G++
 	filter "action:gmake2"
 		buildoptions { "-Wall" }
-		links { "glfw3" }
+		links 
+		{
+			"glfw3",
+			"opengl32",
+			"GLAD",
+			"ImGui",
+			"yaml-cpp",
+			"comdlg32"
+		}
 		-- Using ccache to accelerate compilation time (not mandatory)
 		-- makesettings [[CXX = ccache g++]]
 	

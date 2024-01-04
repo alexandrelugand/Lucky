@@ -237,17 +237,17 @@ namespace Lucky
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Load layout", "Alt+L", false, true))
+				if (ImGui::MenuItem("Load layout", "Alt+L"))
 					m_LoadLayout = true;
 
-				if (ImGui::MenuItem("Save layout", "Alt+S", false, true))
+				if (ImGui::MenuItem("Save layout", "Alt+S"))
 					m_SaveLayout = true;
 
 #ifndef __EMSCRIPTEN__
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Exit", NULL, false, true))
+				if (ImGui::MenuItem("Exit", "Esc"))
 					Application::Get().Close();
 #endif
 				ImGui::EndMenu();
