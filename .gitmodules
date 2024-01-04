@@ -4,3 +4,6 @@
 [submodule "Vendors/GLM"]
 	path = Vendors/GLM
 	url = https://github.com/g-truc/glm.git
+[submodule "Vendors/yaml-cpp"]
+	path = Vendors/yaml-cpp
+	url = https://github.com/alexandrelugand/yaml-cpp.git
