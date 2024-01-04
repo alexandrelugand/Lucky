@@ -34,7 +34,7 @@ EXE = $(OUTDIR)/$(PRJNAME).html
 LIB = $(OUTDIR)/$(PRJNAME).a
 
 INCLUDE_FLAGS = -I./src
-INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/ImGui/backends -I$(VENDORS)/GLM -I$(VENDORS)/stb -I$(VENDORS)/entt/include
+INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/ImGui/backends -I$(VENDORS)/GLM -I$(VENDORS)/stb -I$(VENDORS)/entt/include -I$(VENDORS)/yaml-cpp/include
 
 SUBDIRS = $(SRCDIR)
 SUBDIRS += $(SRCDIR)/Application
@@ -42,8 +42,9 @@ SUBDIRS += $(SRCDIR)/Core
 SUBDIRS += $(SRCDIR)/Core/ImGui
 SUBDIRS += $(SRCDIR)/Renderer
 SUBDIRS += $(SRCDIR)/Scene
+SUBDIRS += $(SRCDIR)/Platforms
+SUBDIRS += $(SRCDIR)/Platforms/Browser
 SUBDIRS += $(SRCDIR)/Platforms/OpenGL
-SUBDIRS += $(SRCDIR)/Platforms/Windows
 SUBDIRS += $(SRCDIR)/Platforms/Windows
 SUBDIRS += $(VENDORS)/stb/stb
 VPATH := $(SUBDIRS)

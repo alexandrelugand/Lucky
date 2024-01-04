@@ -23,6 +23,7 @@ includeDir["ImGui"]="../Vendors/ImGui"
 includeDir["GLM"]="../Vendors/GLM"
 includeDir["stb"]="../Vendors/stb"
 includeDir["entt"]="../Vendors/entt/include"
+includeDir["yaml"]="../Vendors/yaml-cpp/include"
 
 libDir = {}
 libDir["GLFW"]= iif(_ACTION == "gmake2", "../Vendors/GLFW/lib-static-ucrt", "../Vendors/GLFW/lib-vc2022")
@@ -31,6 +32,7 @@ libDir["GLFW"]= iif(_ACTION == "gmake2", "../Vendors/GLFW/lib-static-ucrt", "../
 group "Dependencies"
 	include "Vendors/GLAD/premake5.lua"
 	include "Vendors/ImGui/premake5.lua"
+	include "Vendors/yaml-cpp/premake5.lua"
 
 group ""
 	include "Lucky/premake5.lua"

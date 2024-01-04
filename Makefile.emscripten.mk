@@ -6,12 +6,14 @@ endif
 
 ifeq ($(config),debug)
   ImGui_config = Debug
+  Yaml_config = Debug
   Lucky_config = Debug
   LuckyEditor_config = Debug
   SandBox_config = Debug
 
 else ifeq ($(config),release)
   ImGui_config = Release
+  Yaml_config = Release
   Lucky_config = Release
   LuckyEditor_config = Release
   SandBox_config = Release
@@ -32,19 +34,25 @@ ifneq (,$(ImGui_config))
 	@${MAKE} --no-print-directory -C Vendors/ImGui -f Makefile.emscripten.mk CONFIG=$(ImGui_config)
 endif
 
-Lucky:
+Yaml: ImGui
+ifneq (,$(Yaml_config))
+	@echo "==== Building Yaml ($(Yaml_config)) ===="
+	@${MAKE} --no-print-directory -C Vendors/yaml-cpp -f Makefile.emscripten.mk CONFIG=$(Yaml_config)
+endif
+
+Lucky: ImGui Yaml
 ifneq (,$(Lucky_config))
 	@echo "==== Building Lucky ($(Lucky_config)) ===="
 	@${MAKE} --no-print-directory -C Lucky -f Makefile.emscripten.mk CONFIG=$(Lucky_config)
 endif
 
-LuckyEditor: ImGui Lucky
+LuckyEditor: Lucky
 ifneq (,$(LuckyEditor_config))
 	@echo "==== Building Lucky Editor ($(LuckyEditor_config)) ===="
 	@${MAKE} --no-print-directory -C LuckyEditor -f Makefile.emscripten.mk CONFIG=$(LuckyEditor_config)
 endif
 
-SandBox: ImGui Lucky
+SandBox: Lucky
 ifneq (,$(SandBox_config))
 	@echo "==== Building SandBox ($(SandBox_config)) ===="
 	@${MAKE} --no-print-directory -C SandBox -f Makefile.emscripten.mk CONFIG=$(SandBox_config)

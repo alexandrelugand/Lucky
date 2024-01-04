@@ -9,15 +9,16 @@ int main(int argc, char** argv)
 		Lucky::Log::Init();
 
 #ifdef __EMSCRIPTEN__    
-		MAIN_THREAD_EM_ASM(
-			FS.mkdir('/data');
-			FS.mount(IDBFS, {}, '/data');
+		MAIN_THREAD_EM_ASM({
+			let db = UTF8ToString($0);
+			FS.mkdir(db);
+			FS.mount(IDBFS, {}, db);
 
 			FS.syncfs(true, function (err) {
 				if(err != undefined)
 					console.log("Mount IDBFS database failed. " + err);
 			})
-		);
+		}, ASSETS);
 #endif
 
 		LK_PROFILE_BEGIN_SESSION("Startup", "Startup.json");

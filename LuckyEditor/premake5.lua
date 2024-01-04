@@ -5,9 +5,9 @@ project "LuckyEditor"
 	architecture "x64"
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
-	staticruntime "on"
+	staticruntime "off"
 
-	dependson { "GLAD", "ImGui", "Lucky" }
+	dependson { "GLAD", "ImGui", "yaml-cpp", "Lucky" }
 
 	files
 	{ 
@@ -45,10 +45,7 @@ project "LuckyEditor"
 
 	links
 	{
-		"Lucky",
-		"opengl32",
-		"GLAD",
-		"ImGui"
+		"Lucky"
 	}
 
 	-- Precompile header

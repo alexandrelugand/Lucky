@@ -65,7 +65,7 @@ namespace Lucky
 		CameraComponent(const CameraComponent& other) = default;
 
 		SceneCamera Camera;
-		bool Primary = false;
+		bool Primary = true;
 		bool FixedAspectRatio = false;
 	};
 

@@ -92,7 +92,7 @@ namespace Lucky
             {
             case GLFW_PRESS:
                 {
-                    KeyPressedEvent event(key, 0);
+                    KeyPressedEvent event((KeyCode)key, 0);
                     data.EventCallback(event);
                     if(key == GLFW_KEY_ESCAPE)
                     {
@@ -103,13 +103,13 @@ namespace Lucky
                 }
             case GLFW_RELEASE:
                 {
-                    KeyReleasedEvent event(key);
+                    KeyReleasedEvent event((KeyCode)key);
                     data.EventCallback(event);
                     break;
                 }
             case GLFW_REPEAT:
                 {
-                    KeyPressedEvent event(key, 1);
+                    KeyPressedEvent event((KeyCode)key, 1);
                     data.EventCallback(event);
                     break;
                 }
@@ -119,7 +119,7 @@ namespace Lucky
         glfwSetCharCallback(m_Window, [](GLFWwindow *window, unsigned int character)
         {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-            KeyTypedEvent event(character);
+            KeyTypedEvent event((KeyCode)character);
             data.EventCallback(event);
         });
 

@@ -41,7 +41,7 @@ VPATH := $(SUBDIRS)
 
 SOURCES = $(shell cd $(SRCDIR) && dir /s/b *.cpp)
 OBJS    = $(patsubst %.cpp,$(OBJDIR)/%.o,$(notdir $(SOURCES)))
-LIBS = $(OUTDIR)/Lucky.a $(OUTDIR)/ImGui.a
+LIBS = $(OUTDIR)/Lucky.a $(OUTDIR)/ImGui.a $(OUTDIR)/Yaml.a
 
 CPPFLAGS =
 LDFLAGS =

@@ -30,6 +30,14 @@ namespace Lucky
 		m_Registry.destroy(entity);
 	}
 
+	void Scene::Clean()
+	{
+		m_Registry.each([&](auto entity)
+		{
+			m_Registry.destroy(entity);
+		});
+	}
+
 	void Scene::OnUpdate(Timestep ts)
 	{
 		// Update Native scripts

@@ -51,3 +51,6 @@ Makefile
 *.sln
 *.vcxproj
 *.vcxproj.*
+
+# LuckyEditor
+LuckyEditor/assets/scenes

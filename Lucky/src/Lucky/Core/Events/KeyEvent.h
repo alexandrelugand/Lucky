@@ -1,29 +1,30 @@
 #pragma once
 
 #include "Event.h"
+#include "Lucky/Application/KeyCodes.h"
 
 namespace Lucky
 {
     class KeyEvent : public Event
     {
     public:
-	    int GetKeyCode() const { return m_KeyCode; }
+		KeyCode GetKeyCode() const { return m_KeyCode; }
 
         EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 
     protected:
-        KeyEvent(int keyCode)
+        KeyEvent(KeyCode keyCode)
             : m_KeyCode(keyCode)
         {
         }
 
-        int m_KeyCode;
+		KeyCode m_KeyCode;
     };
 
     class KeyPressedEvent : public KeyEvent
     {
     public:
-        KeyPressedEvent(int keyCode, int repeatCount) 
+        KeyPressedEvent(KeyCode keyCode, int repeatCount)
             : KeyEvent(keyCode), m_RepeatCount(repeatCount)
         {
         }
@@ -46,7 +47,7 @@ namespace Lucky
     class KeyReleasedEvent : public KeyEvent
     {
     public:
-        KeyReleasedEvent(int keyCode)
+        KeyReleasedEvent(KeyCode keyCode)
             : KeyEvent(keyCode)
         {
         }
@@ -64,7 +65,7 @@ namespace Lucky
     class KeyTypedEvent : public KeyEvent
     {
     public:
-        KeyTypedEvent(int keyCode) 
+        KeyTypedEvent(KeyCode keyCode)
             : KeyEvent(keyCode)
         {
         }

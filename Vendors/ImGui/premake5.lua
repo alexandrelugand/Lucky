@@ -2,7 +2,7 @@ project "ImGui"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 	architecture "x64"
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)

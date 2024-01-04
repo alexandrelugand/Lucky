@@ -44,6 +44,7 @@
 #include "Lucky/Scene/Scene.h"
 #include "Lucky/Scene/Entity.h"
 #include "Lucky/Scene/Components.h"
+#include "Lucky/Scene/SceneSerializer.h"
 // ---------------------------------------
 
 // --- Debug -----------------------------

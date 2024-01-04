@@ -58,7 +58,7 @@ namespace Lucky
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 		ImGui_ImplOpenGL3_Init("#version 300 es");
-		io.IniFilename = "/data/imgui.ini";
+		io.IniFilename = STRCAT(ASSETS, "/layout/imgui.ini").c_str();
 #else
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);

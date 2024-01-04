@@ -147,7 +147,7 @@ namespace Lucky
 			size_t eol = source.find_first_of("\r\n", pos);
 			LK_CORE_ASSERT(eol != std::string::npos, "Syntax error");
 			size_t begin = pos + typeTokenLength + 1;
-			std::string type = trim(source.substr(begin, eol - begin));
+			std::string type = Trim(source.substr(begin, eol - begin));
 			GLenum shaderType = ShaderTypeFromString(type);
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
 			pos = source.find(typeToken, nextLinePos);

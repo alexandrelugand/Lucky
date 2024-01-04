@@ -5,9 +5,10 @@ project "Lucky"
 	architecture "x64"
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
-	staticruntime "on"
+	staticruntime "off"
 
-	dependson { "GLAD", "ImGui" }
+	-- dependson { "GLAD", "ImGui", "ImGuiFileDialog", "yaml-cpp" }
+	dependson { "GLAD", "ImGui", "yaml-cpp" }
 
 	files
 	{ 
@@ -38,9 +39,11 @@ project "Lucky"
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",
 		"%{includeDir.ImGui}/backends",
+		-- "%{includeDir.ImGuiFileDialog}",
 		"%{includeDir.GLM}",
 		"%{includeDir.stb}",
-		"%{includeDir.entt}"
+		"%{includeDir.entt}",
+		"%{includeDir.yaml}"
 	}
 
 	libdirs 
@@ -52,12 +55,15 @@ project "Lucky"
 	{
 		"opengl32",
 		"GLAD",
-		"ImGui"
+		"ImGui",
+		-- "ImGuiFileDialog",
+		"yaml-cpp"
 	}
 
 	defines
 	{
-		"GLFW_INCLUDE_NONE"
+		"GLFW_INCLUDE_NONE",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	-- Precompile header

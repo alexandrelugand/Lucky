@@ -1,6 +1,7 @@
 ﻿#include "LuckyEditorPch.h"
 #include "EditorLayer.h"
 
+#include "Lucky/Platforms/Platform.h"
 
 namespace Lucky
 {
@@ -16,6 +17,12 @@ namespace Lucky
 
 		auto& window = Application::Get().GetWindow();
 
+		FramebufferSpecification fbSpec;
+		fbSpec.Width = window.GetWidth();
+		fbSpec.Height = window.GetHeight();
+		m_Framebuffer = Framebuffer::Create(fbSpec);
+
+#if 1
 		Camera::Settings settings;
 		settings.ProjectionType = Camera::ProjectionType::Orthographic;
 		settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
@@ -27,11 +34,6 @@ namespace Lucky
 		settings.OrthographicSize = 10.0f;
 		settings.OrthographicNearClip = -100.0f;
 		settings.OrthographicFarClip = 100.0f;
-
-		FramebufferSpecification fbSpec;
-		fbSpec.Width = window.GetWidth();
-		fbSpec.Height = window.GetHeight();
-		m_Framebuffer = Framebuffer::Create(fbSpec);
 
 		class CameraController : public ScriptableEntity
 		{
@@ -128,12 +130,12 @@ namespace Lucky
 			}
 		};
 
-		m_CameraAEntity = m_ActiveScene->CreateEntity("Camera A");
-		m_CameraAEntity.AddComponent<CameraComponent>(settings).Primary = true;
-		m_CameraAEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+		auto cameraA = m_ActiveScene->CreateEntity("Camera A");
+		cameraA.AddComponent<CameraComponent>(settings);
+		cameraA.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
-		m_CameraBEntity = m_ActiveScene->CreateEntity("Camera B");
-		m_CameraBEntity.AddComponent<CameraComponent>(settings);
+		auto cameraB = m_ActiveScene->CreateEntity("Camera B");
+		cameraB.AddComponent<CameraComponent>(settings).Primary = false;
 
 		auto greenSquare = m_ActiveScene->CreateEntity("Green Square");
 		greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
@@ -142,9 +144,9 @@ namespace Lucky
 		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
 		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 		redSquare.GetComponent<TransformComponent>().Translation = glm::vec3{ 2.0f, 0.0f, -10.0f };
-
+#endif
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-
+		
 #ifdef __EMSCRIPTEN__ 
 		LK_TRACE("Load default layout");
 		ImGui::LoadIniSettingsFromDisk("assets/layout/imgui.ini");
@@ -182,8 +184,7 @@ namespace Lucky
 
 	void EditorLayer::OnImGuiRender()
 	{
-		static uint32_t loadLayout = 0;
-		bool save = false, load = false;
+		static uint32_t tryLoadLayout = 0;
 		static ImGuiDockNodeFlags dockSpace_flags = ImGuiDockNodeFlags_None;
 
 		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
@@ -224,11 +225,23 @@ namespace Lucky
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Load layout", NULL, false, true))
-					load = true;
+				// Don't bind shortcuts on Ctrl because we can't override Chrome shortcuts
+				if (ImGui::MenuItem("New", "Shift+N"))
+					m_NewScene = true;				
 
-				if (ImGui::MenuItem("Save layout", NULL, false, true))
-					save = true;
+				if (ImGui::MenuItem("Open...", "Shift+O"))
+					m_OpenScene = true;
+
+				if (ImGui::MenuItem("Save...", "Shift+S"))
+					m_SaveScene = true;
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Load layout", "Alt+L", false, true))
+					m_LoadLayout = true;
+
+				if (ImGui::MenuItem("Save layout", "Alt+S", false, true))
+					m_SaveLayout = true;
 
 #ifndef __EMSCRIPTEN__
 
@@ -245,23 +258,21 @@ namespace Lucky
 
 		m_SceneHierarchyPanel.OnImGuiRenderer();
 
-		ImGui::Begin("Settings");
-		
-
-		if(ImGui::Checkbox("Show Camera A", &m_CameraA))
-		{
-			m_CameraAEntity.GetComponent<CameraComponent>().Primary = m_CameraA;
-			m_CameraBEntity.GetComponent<CameraComponent>().Primary = !m_CameraA;
-		}
-
-		ImGui::End();
-
 		auto stats = Renderer2D::GetStats();
 		ImGui::Begin("Stats");
-		ImGui::Text("Draw calls: %d", stats.DrawCalls),
-		ImGui::Text("Quads: %d", stats.QuadCount),
-		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount()),
-		ImGui::Text("Indices: %d", stats.GetTotalIndexCount()),
+		ImGui::Text("Draw calls: %d", stats.DrawCalls);
+		ImGui::Text("Quads: %d", stats.QuadCount);
+		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
+		ImGui::Separator();
+		static bool open = false;
+		if(ImGui::Button("Show Demo"))
+			open = true;
+
+		if(open)			
+			ImGui::ShowDemoWindow(&open);
+
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -281,21 +292,132 @@ namespace Lucky
 		ImGui::End();
 		ImGui::PopStyleVar(2);
 		
-		if(loadLayout < 10)
+		if(tryLoadLayout < 10)
 		{
 			Application::Get().GetImGuiLayer()->Load();
-			loadLayout++;
+			tryLoadLayout++;
 		}
 
-		if(save)
-			Application::Get().GetImGuiLayer()->Save();
+		if(m_NewScene)
+			NewScene();
 
-		if(load)
-			Application::Get().GetImGuiLayer()->Load();
+		if(m_OpenScene)
+			OpenScene();
+
+		if(m_SaveScene)
+			SaveScene();
+
+		if (m_LoadLayout)
+			LoadLayout();
+
+		if (m_SaveLayout)
+			SaveLayout();
 	}
 
 	void EditorLayer::OnEvent(Event &event)
 	{
 		m_ActiveScene->OnEvent(event);
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+	}
+
+	void EditorLayer::NewScene()
+	{
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_NewScene = false;
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filePath = Platform::OpenFile("Lucky Scene (*.lucky)\0*.lucky\0All files\0*.*\0\0", STRCAT(ASSETS, "/scenes"));
+		if (!filePath.empty())
+		{
+			if (filePath != "##Cancel")
+			{
+				m_ActiveScene = CreateRef<Scene>();
+				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+				m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+				SceneSerializer serializer(m_ActiveScene);
+				serializer.Deserialize(filePath);
+			}
+			m_OpenScene = false;
+		}
+	}
+
+	void EditorLayer::SaveScene()
+	{
+		std::string filePath = Platform::SaveFile("Lucky Scene (*.lucky)\0*.lucky;\0\0", STRCAT(ASSETS, "/scenes"));
+		if (!filePath.empty())
+		{
+			if (filePath != "##Cancel")
+			{
+				SceneSerializer serializer(m_ActiveScene);
+				serializer.Serialize(filePath);
+			}
+			m_SaveScene = false;
+		}
+	}
+
+	void EditorLayer::LoadLayout()
+	{
+		Application::Get().GetImGuiLayer()->Load();
+		m_LoadLayout = false;
+	}
+
+	void EditorLayer::SaveLayout()
+	{
+		Application::Get().GetImGuiLayer()->Save();
+		m_SaveLayout = false;
+	}
+
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		if (e.GetRepeatCount() > 0)
+			return false;
+
+		bool alt = Input::IsKeyPressed(KeyCode::LeftAlt) || Input::IsKeyPressed(KeyCode::RightAlt);
+		bool shift = Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift);
+
+		// Shortcuts
+		switch (e.GetKeyCode())
+		{
+		case KeyCode::N:
+			{
+				if (shift)
+					m_NewScene = true;
+				break;
+			}
+
+		case KeyCode::S:
+			{
+				if (shift)
+					m_SaveScene = true;
+				if (alt)
+					m_SaveLayout = true;
+				break;
+			}
+
+		case KeyCode::O:
+			{
+				if (shift)
+					m_OpenScene = true;
+				break;
+			}
+
+		case KeyCode::L:
+			{
+				if (alt)
+					m_LoadLayout = true;
+				break;
+			}
+
+		default:
+			break;
+		}
+
+		return false;
 	}
 } // namespace Lucky

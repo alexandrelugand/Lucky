@@ -11,14 +11,13 @@ namespace Lucky
 
 	class Scene
 	{
-		friend class Entity;
-
 	public:
 		Scene();
 		~Scene();
 
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
+		void Clean();
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
@@ -30,8 +29,10 @@ namespace Lucky
 		void OnComponentAdded(Entity entity, T& component);
 
 		entt::registry m_Registry;
-		uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
+		uint32_t m_ViewportWidth = 1, m_ViewportHeight = 1;
 
+		friend class Entity;
 		friend class SceneHierarchyPanel;
+		friend class SceneSerializer;
 	};	
 }

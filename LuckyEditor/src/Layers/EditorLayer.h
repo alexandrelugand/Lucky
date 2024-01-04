@@ -17,15 +17,18 @@ namespace Lucky
 		void OnEvent(Event &event) override;
 
 	private:
+		void NewScene();
+		void OpenScene();
+		void SaveScene();
+		void LoadLayout();
+		void SaveLayout();
+		bool OnKeyPressed(KeyPressedEvent& e);
+
 		Ref<Scene> m_ActiveScene;
 		Ref<Framebuffer> m_Framebuffer;
-		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
+		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
-
-		Entity m_CameraAEntity;
-		Entity m_CameraBEntity;
-		bool m_CameraA = true;
-
+		bool m_NewScene = false, m_OpenScene = false, m_SaveScene = false, m_SaveLayout = false, m_LoadLayout = false;
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};
 } // namespace Lucky
