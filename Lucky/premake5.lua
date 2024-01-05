@@ -7,7 +7,6 @@ project "Lucky"
 	objdir ("%{wks.location}/bin-int/" .. tmpdir)
 	staticruntime "off"
 
-	-- dependson { "GLAD", "ImGui", "ImGuiFileDialog", "yaml-cpp" }
 	dependson { "GLAD", "ImGui", "yaml-cpp" }
 
 	files
@@ -17,7 +16,9 @@ project "Lucky"
 		"%{includeDir.GLM}/glm/**.hpp", 
 		"%{includeDir.GLM}/glm/**.inl",
 		"%{includeDir.stb}/**.h", 
-		"%{includeDir.stb}/**.cpp", 
+		"%{includeDir.stb}/**.cpp",
+		"%{includeDir.ImGuizmo}/*.h", 
+		"%{includeDir.ImGuizmo}/*.cpp"
 	}
 
 	vpaths 
@@ -27,7 +28,9 @@ project "Lucky"
 			"%{includeDir.GLM}/glm/**.hpp", 
 			"%{includeDir.GLM}/glm/**.inl",
 			"%{includeDir.stb}/**.h",
-			"%{includeDir.stb}/**.cpp"
+			"%{includeDir.stb}/**.cpp",
+			"%{includeDir.ImGuizmo}/*.h", 
+			"%{includeDir.ImGuizmo}/*.cpp"
 		} 
 	}
 
@@ -42,7 +45,8 @@ project "Lucky"
 		"%{includeDir.GLM}",
 		"%{includeDir.stb}",
 		"%{includeDir.entt}",
-		"%{includeDir.yaml}"
+		"%{includeDir.yaml}",
+		"%{includeDir.ImGuizmo}"
 	}
 
 	libdirs 
@@ -67,6 +71,9 @@ project "Lucky"
 	-- Precompile header
 	pchheader "LuckyPch.h"
 	pchsource "src/LuckyPch.cpp"
+
+	filter "files:../Vendors/ImGuizmo/*.cpp"
+		flags { "NoPCH" }
 
 	-- G++
 	filter "action:gmake2"

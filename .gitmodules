@@ -7,3 +7,6 @@
 [submodule "Vendors/yaml-cpp"]
 	path = Vendors/yaml-cpp
 	url = https://github.com/alexandrelugand/yaml-cpp.git
+[submodule "Vendors/ImGuizmo"]
+	path = Vendors/ImGuizmo
+	url = https://github.com/alexandrelugand/ImGuizmo.git

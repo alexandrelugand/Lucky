@@ -204,7 +204,7 @@ namespace Lucky
 #else
 #pragma GCC diagnostic pop
 #endif
-		
+
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
@@ -223,7 +223,7 @@ namespace Lucky
 		std::string current_filePath = filePath;
 		bool exportFile = false;
 		auto pos = current_filePath.find("--export=");
-		if(pos >= 0)
+		if(pos != std::string::npos)
 		{
 			exportFile = true;
 			current_filePath = current_filePath.replace(pos, 9, "");

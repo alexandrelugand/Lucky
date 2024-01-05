@@ -21,6 +21,7 @@
 #include "Lucky/Core/ImGui/ImGuiLayer.h"
 #include "Lucky/Core/CameraController.h"
 #include "Lucky/Core/ParticleSystem.h"
+#include "Lucky/Math/Math.h"
 // ---------------------------------------
 
 // --- Renderer --------------------------

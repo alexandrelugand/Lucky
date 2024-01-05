@@ -6,6 +6,7 @@ endif
 
 ifeq ($(config),debug)
   ImGui_config = Debug
+  ImGuizmo_config = Debug
   Yaml_config = Debug
   Lucky_config = Debug
   LuckyEditor_config = Debug
@@ -13,6 +14,7 @@ ifeq ($(config),debug)
 
 else ifeq ($(config),release)
   ImGui_config = Release
+  ImGuizmo_config = Release
   Yaml_config = Release
   Lucky_config = Release
   LuckyEditor_config = Release
@@ -34,13 +36,19 @@ ifneq (,$(ImGui_config))
 	@${MAKE} --no-print-directory -C Vendors/ImGui -f Makefile.emscripten.mk CONFIG=$(ImGui_config)
 endif
 
-Yaml: ImGui
+ImGuizmo:
+ifneq (,$(ImGui_config))
+	@echo "==== Building ImGuizmo ($(ImGuizmo_config)) ===="
+	@${MAKE} --no-print-directory -C Vendors/ImGuizmo -f Makefile.emscripten.mk CONFIG=$(ImGuizmo_config)
+endif
+
+Yaml: ImGui ImGuizmo
 ifneq (,$(Yaml_config))
 	@echo "==== Building Yaml ($(Yaml_config)) ===="
 	@${MAKE} --no-print-directory -C Vendors/yaml-cpp -f Makefile.emscripten.mk CONFIG=$(Yaml_config)
 endif
 
-Lucky: ImGui Yaml
+Lucky: ImGui ImGuizmo Yaml
 ifneq (,$(Lucky_config))
 	@echo "==== Building Lucky ($(Lucky_config)) ===="
 	@${MAKE} --no-print-directory -C Lucky -f Makefile.emscripten.mk CONFIG=$(Lucky_config)

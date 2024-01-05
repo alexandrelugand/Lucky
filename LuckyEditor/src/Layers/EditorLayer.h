@@ -30,5 +30,6 @@ namespace Lucky
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 		bool m_NewScene = false, m_OpenScene = false, m_SaveScene = false, m_SaveLayout = false, m_LoadLayout = false;
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		int m_GizmoType = -1;
 	};
 } // namespace Lucky

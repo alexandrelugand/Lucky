@@ -129,6 +129,18 @@ namespace Lucky
 		}
 	}
 
+	Entity Scene::GetPrimaryCamera() const
+	{
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			const auto& cameraCmp = view.get<CameraComponent>(entity);
+			if (cameraCmp.Primary)
+				return Entity{ entity, (Scene*)this };
+		}
+		return Entity{};
+	}
+
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component)
 	{

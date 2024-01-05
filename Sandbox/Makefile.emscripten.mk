@@ -33,7 +33,7 @@ EXE = $(OUTDIR)/index.html
 LIB = $(OUTDIR)/$(PRJNAME).a
 
 INCLUDE_FLAGS = -I./src -I../Lucky/src
-INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/GLM -I$(VENDORS)/stb -I$(VENDORS)/entt/include
+INCLUDE_LIB_FLAGS = -I$(VENDORS)/SDL/include -I$(VENDORS)/spdlog/include -I$(VENDORS)/ImGui -I$(VENDORS)/GLM -I$(VENDORS)/stb -I$(VENDORS)/entt/include -I$(VENDORS)/ImGuizmo
 
 SUBDIRS = $(SRCDIR)
 SUBDIRS += $(SRCDIR)/Layers
@@ -41,7 +41,7 @@ VPATH := $(SUBDIRS)
 
 SOURCES = $(shell cd $(SRCDIR) && dir /s/b *.cpp)
 OBJS    = $(patsubst %.cpp,$(OBJDIR)/%.o,$(notdir $(SOURCES)))
-LIBS = $(OUTDIR)/Lucky.a $(OUTDIR)/ImGui.a $(OUTDIR)/Yaml.a
+LIBS = $(OUTDIR)/Lucky.a $(OUTDIR)/ImGui.a $(OUTDIR)/ImGuizmo.a $(OUTDIR)/Yaml.a
 
 CPPFLAGS =
 LDFLAGS =

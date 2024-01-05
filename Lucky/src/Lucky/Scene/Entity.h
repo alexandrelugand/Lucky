@@ -9,8 +9,8 @@ namespace Lucky
 	{
 	public:
 		Entity() = default;
-		Entity(const Entity& other) = default;
 		Entity(entt::entity handle, Scene* scene);
+		Entity(const Entity& other) = default;
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)

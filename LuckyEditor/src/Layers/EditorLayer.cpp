@@ -2,6 +2,8 @@
 #include "EditorLayer.h"
 
 #include "Lucky/Platforms/Platform.h"
+#include "ImGuizmo.h"
+#include "Lucky/Math/Math.h"
 
 namespace Lucky
 {
@@ -22,7 +24,7 @@ namespace Lucky
 		fbSpec.Height = window.GetHeight();
 		m_Framebuffer = Framebuffer::Create(fbSpec);
 
-#if 1
+#if 0
 		Camera::Settings settings;
 		settings.ProjectionType = Camera::ProjectionType::Orthographic;
 		settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
@@ -46,7 +48,7 @@ namespace Lucky
 			}
 
 			void OnCreate() override
-			{				
+			{
 			}
 
 			void OnDestroy() override
@@ -90,15 +92,15 @@ namespace Lucky
 					}
 
 
-					if (Input::IsKeyPressed(KeyCode::E))
-						tc.Rotation.z -= c_Settings.RotationSpeed * ts;
-					else
+				if (Input::IsKeyPressed(KeyCode::E))
+					tc.Rotation.z -= c_Settings.RotationSpeed * ts;
+				else
 #ifndef __EMSCRIPTEN__
-						if (Input::IsKeyPressed(KeyCode::Q))
+					if (Input::IsKeyPressed(KeyCode::Q))
 #else
-						if (Input::IsKeyPressed(KeyCode::A))
+					if (Input::IsKeyPressed(KeyCode::A))
 #endif
-							tc.Rotation.z += c_Settings.RotationSpeed * ts;
+						tc.Rotation.z += c_Settings.RotationSpeed * ts;
 
 				if (Input::IsKeyPressed(KeyCode::Space))
 				{
@@ -146,7 +148,7 @@ namespace Lucky
 		redSquare.GetComponent<TransformComponent>().Translation = glm::vec3{ 2.0f, 0.0f, -10.0f };
 #endif
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-		
+
 #ifdef __EMSCRIPTEN__ 
 		LK_TRACE("Load default layout");
 		ImGui::LoadIniSettingsFromDisk("assets/layout/imgui.ini");
@@ -174,7 +176,7 @@ namespace Lucky
 		m_Framebuffer->Bind();
 
 		// Prepare scene
-		RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
 		m_ActiveScene->OnUpdate(ts);
@@ -194,7 +196,7 @@ namespace Lucky
 		ImGui::SetNextWindowPos(viewport->WorkPos);
 		ImGui::SetNextWindowSize(viewport->WorkSize);
 		ImGui::SetNextWindowViewport(viewport->ID);
-	
+
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
@@ -227,7 +229,7 @@ namespace Lucky
 			{
 				// Don't bind shortcuts on Ctrl because we can't override Chrome shortcuts
 				if (ImGui::MenuItem("New", "Shift+N"))
-					m_NewScene = true;				
+					m_NewScene = true;
 
 				if (ImGui::MenuItem("Open...", "Shift+O"))
 					m_OpenScene = true;
@@ -267,44 +269,92 @@ namespace Lucky
 
 		ImGui::Separator();
 		static bool open = false;
-		if(ImGui::Button("Show Demo"))
+		if (ImGui::Button("Show Demo"))
 			open = true;
 
-		if(open)			
+		if (open)
 			ImGui::ShowDemoWindow(&open);
 
-		ImGui::End();
+		ImGui::End(); // Stats
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = *((glm::vec2*)&viewportPanelSize);
-		
-		ImGui::Image((ImTextureID)(intptr_t)m_Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2 { 0, 1 }, ImVec2 { 1, 0 });
-		ImGui::End();
+
+		ImGui::Image((ImTextureID)(intptr_t)m_Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		// Gizmos
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity && m_GizmoType != -1)
+		{
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+
+			float windowWidth = ImGui::GetWindowWidth();
+			float windowHeight = ImGui::GetWindowHeight();
+			auto windowPos = ImGui::GetWindowPos();
+			ImGuizmo::SetRect(windowPos.x, windowPos.y, windowWidth, windowHeight);
+
+			// Camera
+			auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
+			const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+			const glm::mat4& cameraProjection = camera.GetProjection();
+			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+			// Entity transform
+			auto& tc = selectedEntity.GetComponent<TransformComponent>();
+			glm::mat4 transform = tc.GetTransform();
+
+			// Snapping
+			bool snap = Input::IsKeyPressed(KeyCode::LeftControl);
+			float snapValue = 0.5f; // Snap to 0.5m for translation/scale
+			// Snap to 45 degrees for rotation
+			if(m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+				snapValue = 45.0f;
+
+			float snapValues[3] = {snapValue, snapValue, snapValue};
+
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+				(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
+				nullptr, snap ? snapValues : nullptr);
+
+			if (ImGuizmo::IsUsing())
+			{
+				glm::vec3 translation, rotation, scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+
+				auto deltaRotation = rotation - tc.Rotation;
+				tc.Translation = translation;
+				tc.Rotation += deltaRotation;
+				tc.Scale = scale;
+			}
+		}
+
+		ImGui::End(); // Viewport
 		ImGui::PopStyleVar();
 
-		ImGui::End();
+		ImGui::End(); // Lucky Editor
 		ImGui::PopStyleVar(2);
-		
-		if(tryLoadLayout < 10)
+
+		if (tryLoadLayout < 10)
 		{
 			Application::Get().GetImGuiLayer()->Load();
 			tryLoadLayout++;
 		}
 
-		if(m_NewScene)
+		if (m_NewScene)
 			NewScene();
 
-		if(m_OpenScene)
+		if (m_OpenScene)
 			OpenScene();
 
-		if(m_SaveScene)
+		if (m_SaveScene)
 			SaveScene();
 
 		if (m_LoadLayout)
@@ -314,7 +364,7 @@ namespace Lucky
 			SaveLayout();
 	}
 
-	void EditorLayer::OnEvent(Event &event)
+	void EditorLayer::OnEvent(Event& event)
 	{
 		m_ActiveScene->OnEvent(event);
 		EventDispatcher dispatcher(event);
@@ -385,34 +435,58 @@ namespace Lucky
 		switch (e.GetKeyCode())
 		{
 		case KeyCode::N:
-			{
-				if (shift)
-					m_NewScene = true;
-				break;
-			}
+		{
+			if (shift)
+				m_NewScene = true;
+			break;
+		}
 
 		case KeyCode::S:
-			{
-				if (shift)
-					m_SaveScene = true;
-				if (alt)
-					m_SaveLayout = true;
-				break;
-			}
+		{
+			if (shift)
+				m_SaveScene = true;
+			if (alt)
+				m_SaveLayout = true;
+			break;
+		}
 
 		case KeyCode::O:
-			{
-				if (shift)
-					m_OpenScene = true;
-				break;
-			}
+		{
+			if (shift)
+				m_OpenScene = true;
+			break;
+		}
 
 		case KeyCode::L:
-			{
-				if (alt)
-					m_LoadLayout = true;
-				break;
-			}
+		{
+			if (alt)
+				m_LoadLayout = true;
+			break;
+		}
+
+		case KeyCode::D1:
+		{
+			m_GizmoType = -1;
+			break;
+		}
+
+		case KeyCode::D2:
+		{
+			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		}
+
+		case KeyCode::D3:
+		{
+			m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			break;
+		}
+
+		case KeyCode::D4:
+		{
+			m_GizmoType = ImGuizmo::OPERATION::SCALE;
+			break;
+		}
 
 		default:
 			break;
