@@ -1,6 +1,7 @@
 #pragma once
 
 #include "KeyCodes.h"
+#include "MouseButtonCodes.h"
 
 namespace Lucky
 {
@@ -8,7 +9,7 @@ namespace Lucky
 	{
 	public:
 		static bool IsKeyPressed(Key keyCode);
-		static bool IsMouseButtonPressed(int button);
+		static bool IsMouseButtonPressed(MouseButton button);
 
 		static std::pair<float, float> GetMousePosition();
 		static float GetMouseX();

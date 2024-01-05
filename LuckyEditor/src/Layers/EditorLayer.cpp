@@ -169,17 +169,20 @@ namespace Lucky
 			(fbSpec.Width != m_ViewportSize.x || fbSpec.Height != m_ViewportSize.y))
 		{
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
-		Renderer2D::ResetStats();
 		m_Framebuffer->Bind();
+		m_EditorCamera.OnUpdate(ts);
+
+		Renderer2D::ResetStats();
 
 		// Prepare scene
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
-		m_ActiveScene->OnUpdate(ts);
+		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
 		m_Framebuffer->Unbind();
 	}
@@ -261,6 +264,13 @@ namespace Lucky
 		m_SceneHierarchyPanel.OnImGuiRenderer();
 
 		auto stats = Renderer2D::GetStats();
+
+		ImGui::Begin("Settings");
+		static bool lock = false;;
+		ImGui::Checkbox("Lock camera", &lock);
+
+		ImGui::End(); // Settings
+
 		ImGui::Begin("Stats");
 		ImGui::Text("Draw calls: %d", stats.DrawCalls);
 		ImGui::Text("Quads: %d", stats.QuadCount);
@@ -302,10 +312,8 @@ namespace Lucky
 			ImGuizmo::SetRect(windowPos.x, windowPos.y, windowWidth, windowHeight);
 
 			// Camera
-			auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
-			const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-			const glm::mat4& cameraProjection = camera.GetProjection();
-			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+			const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+			glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
 			// Entity transform
 			auto& tc = selectedEntity.GetComponent<TransformComponent>();
@@ -362,11 +370,14 @@ namespace Lucky
 
 		if (m_SaveLayout)
 			SaveLayout();
+
+		m_EditorCamera.Lock(lock);
 	}
 
 	void EditorLayer::OnEvent(Event& event)
 	{
 		m_ActiveScene->OnEvent(event);
+		m_EditorCamera.OnEvent(event);
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 	}
@@ -376,6 +387,7 @@ namespace Lucky
 		m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_EditorCamera.Reset();
 		m_NewScene = false;
 	}
 

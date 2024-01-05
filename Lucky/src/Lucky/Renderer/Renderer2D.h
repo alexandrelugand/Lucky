@@ -2,6 +2,7 @@
 
 #include "Lucky/Core/CameraController.h"
 #include "Lucky/Renderer/Camera.h"
+#include "Lucky/Renderer/EditorCamera.h"
 #include "Lucky/Renderer/Texture.h"
 #include "Lucky/Renderer/SubTexture2D.h"
 
@@ -14,8 +15,9 @@ namespace Lucky
 		static void Shutdown();
 
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
-		static void BeginScene(const Scope<CameraController>& cameraController);
+		static void BeginScene(const EditorCamera& camera);
 		static void BeginScene(const BaseCamera& baseCamera);
+		static void BeginScene(const Scope<CameraController>& cameraController); //TODO: to remove
 		static void EndScene();
 		static void Flush();
 
@@ -50,6 +52,7 @@ namespace Lucky
 		static Statictics GetStats();
 
 	private:
-		static void FlushAndReset();
+		static void StartBatch();
+		static void NextBatch();
 	};
 } // namespace Lucky

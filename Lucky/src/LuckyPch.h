@@ -39,6 +39,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "Lucky/Core/Base.h"
 #include "Lucky/Core/Log.h"

@@ -49,7 +49,7 @@ namespace Lucky
 #endif
 	}
 
-	void Scene::OnUpdate(Timestep ts)
+	void Scene::OnUpdateRuntime(Timestep ts)
 	{
 		// Update Native scripts
 		{
@@ -104,6 +104,20 @@ namespace Lucky
 
 			Renderer2D::EndScene();
 		}
+	}
+
+	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera)
+	{
+		Renderer2D::BeginScene(editorCamera);
+
+		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+		for (auto entity : group)
+		{
+			const auto& [tc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+			Renderer2D::DrawQuad(tc.GetTransform(), sprite.Color);
+		}
+
+		Renderer2D::EndScene();
 	}
 
 	void Scene::OnEvent(Event& e)

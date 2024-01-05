@@ -71,5 +71,8 @@ namespace Lucky
 		glDeleteFramebuffers(1, &m_FramebufferId);
 		glDeleteTextures(1, &m_ColorAttachment);
 		glDeleteTextures(1, &m_DepthAttachment);
+
+		m_ColorAttachment = 0;
+		m_DepthAttachment = 0;
 	}
 }

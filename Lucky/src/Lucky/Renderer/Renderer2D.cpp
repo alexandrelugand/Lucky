@@ -9,11 +9,11 @@ namespace Lucky
 {
 	struct QuadVertex
 	{
-		glm::vec3 Position;
-		glm::vec2 TexCoord;
-		glm::vec4 Color;
-		float TexIndex;
-		float TilingFactor;
+		glm::vec3 Position{ 0.0f, 0.0f, 0.0f};
+		glm::vec2 TexCoord{0.0f, 0.0f };
+		glm::vec4 Color{1.0f, 1.0f , 1.0f , 1.0f };
+		float TexIndex = 0.0f;
+		float TilingFactor = 0.0f;
 	};
 
 	struct Renderer2DData
@@ -121,22 +121,16 @@ namespace Lucky
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetMat4("u_ViewProjection", view);
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-		s_Data.TextureSlotIndex = 1;
+		StartBatch();
 	}
 
-	void Renderer2D::BeginScene(const Scope<CameraController>& cameraController)
+	void Renderer2D::BeginScene(const EditorCamera& camera)
 	{
 		LK_PROFILE_FUNCTION();
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", cameraController->GetCamera().GetViewProjectionMatrix());
+		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
 
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-		s_Data.TextureSlotIndex = 1;
+		StartBatch();
 	}
 
 	void Renderer2D::BeginScene(const BaseCamera& baseCamera)
@@ -145,6 +139,20 @@ namespace Lucky
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetMat4("u_ViewProjection", baseCamera.GetViewProjectionMatrix());
 
+		StartBatch();
+	}
+
+	void Renderer2D::BeginScene(const Scope<CameraController>& cameraController)
+	{
+		LK_PROFILE_FUNCTION();
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->SetMat4("u_ViewProjection", cameraController->GetCamera().GetViewProjectionMatrix());
+
+		StartBatch();
+	}
+
+	void Renderer2D::StartBatch()
+	{
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 
@@ -155,20 +163,23 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 
-		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
-		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
-
 		Flush();
 	}
 
 	void Renderer2D::Flush()
 	{
-		//Bind textures
-		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
-			s_Data.TextureSlots[i]->Bind(i);
+		if (s_Data.QuadIndexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
+			s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
-		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
-		s_Data.Stats.DrawCalls++;
+			//Bind textures
+			for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+				s_Data.TextureSlots[i]->Bind(i);
+
+			RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+			s_Data.Stats.DrawCalls++;
+		}
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color)
@@ -275,7 +286,7 @@ namespace Lucky
 		LK_PROFILE_FUNCTION();
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-			FlushAndReset();
+			NextBatch();
 
 		constexpr size_t quadVertexCount = 4;
 		constexpr float textureIndex = 0.0f; //White texture
@@ -316,7 +327,7 @@ namespace Lucky
 		};
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-			FlushAndReset();
+			NextBatch();
 
 		float textureIndex = 0.0f;
 
@@ -359,7 +370,7 @@ namespace Lucky
 		const glm::vec2* textureCoords = subTexture->GetTexCoords();
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
-			FlushAndReset();
+			NextBatch();
 
 		float textureIndex = 0.0f;
 
@@ -404,7 +415,7 @@ namespace Lucky
 		return s_Data.Stats;
 	}
 
-	void Renderer2D::FlushAndReset()
+	void Renderer2D::NextBatch()
 	{
 		EndScene();
 

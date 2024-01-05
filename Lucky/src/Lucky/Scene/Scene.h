@@ -4,6 +4,7 @@
 
 #include "Lucky/Core/Timestep.h"
 #include "Lucky/Core/Events/Event.h"
+#include "Lucky/Renderer/EditorCamera.h"
 
 namespace Lucky
 {
@@ -19,7 +20,8 @@ namespace Lucky
 		void DestroyEntity(Entity entity);
 		void Clean();
 
-		void OnUpdate(Timestep ts);
+		void OnUpdateRuntime(Timestep ts);
+		void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera);
 		void OnEvent(Event& e);
 
 		void OnViewportResize(uint32_t width, uint32_t height);

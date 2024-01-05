@@ -12,10 +12,10 @@ namespace Lucky
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool Input::IsMouseButtonPressed(int button)
+	bool Input::IsMouseButtonPressed(MouseButton button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
-		auto state = glfwGetMouseButton(window, button);
+		auto state = glfwGetMouseButton(window, (int)button);
 		return state == GLFW_PRESS;
 	}
 
@@ -24,7 +24,7 @@ namespace Lucky
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
-		return std::pair<float, float>((float)xpos, (float)ypos);
+		return std::pair((float)xpos, (float)ypos);
 	}
 
 	float Input::GetMouseX()

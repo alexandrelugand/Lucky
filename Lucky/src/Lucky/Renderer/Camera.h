@@ -38,6 +38,7 @@ namespace Lucky
 			float PerspectiveFarClip = 1000.0f;
 		};
 
+		Camera() = default;
 		Camera(const Settings& settings);
 		Camera(const Settings& settings, const glm::mat4& projection);
 		virtual ~Camera() = default;
@@ -46,7 +47,7 @@ namespace Lucky
 		const glm::mat4& GetProjection() const { return m_Projection; }
 
 	protected:
-		Settings m_Settings;
+		Settings m_Settings{};
 		glm::mat4 m_Projection = glm::mat4(1.0f);
 	};
 }
