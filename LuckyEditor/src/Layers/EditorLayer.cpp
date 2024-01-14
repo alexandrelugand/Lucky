@@ -20,6 +20,11 @@ namespace Lucky
 		auto& window = Application::Get().GetWindow();
 
 		FramebufferSpecification fbSpec;
+#ifndef __EMSCRIPTEN__
+		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+#else
+		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+#endif
 		fbSpec.Width = window.GetWidth();
 		fbSpec.Height = window.GetHeight();
 		m_Framebuffer = Framebuffer::Create(fbSpec);
@@ -164,7 +169,7 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 
-		auto fbSpec = m_Framebuffer->GetSpecification();
+		auto& fbSpec = m_Framebuffer->GetSpecification();
 		if (m_ViewportSize.x > 0 && m_ViewportSize.y > 0 &&
 			(fbSpec.Width != m_ViewportSize.x || fbSpec.Height != m_ViewportSize.y))
 		{
@@ -182,7 +187,28 @@ namespace Lucky
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
+#ifndef __EMSCRIPTEN__
+		// Clear our entity Id attachment to -1
+		m_Framebuffer->ClearAttachment(1, -1);
+#endif
+
 		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+
+#ifndef __EMSCRIPTEN__
+		auto [mx, my] = ImGui::GetMousePos();
+		mx -= m_ViewportBounds[0].x;
+		my -= m_ViewportBounds[0].y;
+		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+
+		int mouseX = (int)mx;
+		int mouseY = (int)(viewportSize.y - my);
+
+		if (mouseX >= 0 && mouseY >= 0 && mouseX < viewportSize.x && mouseY < viewportSize.y)
+		{
+			auto entityId = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+			m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
+		}
+#endif
 
 		m_Framebuffer->Unbind();
 	}
@@ -268,6 +294,10 @@ namespace Lucky
 		ImGui::Begin("Settings");
 		static bool lock = false;;
 		ImGui::Checkbox("Lock camera", &lock);
+		std::string name = "None";
+		if (m_HoveredEntity)
+			name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+		ImGui::Text("Hovered Entity: %s", name.c_str());
 
 		ImGui::End(); // Settings
 
@@ -289,6 +319,7 @@ namespace Lucky
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
+		auto viewportOffset = ImGui::GetCursorPos(); // Includes tab bar
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
@@ -298,6 +329,15 @@ namespace Lucky
 		m_ViewportSize = *((glm::vec2*)&viewportPanelSize);
 
 		ImGui::Image((ImTextureID)(intptr_t)m_Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		auto windowSize = ImGui::GetWindowSize();
+		ImVec2 minBound = ImGui::GetWindowPos();
+		minBound.x += viewportOffset.x;
+		minBound.y += viewportOffset.y;
+
+		ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
+		m_ViewportBounds[0] = { minBound.x, minBound.y };
+		m_ViewportBounds[1] = { maxBound.x, maxBound.y };
 
 		// Gizmos
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();

@@ -27,11 +27,14 @@ namespace Lucky
 		Ref<Scene> m_ActiveScene;
 		Ref<Framebuffer> m_Framebuffer;
 		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
+		glm::vec2 m_ViewportBounds[2];
+
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 		bool m_NewScene = false, m_OpenScene = false, m_SaveScene = false, m_SaveLayout = false, m_LoadLayout = false;
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		int m_GizmoType = -1;
 
 		EditorCamera m_EditorCamera;
+		Entity m_HoveredEntity{};
 	};
 } // namespace Lucky

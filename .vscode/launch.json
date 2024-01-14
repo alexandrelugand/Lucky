@@ -42,7 +42,7 @@
             "name": "Debug (Emscripten)",
             "type": "PowerShell",
             "request": "launch",
-            "script": "ws -s index.html -o",
+            "script": "ws -s editor.html -o",
             "cwd": "${workspaceFolder}/bin/browser/Debug",
             "preLaunchTask": "Debug-emscripten",
             "postDebugTask": "StopServer"
@@ -52,7 +52,7 @@
             "name": "Release (Emscripten)",
             "type": "PowerShell",
             "request": "launch",
-            "script": "ws -s index.html -o",
+            "script": "ws -s editor.html -o",
             "cwd": "${workspaceFolder}/bin/browser/Release",
             "preLaunchTask": "Release-emscripten",
             "postDebugTask": "StopServer"

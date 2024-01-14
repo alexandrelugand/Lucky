@@ -114,7 +114,7 @@ namespace Lucky
 		for (auto entity : group)
 		{
 			const auto& [tc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::DrawQuad(tc.GetTransform(), sprite.Color);
+			Renderer2D::DrawSprite(tc.GetTransform(), sprite, (int)entity);
 		}
 
 		Renderer2D::EndScene();

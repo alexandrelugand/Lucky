@@ -14,6 +14,7 @@ namespace Lucky
 		glm::vec4 Color{1.0f, 1.0f , 1.0f , 1.0f };
 		float TexIndex = 0.0f;
 		float TilingFactor = 0.0f;
+		int EntityId = -1;
 	};
 
 	struct Renderer2DData
@@ -61,7 +62,8 @@ namespace Lucky
 			{ShaderDataType::Float2, "a_TexCoord" },
 			{ShaderDataType::Float4, "a_Color" },
 			{ShaderDataType::Float, "a_TexIndex" },
-			{ShaderDataType::Float, "a_TilingFactor" }
+			{ShaderDataType::Float, "a_TilingFactor" },
+			{ShaderDataType::Int, "a_EntityId" }
 		});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
@@ -281,7 +283,7 @@ namespace Lucky
 		DrawQuad(transform, subTexture, tilingFactor, tintColor);
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityId)
 	{
 		LK_PROFILE_FUNCTION();
 
@@ -306,6 +308,7 @@ namespace Lucky
 			s_Data.QuadVertexBufferPtr->Color = color;
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityId = entityId;
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -313,7 +316,7 @@ namespace Lucky
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& tintColor)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& tintColor, int entityId)
 	{
 		LK_PROFILE_FUNCTION();
 
@@ -354,6 +357,7 @@ namespace Lucky
 			s_Data.QuadVertexBufferPtr->Color = tintColor;
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityId = entityId;
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -361,7 +365,7 @@ namespace Lucky
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subTexture, float tilingFactor, const glm::vec4& tintColor)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<SubTexture2D>& subTexture, float tilingFactor, const glm::vec4& tintColor, int entityId)
 	{
 		LK_PROFILE_FUNCTION();
 
@@ -397,11 +401,17 @@ namespace Lucky
 			s_Data.QuadVertexBufferPtr->Color = tintColor;
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
+			s_Data.QuadVertexBufferPtr->EntityId = entityId;
 			s_Data.QuadVertexBufferPtr++;
 		}
 
 		s_Data.QuadIndexCount += 6;
 		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawSprite(const glm::mat4& transform, const SpriteRendererComponent& spriteRenderComponent, int entityId)
+	{
+		DrawQuad(transform, spriteRenderComponent.Color, entityId);
 	}
 
 	void Renderer2D::ResetStats()
