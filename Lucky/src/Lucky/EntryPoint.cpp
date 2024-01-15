@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 #endif
 
 		LK_PROFILE_BEGIN_SESSION("Startup", "Startup.json");
-		Lucky::Application* application = CreateApplication();
+		Lucky::Application* application = CreateApplication({argc, argv});
 		LK_PROFILE_END_SESSION();
 
 		LK_PROFILE_BEGIN_SESSION("Runtime", "Runtime.json");

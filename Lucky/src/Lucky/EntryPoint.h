@@ -7,7 +7,7 @@
 #endif
 #include "Lucky/Application/Application.h"
 
-extern Lucky::Application* CreateApplication();
+extern Lucky::Application* CreateApplication(const Lucky::ApplicationCommandLineArgs& args);
 
 EMSCRIPTEN_KEEPALIVE
 extern int main(int argc, char** argv);

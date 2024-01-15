@@ -8,7 +8,7 @@ namespace Lucky
 	class LuckyEditor : public Application
 	{
 	public:
-	    LuckyEditor(const WindowProps& props);
+	    LuckyEditor(const WindowProps& props, const ApplicationCommandLineArgs& args);
 	    virtual ~LuckyEditor();
 	};
 }

@@ -11,6 +11,7 @@ namespace Lucky
 
 	void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
 	{
+		LK_CORE_ASSERT(width > 0 && height > 0);
 		m_Settings.AspectRatio = (float)width / (float)height;
 		RecalculateProjection();
 	}

@@ -14,6 +14,7 @@ namespace Lucky
 		void OnImGuiRenderer();
 
 		Entity GetSelectedEntity() const { return m_SelectedEntity; }
+		void SetSelectedEntity(Entity entity) { m_SelectedEntity = entity; }
 
 	private:
 		void DrawEntityNode(const Entity& entity);

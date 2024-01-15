@@ -2,7 +2,6 @@
 #include "EditorLayer.h"
 
 #include "Lucky/Platforms/Platform.h"
-#include "ImGuizmo.h"
 #include "Lucky/Math/Math.h"
 
 namespace Lucky
@@ -19,6 +18,13 @@ namespace Lucky
 
 		InitScene();
 
+		auto commandLineArgs = Application::Get().GetCommandLineArgs();
+		if(commandLineArgs.Count > 1)
+		{
+			auto sceneFilePath = commandLineArgs[1];
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Deserialize(sceneFilePath);
+		}
 #if 0
 		Camera::Settings settings;
 		settings.ProjectionType = Camera::ProjectionType::Orthographic;
@@ -172,36 +178,11 @@ namespace Lucky
 
 		m_EditorCamera.OnUpdate(ts);
 
-		//m_Framebuffer->Bind();
-
 		// Prepare scene
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
-#ifndef __EMSCRIPTEN__
-		// Clear our entity Id attachment to -1
-		//m_Framebuffer->ClearAttachment(1, -1);
-#endif
-
 		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
-
-#ifndef __EMSCRIPTEN__
-		/*auto [mx, my] = ImGui::GetMousePos();
-		mx -= m_ViewportBounds[0].x;
-		my -= m_ViewportBounds[0].y;
-		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
-
-		int mouseX = (int)mx;
-		int mouseY = (int)(viewportSize.y - my);
-
-		if (mouseX >= 0 && mouseY >= 0 && mouseX < viewportSize.x && mouseY < viewportSize.y)
-		{
-			auto entityId = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-			m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
-		}*/
-#endif
-
-		//m_Framebuffer->Unbind();
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -310,7 +291,12 @@ namespace Lucky
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Viewport");
-		auto viewportOffset = ImGui::GetCursorPos(); // Includes tab bar
+
+		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		auto viewportOffset = ImGui::GetWindowPos();
+		m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
@@ -321,15 +307,6 @@ namespace Lucky
 
 		ImGui::Image((ImTextureID)(intptr_t)m_RenderPassRenderer.Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
-		auto windowSize = ImGui::GetWindowSize();
-		ImVec2 minBound = ImGui::GetWindowPos();
-		minBound.x += viewportOffset.x;
-		minBound.y += viewportOffset.y;
-
-		ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
-		m_ViewportBounds[0] = { minBound.x, minBound.y };
-		m_ViewportBounds[1] = { maxBound.x, maxBound.y };
-
 		// Gizmos
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1)
@@ -337,10 +314,7 @@ namespace Lucky
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
 
-			float windowWidth = ImGui::GetWindowWidth();
-			float windowHeight = ImGui::GetWindowHeight();
-			auto windowPos = ImGui::GetWindowPos();
-			ImGuizmo::SetRect(windowPos.x, windowPos.y, windowWidth, windowHeight);
+			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
 			// Camera
 			const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
@@ -411,14 +385,12 @@ namespace Lucky
 		m_EditorCamera.OnEvent(event);
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
 	}
 
 	void EditorLayer::NewScene()
 	{
 		InitScene();
-		/*m_ActiveScene = CreateRef<Scene>();
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);*/
 		m_EditorCamera.Reset();
 		m_NewScene = false;
 	}
@@ -431,11 +403,6 @@ namespace Lucky
 			if (filePath != "##Cancel")
 			{
 				InitScene();
-
-				/*m_ActiveScene = CreateRef<Scene>();
-				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-				m_SceneHierarchyPanel.SetContext(m_ActiveScene);*/
-
 				SceneSerializer serializer(m_ActiveScene);
 				serializer.Deserialize(filePath);
 			}
@@ -538,6 +505,16 @@ namespace Lucky
 			break;
 		}
 
+		return false;
+	}
+
+	bool EditorLayer::OnMouseButtonPressed(MouseButtonEvent& e)
+	{
+		if(e.GetButton() == MouseButton::ButtonLeft)
+		{
+			if (CanPick())
+				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+		}
 		return false;
 	}
 

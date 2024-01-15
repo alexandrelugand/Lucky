@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "Lucky/Application/MouseButtonCodes.h"
 
 namespace Lucky
 {
@@ -64,21 +65,21 @@ namespace Lucky
     class MouseButtonEvent : public MouseEvent
     {
     public:
-	    int GetButton() const { return m_MouseButton; }
+		MouseButton GetButton() const { return m_MouseButton; }
 
     protected:
-        MouseButtonEvent(int button)
+        MouseButtonEvent(MouseButton button)
             : m_MouseButton(button)
         {
         }
 
-        int m_MouseButton;
+		MouseButton m_MouseButton;
     };
     
     class MouseButtonPressedEvent : public MouseButtonEvent
     {
     public:
-        MouseButtonPressedEvent(int button)
+        MouseButtonPressedEvent(MouseButton button)
             : MouseButtonEvent(button)
         {
         }
@@ -96,7 +97,7 @@ namespace Lucky
     class MouseButtonReleasedEvent : public MouseButtonEvent
     {
     public:
-        MouseButtonReleasedEvent(int button)
+        MouseButtonReleasedEvent(MouseButton button)
             : MouseButtonEvent(button)
         {
         }

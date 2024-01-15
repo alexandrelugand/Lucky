@@ -80,6 +80,7 @@ project "LuckyEditor"
 
 	filter { "action:vs2022", "configurations:Debug" }
 		ignoredefaultlibraries { "LIBCMT" }
+		debugargs { "assets\\scenes\\PinkCube.lucky" }
 
 	-- Configurations
 	filter "configurations:Debug"

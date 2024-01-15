@@ -17,7 +17,8 @@ namespace Lucky
 
     Application* Application::s_Instance;
 
-    Application::Application(const WindowProps &props)
+    Application::Application(const WindowProps &props, const ApplicationCommandLineArgs& args)
+	    : m_CommandLineArgs(args)
     {
 		LK_PROFILE_FUNCTION();
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Lucky/Core/Assert.h"
 #include "Lucky/Core/Events/ApplicationEvent.h"
 #include "Lucky/Core/ImGui/ImGuiLayer.h"
 #include "Lucky/Core/LayerStack.h"
@@ -13,10 +14,22 @@
 
 namespace Lucky
 {
+    struct ApplicationCommandLineArgs
+    {
+		int Count = 0;
+		char** Args = nullptr;
+
+		const char* operator[](int index) const
+		{
+			LK_CORE_ASSERT(index < Count);
+			return Args[index];
+		}
+    };
+    
     class Application
     {
     public:
-        Application(const WindowProps& props);
+        Application(const WindowProps& props, const ApplicationCommandLineArgs& args = ApplicationCommandLineArgs());
         virtual ~Application();
 
         static Application& Get() { return *s_Instance; }
@@ -29,7 +42,10 @@ namespace Lucky
         Window& GetWindow() const { return *m_Window; }
 		ImGuiLayer* GetImGuiLayer() const { return m_ImGuiLayer; }
 
+		ApplicationCommandLineArgs GetCommandLineArgs() const { return m_CommandLineArgs; }
+
     private:
+		ApplicationCommandLineArgs m_CommandLineArgs;
         static Application* s_Instance;
         WASM_API Scope<Window> m_Window;
         WASM_API ImGuiLayer* m_ImGuiLayer;
@@ -45,5 +61,5 @@ namespace Lucky
     };
 
     //To be defined in client
-    Application* CreateApplication(const WindowProps& props);
+    Application* CreateApplication(const WindowProps& props, ApplicationCommandLineArgs args);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <Lucky.h>
 
+#include <ImGuizmo.h>
 #include "Panels/SceneHierarchyPanel.h"
 
 namespace Lucky
@@ -23,7 +24,9 @@ namespace Lucky
 		void LoadLayout();
 		void SaveLayout();
 		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMouseButtonPressed(MouseButtonEvent& e);
 		void InitScene();
+		bool CanPick() const { return m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(KeyCode::LeftAlt); }
 
 		Ref<Scene> m_ActiveScene;
 		RenderPass m_RenderPassRenderer;
