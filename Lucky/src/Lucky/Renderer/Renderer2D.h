@@ -15,11 +15,20 @@ namespace Lucky
 		static void Init();
 		static void Shutdown();
 
+		// Runtime
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(const Camera& camera, const glm::mat4& transform, const RenderPass& pass);
+
+		// Editor
 		static void BeginScene(const EditorCamera& camera);
+		static void BeginScene(const EditorCamera& camera, const RenderPass& pass);
+
+		//TODO: to remove
 		static void BeginScene(const BaseCamera& baseCamera);
-		static void BeginScene(const Scope<CameraController>& cameraController); //TODO: to remove
+		static void BeginScene(const Scope<CameraController>& cameraController);
+
 		static void EndScene();
+		static void EndScene(const RenderPass& pass);
 		static void Flush();
 
 		// Primitives

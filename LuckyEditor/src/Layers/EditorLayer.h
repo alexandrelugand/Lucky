@@ -23,9 +23,12 @@ namespace Lucky
 		void LoadLayout();
 		void SaveLayout();
 		bool OnKeyPressed(KeyPressedEvent& e);
+		void InitScene();
 
 		Ref<Scene> m_ActiveScene;
-		Ref<Framebuffer> m_Framebuffer;
+		RenderPass m_RenderPassRenderer;
+		RenderPass m_RenderPassMousePicking;
+
 		glm::vec2 m_ViewportSize = { 1.0f, 1.0f };
 		glm::vec2 m_ViewportBounds[2];
 

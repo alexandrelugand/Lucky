@@ -97,7 +97,11 @@ namespace Lucky
 
 		// Shaders
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
-		s_Data.TextureShader = shaderLibrary.Load("assets/shaders/2DTexture.glsl");
+
+		if(!shaderLibrary.Exists("2DTexture"))
+			shaderLibrary.Load("assets/shaders/2DTexture.glsl");
+
+		s_Data.TextureShader = shaderLibrary.Get("2DTexture");
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
@@ -126,11 +130,51 @@ namespace Lucky
 		StartBatch();
 	}
 
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform, const RenderPass& pass)
+	{
+		LK_PROFILE_FUNCTION();
+
+		const auto view = camera.GetProjection() * glm::inverse(transform);
+
+		int32_t samplers[32];
+		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
+			samplers[i] = i;
+
+		pass.Framebuffer->Bind();
+		pass.Shader->Bind();
+		pass.Shader->SetMat4("u_ViewProjection", view);
+		pass.Shader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+
+		if (pass.BeforeRenderCallback)
+			pass.BeforeRenderCallback(pass);
+
+		StartBatch();
+	}
+
 	void Renderer2D::BeginScene(const EditorCamera& camera)
 	{
 		LK_PROFILE_FUNCTION();
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
+
+		StartBatch();
+	}
+
+	void Renderer2D::BeginScene(const EditorCamera& camera, const RenderPass& pass)
+	{
+		LK_PROFILE_FUNCTION();
+
+		int32_t samplers[32];
+		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
+			samplers[i] = i;
+
+		pass.Framebuffer->Bind();
+		pass.Shader->Bind();
+		pass.Shader->SetMat4("u_ViewProjection", camera.GetViewProjection());
+		pass.Shader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+
+		if (pass.BeforeRenderCallback)
+			pass.BeforeRenderCallback(pass);
 
 		StartBatch();
 	}
@@ -166,6 +210,19 @@ namespace Lucky
 		LK_PROFILE_FUNCTION();
 
 		Flush();
+	}
+
+	void Renderer2D::EndScene(const RenderPass& pass)
+	{
+		LK_PROFILE_FUNCTION();
+
+		Flush();
+
+		if (pass.AfterRenderCallback)
+			pass.AfterRenderCallback(pass);
+
+		pass.Shader->Unbind();
+		pass.Framebuffer->Unbind();
 	}
 
 	void Renderer2D::Flush()

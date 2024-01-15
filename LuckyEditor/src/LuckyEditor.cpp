@@ -8,6 +8,12 @@ namespace Lucky
 	LuckyEditor::LuckyEditor(const WindowProps& props) :
 		Application(props)
 	{
+		auto& shaderLibrary = ShaderLibrary::GetInstance();
+		if(!shaderLibrary.Exists("2DTexture"))
+			shaderLibrary.Load("assets/shaders/2DTexture.glsl");
+		if (!shaderLibrary.Exists("MousePicking"))
+			shaderLibrary.Load("assets/shaders/MousePicking.glsl");
+
         PushLayer(new EditorLayer());
 		LK_INFO("Application initialized");
 	}

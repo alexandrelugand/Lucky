@@ -22,6 +22,11 @@ namespace Lucky
 			s_RendererApi->Clear();
 		}
 
+		static void ClearDepth()
+		{
+			s_RendererApi->ClearDepth();
+		}
+
 		static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0)
 		{
 			s_RendererApi->DrawIndexed(vertexArray, indexCount);

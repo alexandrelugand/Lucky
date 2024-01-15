@@ -23,6 +23,12 @@ namespace Lucky
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
+	void OpenGLRendererApi::ClearDepth()
+	{
+		LK_PROFILE_FUNCTION();
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
 	void OpenGLRendererApi::DrawIndexed(const Ref<VertexArray> &vertexArray, uint32_t indexCount)
 	{
 		LK_PROFILE_FUNCTION();

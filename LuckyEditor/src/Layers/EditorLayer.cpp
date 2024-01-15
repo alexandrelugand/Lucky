@@ -15,19 +15,9 @@ namespace Lucky
 
 	void EditorLayer::OnAttach()
 	{
-		LK_PROFILE_FUNCTION();
+		LK_PROFILE_FUNCTION();		
 
-		auto& window = Application::Get().GetWindow();
-
-		FramebufferSpecification fbSpec;
-#ifndef __EMSCRIPTEN__
-		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
-#else
-		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
-#endif
-		fbSpec.Width = window.GetWidth();
-		fbSpec.Height = window.GetHeight();
-		m_Framebuffer = Framebuffer::Create(fbSpec);
+		InitScene();
 
 #if 0
 		Camera::Settings settings;
@@ -152,8 +142,7 @@ namespace Lucky
 		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
 		redSquare.GetComponent<TransformComponent>().Translation = glm::vec3{ 2.0f, 0.0f, -10.0f };
 #endif
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-
+		
 #ifdef __EMSCRIPTEN__ 
 		LK_TRACE("Load default layout");
 		ImGui::LoadIniSettingsFromDisk("assets/layout/imgui.ini");
@@ -169,19 +158,21 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 
-		auto& fbSpec = m_Framebuffer->GetSpecification();
-		if (m_ViewportSize.x > 0 && m_ViewportSize.y > 0 &&
-			(fbSpec.Width != m_ViewportSize.x || fbSpec.Height != m_ViewportSize.y))
+		for (auto& pass : m_ActiveScene->GetPasses())
 		{
-			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			auto& fbSpec = pass.Framebuffer->GetSpecification();
+			if (m_ViewportSize.x > 0 && m_ViewportSize.y > 0 &&
+				(fbSpec.Width != m_ViewportSize.x || fbSpec.Height != m_ViewportSize.y))
+			{
+				pass.Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+				m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			}
 		}
 
-		m_Framebuffer->Bind();
 		m_EditorCamera.OnUpdate(ts);
 
-		Renderer2D::ResetStats();
+		//m_Framebuffer->Bind();
 
 		// Prepare scene
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
@@ -189,13 +180,13 @@ namespace Lucky
 
 #ifndef __EMSCRIPTEN__
 		// Clear our entity Id attachment to -1
-		m_Framebuffer->ClearAttachment(1, -1);
+		//m_Framebuffer->ClearAttachment(1, -1);
 #endif
 
 		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
 #ifndef __EMSCRIPTEN__
-		auto [mx, my] = ImGui::GetMousePos();
+		/*auto [mx, my] = ImGui::GetMousePos();
 		mx -= m_ViewportBounds[0].x;
 		my -= m_ViewportBounds[0].y;
 		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
@@ -207,10 +198,10 @@ namespace Lucky
 		{
 			auto entityId = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
 			m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
-		}
+		}*/
 #endif
 
-		m_Framebuffer->Unbind();
+		//m_Framebuffer->Unbind();
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -328,7 +319,7 @@ namespace Lucky
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = *((glm::vec2*)&viewportPanelSize);
 
-		ImGui::Image((ImTextureID)(intptr_t)m_Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image((ImTextureID)(intptr_t)m_RenderPassRenderer.Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		auto windowSize = ImGui::GetWindowSize();
 		ImVec2 minBound = ImGui::GetWindowPos();
@@ -424,9 +415,10 @@ namespace Lucky
 
 	void EditorLayer::NewScene()
 	{
-		m_ActiveScene = CreateRef<Scene>();
+		InitScene();
+		/*m_ActiveScene = CreateRef<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);*/
 		m_EditorCamera.Reset();
 		m_NewScene = false;
 	}
@@ -438,9 +430,11 @@ namespace Lucky
 		{
 			if (filePath != "##Cancel")
 			{
-				m_ActiveScene = CreateRef<Scene>();
+				InitScene();
+
+				/*m_ActiveScene = CreateRef<Scene>();
 				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-				m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+				m_SceneHierarchyPanel.SetContext(m_ActiveScene);*/
 
 				SceneSerializer serializer(m_ActiveScene);
 				serializer.Deserialize(filePath);
@@ -545,5 +539,70 @@ namespace Lucky
 		}
 
 		return false;
+	}
+
+	void EditorLayer::InitScene()
+	{
+		auto& window = Application::Get().GetWindow();
+		auto& shaderLibrary = ShaderLibrary::GetInstance();
+
+		m_ActiveScene = CreateRef<Scene>();
+
+		FramebufferSpecification fbSpec;
+		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+		fbSpec.Width = window.GetWidth();
+		fbSpec.Height = window.GetHeight();
+		m_RenderPassRenderer.Name = "Renderer";
+		m_RenderPassRenderer.Framebuffer = Framebuffer::Create(fbSpec);
+		m_RenderPassRenderer.Shader = shaderLibrary.Get("2DTexture");
+		m_RenderPassRenderer.BeforeRenderCallback = [](const auto& pass)
+		{
+			if(pass.Name == "Renderer")
+			{
+				RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+				RenderCommand::Clear();
+			}
+		};
+
+		FramebufferSpecification fbSpec2;
+		fbSpec2.AttachmentSpecs = { FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+		fbSpec2.Width = window.GetWidth();
+		fbSpec2.Height = window.GetHeight();
+		m_RenderPassMousePicking.Name = "MousePicking";
+		m_RenderPassMousePicking.Framebuffer = Framebuffer::Create(fbSpec2);
+		m_RenderPassMousePicking.Shader = shaderLibrary.Get("MousePicking");
+		m_RenderPassMousePicking.BeforeRenderCallback = [](const auto& pass)
+			{
+				if (pass.Name == "MousePicking")
+				{
+					pass.Framebuffer->ClearAttachment(0, -1);
+					RenderCommand::ClearDepth();
+				}
+			};
+		m_RenderPassMousePicking.AfterRenderCallback = [this](const auto& pass)
+			{
+				if (pass.Name == "MousePicking")
+				{
+					auto [mx, my] = ImGui::GetMousePos();
+					mx -= m_ViewportBounds[0].x;
+					my -= m_ViewportBounds[0].y;
+					glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+
+					int mouseX = (int)mx;
+					int mouseY = (int)(viewportSize.y - my);
+
+					if (mouseX >= 0 && mouseY >= 0 && mouseX < viewportSize.x && mouseY < viewportSize.y)
+					{
+						auto entityId = pass.Framebuffer->ReadPixel(0, mouseX, mouseY);
+						m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
+					}
+				}
+			};
+
+		m_ActiveScene->AddPass(m_RenderPassMousePicking);
+		m_ActiveScene->AddPass(m_RenderPassRenderer);
+
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 } // namespace Lucky

@@ -49,8 +49,20 @@ namespace Lucky
 #endif
 	}
 
+	void Scene::AddPass(const RenderPass& pass)
+	{
+		m_RenderPasses.push_back(pass);
+	}
+
+	void Scene::ClearPass()
+	{
+		m_RenderPasses.clear();
+	}
+
 	void Scene::OnUpdateRuntime(Timestep ts)
 	{
+		Renderer2D::ResetStats();
+
 		// Update Native scripts
 		{
 #ifdef COMPILER_MSVC
@@ -96,7 +108,7 @@ namespace Lucky
 			Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-			for(auto entity : group)
+			for (auto entity : group)
 			{
 				const auto& [tc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 				Renderer2D::DrawQuad(tc.GetTransform(), sprite.Color);
@@ -108,16 +120,21 @@ namespace Lucky
 
 	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& editorCamera)
 	{
-		Renderer2D::BeginScene(editorCamera);
+		Renderer2D::ResetStats();
 
-		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-		for (auto entity : group)
+		for(auto& pass : m_RenderPasses)
 		{
-			const auto& [tc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::DrawSprite(tc.GetTransform(), sprite, (int)entity);
-		}
+			Renderer2D::BeginScene(editorCamera, pass);
 
-		Renderer2D::EndScene();
+			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+			for (auto entity : group)
+			{
+				const auto& [tc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+				Renderer2D::DrawSprite(tc.GetTransform(), sprite, (int)entity);
+			}
+
+			Renderer2D::EndScene(pass);
+		}
 	}
 
 	void Scene::OnEvent(Event& e)
