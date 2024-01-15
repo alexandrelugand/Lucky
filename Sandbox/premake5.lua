@@ -55,6 +55,7 @@ project "Sandbox"
 
 	-- G++
 	filter "action:gmake2"
+		staticruntime "on"
 		buildoptions { "-Wall" }
 		links 
 		{
