@@ -42,6 +42,9 @@ bin-int
 !Vendors/**/*.exe
 !Vendors/**/*.a
 !Vendors/**/*.dll
+Scripts/__pycache__
+Vendors/VulkanSDK
+**/assets/cache/**
 
 # Makefiles
 Makefile
