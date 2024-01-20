@@ -48,7 +48,6 @@ Vendors/VulkanSDK
 
 # Makefiles
 Makefile
-!Makefile.**.mk
 
 # Visual studio
 .vs

@@ -41,40 +41,49 @@ project "LuckyEditor"
 
 	libdirs 
 	{
-		"%{libDir.GLFW}"
+		"%{libDir.GLFW}",
+		"%{libDir.ImGui}"
 	}
 
 	links
 	{
-		"Lucky"
+		"Lucky",
+		"ImGui",
+		"ImGuizmo",
+		"yaml-cpp"
 	}
 
 	-- Precompile header
 	pchheader "LuckyEditorPch.h"
 	pchsource "src/LuckyEditorPch.cpp"
 
-	-- G++
-	filter "action:gmake2"
-		staticruntime "on"
-		buildoptions { "-Wall" }
-		links 
-		{
-			"glfw3",
-			"opengl32",
-			"GLAD",
-			"ImGui",
-			"yaml-cpp",
-			"comdlg32"
-		}
-		-- Using ccache to accelerate compilation time (not mandatory)
-		-- makesettings [[CXX = ccache g++]]
-	
-	filter { "action:gmake2", "configurations:Release"}
-		buildoptions { "-O3" }
+	-- Configurations
+	filter "configurations:Debug"
+		defines { "DEBUG" }
+		runtime "Debug"
+		symbols "On" 
+		optimize "Off"
+
+	filter "configurations:Release"  
+		defines { "NDEBUG" }
+		runtime "Release"
+		optimize "full"
+
+	-- EMScripten
+	filter { "action:gmake2" }
+		architecture "x86"
+		makesettings [[
+CC = emcc
+CXX = em++
+AR = emar
+		]]
+		targetextension  ".html"
+		buildoptions { "-Wall -Wformat -s DISABLE_EXCEPTION_CATCHING=1 -Wno-deprecated-include-gch" }
+		linkoptions { "-s DISABLE_EXCEPTION_CATCHING=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_GLFW=3 -s FULL_ES3=1 -s FORCE_FILESYSTEM=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 --use-preload-plugins --no-heap-copy --preload-file assets -lidbfs.js" }
 
 	-- VS 2022
 	filter "action:vs2022"
-		defines { "_CRT_SECURE_NO_WARNINGS" }
+		defines {  "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
 		disablewarnings { "4996" }
 		links { "glfw3_mt" }
 
@@ -82,24 +91,3 @@ project "LuckyEditor"
 		ignoredefaultlibraries { "LIBCMT" }
 		debugargs { "assets\\scenes\\PinkCube.lucky" }
 
-	-- Configurations
-	filter "configurations:Debug"
-		defines { "DEBUG" }
-		runtime "Debug"
-		symbols "On" 
-
-	filter "configurations:Release"  
-		defines { "NDEBUG" }
-		runtime "Release"
-		optimize "On" 
-
-	-- Platforms
-	filter "system:windows"
-		systemversion "latest"
-		defines { "PLATFORM_WINDOWS" }
-
-	-- Post builds
-	postbuildcommands 
-	{
-		'{COPY} "../Vendors/GLFW/lib-static-ucrt/glfw3.dll" "%{cfg.targetdir}"',
-	}

@@ -36,14 +36,22 @@ project "ImGui"
 	filter "system:windows"
 		systemversion "latest"
 
-	filter "system:linux"
-		pic "On"
-		systemversion "latest"
-
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
+		optimize "Off"
 
 	filter "configurations:Release"
 		runtime "Release"
-		optimize "on"
+		optimize "full"
+
+	filter { "action:gmake2" }
+		architecture "x86"
+		makesettings [[
+CC = emcc
+CXX = em++
+AR = emar
+		]]
+		targetextension  ".a"
+		buildoptions { "-Wall -Wformat -s DISABLE_EXCEPTION_CATCHING=1" }
+		linkoptions { "-s DISABLE_EXCEPTION_CATCHING=1 -s USE_SDL=2 -s USE_GLFW=3 -s FULL_ES3=1 -s FORCE_FILESYSTEM=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 --no-heap-copy --preload-file ./misc/fonts@/fonts" }

@@ -16,9 +16,9 @@ project "Lucky"
 		"%{includeDir.GLM}/glm/**.hpp", 
 		"%{includeDir.GLM}/glm/**.inl",
 		"%{includeDir.stb}/**.h", 
-		"%{includeDir.stb}/**.cpp",
-		"%{includeDir.ImGuizmo}/*.h", 
-		"%{includeDir.ImGuizmo}/*.cpp"
+		"%{includeDir.stb}/**.cpp"
+		-- "%{includeDir.ImGuizmo}/*.h", 
+		-- "%{includeDir.ImGuizmo}/*.cpp"
 	}
 
 	vpaths 
@@ -28,9 +28,9 @@ project "Lucky"
 			"%{includeDir.GLM}/glm/**.hpp", 
 			"%{includeDir.GLM}/glm/**.inl",
 			"%{includeDir.stb}/**.h",
-			"%{includeDir.stb}/**.cpp",
-			"%{includeDir.ImGuizmo}/*.h", 
-			"%{includeDir.ImGuizmo}/*.cpp"
+			"%{includeDir.stb}/**.cpp"
+			-- "%{includeDir.ImGuizmo}/*.h", 
+			-- "%{includeDir.ImGuizmo}/*.cpp"
 		} 
 	}
 
@@ -59,6 +59,7 @@ project "Lucky"
 		"opengl32",
 		"GLAD",
 		"ImGui",
+		"ImGuizmo",
 		"yaml-cpp"
 	}
 
@@ -75,41 +76,34 @@ project "Lucky"
 	filter "files:../Vendors/ImGuizmo/*.cpp"
 		flags { "NoPCH" }
 
-	-- G++
-	filter "action:gmake2"
-		staticruntime "on"
-		buildoptions { "-Wall" }
-		links 
-		{
-			"glfw3"
-		}
-		-- Using ccache to accelerate compilation time (not mandatory)
-		-- makesettings [[CXX = ccache g++]]
-
-	filter { "action:gmake2", "configurations:Release"}
-		buildoptions { "-O3" }
-		links 
-		{
-			"comdlg32"
-		}
-
-	-- VS 2022
-	filter "action:vs2022"
-		defines { "_CRT_SECURE_NO_WARNINGS" }
-		disablewarnings { "4996" }
-		links { "glfw3_mt" }
-
 	-- Configurations
 	filter "configurations:Debug"
 		defines { "DEBUG" }
 		runtime "Debug"
 		symbols "On" 
+		optimize "Off"
 
 	filter "configurations:Release"
 		defines { "NDEBUG" }
 		runtime "Release"
-		optimize "On" 
+		optimize "full"
 
-	-- Platforms
-	filter "system:windows"
-		defines { "PLATFORM_WINDOWS" }
+	-- EMScripten
+	filter { "action:gmake2" }
+		architecture "x86"
+		makesettings [[
+CC = emcc
+CXX = em++
+AR = emar
+		]]
+		targetextension  ".a"
+		buildoptions { "-Wall -Wformat -s DISABLE_EXCEPTION_CATCHING=1 -Wno-deprecated-include-gch" }
+		linkoptions { "-s DISABLE_EXCEPTION_CATCHING=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_GLFW=3 -s FULL_ES3=1 -s FORCE_FILESYSTEM=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 --use-preload-plugins --no-heap-copy" }
+
+	-- VS 2022
+	filter "action:vs2022"
+		defines { "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
+		disablewarnings { "4996" }
+		links { "glfw3_mt" }
+
+

@@ -1,7 +1,7 @@
 {
     "tasks": [
         {
-            "label": "Debug-native",
+            "label": "Debug",
             "type": "shell",
             "command": "make",
             "args": [
@@ -12,31 +12,9 @@
             "group": "build"
         },
         {
-            "label": "Release-native",
+            "label": "Release",
             "type": "shell",
             "command": "make",
-            "args": [
-                "-j8",
-                "config=release",
-                "all"
-            ],
-            "group": "build"
-        },
-        {
-            "label": "Debug-emscripten",
-            "type": "shell",
-            "command": "make -f Makefile.emscripten.mk",
-            "args": [
-                "-j8",
-                "config=debug",
-                "all"
-            ],
-            "group": "build"
-        },
-        {
-            "label": "Release-emscripten",
-            "type": "shell",
-            "command": "make -f Makefile.emscripten.mk",
             "args": [
                 "-j8",
                 "config=release",
