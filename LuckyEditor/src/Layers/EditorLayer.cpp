@@ -264,7 +264,9 @@ namespace Lucky
 		auto stats = Renderer2D::GetStats();
 
 		ImGui::Begin("Settings");
-		static bool lock = false;;
+		static bool lock = false;
+		auto renderApi = NAMEOF_ENUM(RendererApi::GetApi());
+		ImGui::Text("Render API: %s", renderApi.data());
 		ImGui::Checkbox("Lock camera", &lock);
 		std::string name = "None";
 		if (m_HoveredEntity)
@@ -526,91 +528,102 @@ namespace Lucky
 		m_ActiveScene = CreateRef<Scene>();
 
 		FramebufferSpecification fbSpec;
-#ifndef __EMSCRIPTEN__
-		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER,  FramebufferTextureFormat::Depth };
-#else
-		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
-#endif
-		fbSpec.Width = window.GetWidth();
-		fbSpec.Height = window.GetHeight();
-		m_RenderPassRenderer.Name = "Renderer";
-		m_RenderPassRenderer.Framebuffer = Framebuffer::Create(fbSpec);
-		m_RenderPassRenderer.Shader = shaderLibrary.Get("2DTexture");
-		m_RenderPassRenderer.BeforeRenderCallback = [](const auto& pass)
+		if(RendererApi::GetApi() == RendererApi::Api::OpenGL)
 		{
-			if(pass.Name == "Renderer")
-			{
-				RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-				RenderCommand::Clear();
-#ifndef __EMSCRIPTEN__
-				pass.Framebuffer->ClearAttachment(1, -1);
-#endif
-			}
-		};
-#ifndef __EMSCRIPTEN__
-		m_RenderPassRenderer.AfterRenderCallback = [this](const auto& pass)
-			{
-				if (pass.Name == "Renderer")
+			fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER,  FramebufferTextureFormat::Depth };
+			fbSpec.Width = window.GetWidth();
+			fbSpec.Height = window.GetHeight();
+			m_RenderPassRenderer.Name = "Renderer";
+			m_RenderPassRenderer.Framebuffer = Framebuffer::Create(fbSpec);
+			m_RenderPassRenderer.Shader = shaderLibrary.Get("2DTexture");
+			m_RenderPassRenderer.BeforeRenderCallback = [](const auto& pass)
 				{
-					auto [mx, my] = ImGui::GetMousePos();
-					mx -= m_ViewportBounds[0].x;
-					my -= m_ViewportBounds[0].y;
-					glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
-
-					int mouseX = (int)mx;
-					int mouseY = (int)(viewportSize.y - my);
-
-					if (mouseX >= 0 && mouseY >= 0 && mouseX < viewportSize.x && mouseY < viewportSize.y)
+					if (pass.Name == "Renderer")
 					{
-						auto entityId = pass.Framebuffer->ReadPixel(1, mouseX, mouseY);
-						m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
+						RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+						RenderCommand::Clear();
+						pass.Framebuffer->ClearAttachment(1, -1);
 					}
-				}
-			};
-#else
-		m_RenderPassRenderer.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader, 0);
-#endif
-
-#ifdef __EMSCRIPTEN__
-		FramebufferSpecification fbSpec2;
-		fbSpec2.AttachmentSpecs = { FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
-		fbSpec2.Width = window.GetWidth();
-		fbSpec2.Height = window.GetHeight();
-		m_RenderPassMousePicking.Name = "MousePicking";
-		m_RenderPassMousePicking.Framebuffer = Framebuffer::Create(fbSpec2);
-		m_RenderPassMousePicking.Shader = shaderLibrary.Get("MousePicking");
-		m_RenderPassMousePicking.BeforeRenderCallback = [](const auto& pass)
-			{
-				if (pass.Name == "MousePicking")
+				};
+			m_RenderPassRenderer.AfterRenderCallback = [this](const auto& pass)
 				{
-					pass.Framebuffer->ClearAttachment(0, -1);
-					RenderCommand::ClearDepth();
-				}
-			};
-		m_RenderPassMousePicking.AfterRenderCallback = [this](const auto& pass)
-			{
-				if (pass.Name == "MousePicking")
-				{
-					auto [mx, my] = ImGui::GetMousePos();
-					mx -= m_ViewportBounds[0].x;
-					my -= m_ViewportBounds[0].y;
-					glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
-
-					int mouseX = (int)mx;
-					int mouseY = (int)(viewportSize.y - my);
-
-					if (mouseX >= 0 && mouseY >= 0 && mouseX < viewportSize.x && mouseY < viewportSize.y)
+					if (pass.Name == "Renderer")
 					{
-						auto entityId = pass.Framebuffer->ReadPixel(0, mouseX, mouseY);
-						m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
-					}
-				}
-			};
-		m_RenderPassMousePicking.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader, 0);
+						auto [mx, my] = ImGui::GetMousePos();
+						mx -= m_ViewportBounds[0].x;
+						my -= m_ViewportBounds[0].y;
+						glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
 
-		m_ActiveScene->AddPass(m_RenderPassMousePicking);
-#endif
-		m_ActiveScene->AddPass(m_RenderPassRenderer);
+						int mouseX = (int)mx;
+						int mouseY = (int)(viewportSize.y - my);
+
+						if (mouseX >= 0 && mouseY >= 0 && mouseX < viewportSize.x && mouseY < viewportSize.y)
+						{
+							auto entityId = pass.Framebuffer->ReadPixel(1, mouseX, mouseY);
+							m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
+						}
+					}
+				};
+
+			m_ActiveScene->AddPass(m_RenderPassRenderer);
+		}
+		else
+		{
+			fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+			fbSpec.Width = window.GetWidth();
+			fbSpec.Height = window.GetHeight();
+			m_RenderPassRenderer.Name = "Renderer";
+			m_RenderPassRenderer.Framebuffer = Framebuffer::Create(fbSpec);
+			m_RenderPassRenderer.Shader = shaderLibrary.Get("2DTexture");
+			m_RenderPassRenderer.BeforeRenderCallback = [](const auto& pass)
+				{
+					if (pass.Name == "Renderer")
+					{
+						RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+						RenderCommand::Clear();
+					}
+				};
+			m_RenderPassRenderer.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader.get(), 0);
+
+			FramebufferSpecification fbSpec2;
+			fbSpec2.AttachmentSpecs = { FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+			fbSpec2.Width = window.GetWidth();
+			fbSpec2.Height = window.GetHeight();
+			m_RenderPassMousePicking.Name = "MousePicking";
+			m_RenderPassMousePicking.Framebuffer = Framebuffer::Create(fbSpec2);
+			m_RenderPassMousePicking.Shader = shaderLibrary.Get("MousePicking");
+			m_RenderPassMousePicking.BeforeRenderCallback = [](const auto& pass)
+				{
+					if (pass.Name == "MousePicking")
+					{
+						pass.Framebuffer->ClearAttachment(0, -1);
+						RenderCommand::ClearDepth();
+					}
+				};
+			m_RenderPassMousePicking.AfterRenderCallback = [this](const auto& pass)
+				{
+					if (pass.Name == "MousePicking")
+					{
+						auto [mx, my] = ImGui::GetMousePos();
+						mx -= m_ViewportBounds[0].x;
+						my -= m_ViewportBounds[0].y;
+						glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+
+						int mouseX = (int)mx;
+						int mouseY = (int)(viewportSize.y - my);
+
+						if (mouseX >= 0 && mouseY >= 0 && mouseX < viewportSize.x && mouseY < viewportSize.y)
+						{
+							auto entityId = pass.Framebuffer->ReadPixel(0, mouseX, mouseY);
+							m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
+						}
+					}
+				};
+			m_RenderPassMousePicking.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader.get(), 0);
+
+			m_ActiveScene->AddPass(m_RenderPassMousePicking);
+			m_ActiveScene->AddPass(m_RenderPassRenderer);
+		}
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);

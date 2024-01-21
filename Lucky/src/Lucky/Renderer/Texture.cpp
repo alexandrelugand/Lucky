@@ -5,9 +5,8 @@
 #include "RendererApi.h"
 #ifndef __EMSCRIPTEN__
 #include "Lucky/Platforms/OpenGL/OpenGLTexture2D.h"
-#else
-#include "Lucky/Platforms/OpenGLES3/OpenGLES3Texture2D.h"
 #endif
+#include "Lucky/Platforms/OpenGLES3/OpenGLES3Texture2D.h"
 
 namespace Lucky
 {
@@ -21,10 +20,9 @@ namespace Lucky
 #ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLTexture2D>(width, height);
-#else
+#endif
 		case RendererApi::Api::OpenGLES3:
 			return CreateRef<OpenGLES3Texture2D>(width, height);
-#endif
 		default:
 			LK_CORE_ASSERT(false, "Renderer API is not supported!");
 			return nullptr;
@@ -41,10 +39,9 @@ namespace Lucky
 #ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLTexture2D>(path);
-#else
+#endif
 		case RendererApi::Api::OpenGLES3:
 			return CreateRef<OpenGLES3Texture2D>(path);
-#endif
 		default:
 			LK_CORE_ASSERT(false, "Renderer API is not supported!");
 			return nullptr;

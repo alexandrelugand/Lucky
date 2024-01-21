@@ -3,7 +3,7 @@
 
 namespace Lucky
 {
-	OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t size, uint32_t binding)
+	OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t binding, uint32_t size)
 	{
 		LK_PROFILE_FUNCTION();
 		glGenBuffers(1, &m_UniformBufferId);

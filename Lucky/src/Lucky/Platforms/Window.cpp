@@ -7,9 +7,9 @@
 #include "Lucky/Core/Events/ApplicationEvent.h"
 #ifndef __EMSCRIPTEN__
 #include "Lucky/Platforms/OpenGL/OpenGLContext.h"
-#else
-#include "Lucky/Platforms/OpenGLES3/OpenGLES3Context.h"
 #endif
+#include "Lucky/Platforms/OpenGLES3/OpenGLES3Context.h"
+#include "Lucky/Renderer/RendererApi.h"
 
 namespace Lucky
 {
@@ -79,9 +79,9 @@ namespace Lucky
 
 #ifndef __EMSCRIPTEN__
         int max_width  = GetSystemMetrics(SM_CXSCREEN);
-        int max_hieght = GetSystemMetrics(SM_CYSCREEN);
-        glfwSetWindowMonitor(m_Window, NULL, (max_width/2)-(m_Data.Width/2), (max_hieght/2) - (m_Data.Height/2), m_Data.Width, m_Data.Height, GLFW_DONT_CARE);
-        m_Context = new OpenGLContext(m_Window);
+        int max_height = GetSystemMetrics(SM_CYSCREEN);
+        glfwSetWindowMonitor(m_Window, NULL, (max_width/2)-(m_Data.Width/2), (max_height/2) - (m_Data.Height/2), m_Data.Width, m_Data.Height, GLFW_DONT_CARE);
+        m_Context = RendererApi::GetApi() == RendererApi::Api::OpenGL ? (Context*) new OpenGLContext(m_Window) : new OpenGLES3Context(m_Window);
 #else        
         m_Context = new OpenGLES3Context(m_Window);
 #endif

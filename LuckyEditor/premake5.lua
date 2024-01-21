@@ -36,7 +36,8 @@ project "LuckyEditor"
 		"%{includeDir.ImGui}",
 		"%{includeDir.GLM}",
 		"%{includeDir.entt}",
-		"%{includeDir.ImGuizmo}"
+		"%{includeDir.ImGuizmo}",
+		"%{includeDir.nameof}"
 	}
 
 	libdirs 

@@ -7,7 +7,7 @@ namespace Lucky
 	class OpenGLES3UniformBuffer : public UniformBuffer
 	{
 	public:
-		OpenGLES3UniformBuffer(const std::string& name, const Ref<Shader>& shader, uint32_t binding);
+		OpenGLES3UniformBuffer(const std::string& name, const Shader* shader, uint32_t binding);
 		virtual ~OpenGLES3UniformBuffer();
 
 		void SetData(const void* data, uint32_t size, uint32_t offset = 0) override;

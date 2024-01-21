@@ -4,9 +4,8 @@
 #include "Renderer.h"
 #ifndef __EMSCRIPTEN__
 #include "Lucky/Platforms/OpenGL/OpenGLFramebuffer.h"
-#else
-#include "Lucky/Platforms/OpenGLES3/OpenGLES3Framebuffer.h"
 #endif
+#include "Lucky/Platforms/OpenGLES3/OpenGLES3Framebuffer.h"
 
 namespace Lucky
 {
@@ -20,10 +19,9 @@ namespace Lucky
 #ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLFramebuffer>(spec);
-#else
+#endif
 		case RendererApi::Api::OpenGLES3:
 			return CreateRef<OpenGLES3Framebuffer>(spec);
-#endif
 		default:
 			LK_CORE_ASSERT(false, "Renderer API is not supported!");
 			return nullptr;

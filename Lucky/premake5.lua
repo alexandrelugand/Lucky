@@ -107,14 +107,12 @@ AR = emar
 
 	-- VS 2022
 	filter "action:vs2022"
-		defines { "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
+		defines { "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS", "OPENGL" }
 		disablewarnings { "4996" }
 		excludes
 		{
 			"src/Lucky/Platforms/Browser/**.h",
-			"src/Lucky/Platforms/Browser/**.cpp",
-			"src/Lucky/Platforms/OpenGLES3/**.h",
-			"src/Lucky/Platforms/OpenGLES3/**.cpp",
+			"src/Lucky/Platforms/Browser/**.cpp"
 		}
 		links 
 		{ 

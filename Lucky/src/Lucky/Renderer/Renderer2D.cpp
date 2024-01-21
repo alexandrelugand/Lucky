@@ -117,9 +117,8 @@ namespace Lucky
 		s_Data.QuadVertexPositions[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
 
-#ifndef __EMSCRIPTEN__
-		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
-#endif		
+		if(RendererApi::GetApi() == RendererApi::Api::OpenGL)
+			s_Data.CameraUniformBuffer = UniformBuffer::Create("", nullptr, 0, sizeof(Renderer2DData::CameraData));
 	}
 
 	void Renderer2D::Shutdown()
@@ -133,13 +132,16 @@ namespace Lucky
 
 		const auto view = camera.GetProjection() * glm::inverse(transform);
 
-#ifndef __EMSCRIPTEN__
-		s_Data.CameraBuffer.ViewProjection = view;
-		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
-#else
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", view);
-#endif
+		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
+		{
+			s_Data.CameraBuffer.ViewProjection = view;
+			s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		}
+		else
+		{
+			s_Data.TextureShader->Bind();
+			s_Data.TextureShader->SetMat4("u_ViewProjection", view);
+		}
 
 		StartBatch();
 	}
@@ -153,13 +155,16 @@ namespace Lucky
 		pass.Framebuffer->Bind();
 		pass.Shader->Bind();
 
-#ifndef __EMSCRIPTEN__
-		s_Data.CameraBuffer.ViewProjection = view;
-		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
-#else
-		s_Data.CameraBuffer.ViewProjection = view;
-		pass.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
-#endif
+		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
+		{
+			s_Data.CameraBuffer.ViewProjection = view;
+			s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		}
+		else
+		{
+			s_Data.CameraBuffer.ViewProjection = view;
+			pass.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		}
 
 		if (pass.BeforeRenderCallback)
 			pass.BeforeRenderCallback(pass);
@@ -170,13 +175,16 @@ namespace Lucky
 	void Renderer2D::BeginScene(const EditorCamera& camera)
 	{
 		LK_PROFILE_FUNCTION();
-#ifndef __EMSCRIPTEN__
-		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
-		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
-#else
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
-#endif
+		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
+		{
+			s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+			s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		}
+		else
+		{
+			s_Data.TextureShader->Bind();
+			s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
+		}
 
 		StartBatch();
 	}
@@ -188,13 +196,16 @@ namespace Lucky
 		pass.Framebuffer->Bind();
 		pass.Shader->Bind();
 
-#ifndef __EMSCRIPTEN__
-		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
-		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
-#else
-		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
-		pass.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
-#endif
+		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
+		{
+			s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+			s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		}
+		else
+		{
+			s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+			pass.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		}
 
 		if (pass.BeforeRenderCallback)
 			pass.BeforeRenderCallback(pass);

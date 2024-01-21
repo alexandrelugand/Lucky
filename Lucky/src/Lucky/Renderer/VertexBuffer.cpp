@@ -5,9 +5,8 @@
 #include "RendererApi.h"
 #ifndef __EMSCRIPTEN__
 #include "Lucky/Platforms/OpenGL/OpenGLVertexBuffer.h"
-#else
-#include "Lucky/Platforms/OpenGLES3/OpenGLES3VertexBuffer.h"
 #endif
+#include "Lucky/Platforms/OpenGLES3/OpenGLES3VertexBuffer.h"
 
 namespace Lucky
 {
@@ -21,10 +20,9 @@ namespace Lucky
 #ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLVertexBuffer>(size);
-#else
+#endif
 		case RendererApi::Api::OpenGLES3:
 			return CreateRef<OpenGLES3VertexBuffer>(size);
-#endif
 		default:
 			LK_CORE_ASSERT(false, "Renderer API is not supported!");
 			return nullptr;
@@ -41,10 +39,9 @@ namespace Lucky
 #ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLVertexBuffer>(vertices, size);
-#else
+#endif
 		case RendererApi::Api::OpenGLES3:
 			return CreateRef<OpenGLES3VertexBuffer>(vertices, size);
-#endif
 		default:
 			LK_CORE_ASSERT(false, "Renderer API is not supported!");
 			return nullptr;

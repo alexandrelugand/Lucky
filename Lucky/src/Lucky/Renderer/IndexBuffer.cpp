@@ -5,9 +5,8 @@
 #include "RendererApi.h"
 #ifndef __EMSCRIPTEN__
 #include "Lucky/Platforms/OpenGL/OpenGLIndexBuffer.h"
-#else
-#include "Lucky/Platforms/OpenGLES3/OpenGLES3IndexBuffer.h"
 #endif
+#include "Lucky/Platforms/OpenGLES3/OpenGLES3IndexBuffer.h"
 
 namespace Lucky
 {
@@ -21,10 +20,9 @@ namespace Lucky
 #ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLIndexBuffer>(indices, count);
-#else
+#endif
 		case RendererApi::Api::OpenGLES3:
 			return CreateRef<OpenGLES3IndexBuffer>(indices, count);
-#endif
 		default:
 			LK_CORE_ASSERT(false, "Renderer API is not supported!");
 			return nullptr;

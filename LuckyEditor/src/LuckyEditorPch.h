@@ -30,6 +30,7 @@
 #endif
 #include <GLFW/glfw3.h>
 #include <imgui.h>
+#include <nameof.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

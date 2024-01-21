@@ -13,21 +13,29 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 		glfwMakeContextCurrent(m_Window);
-		
-		LK_CORE_INFO("OpenGL info:");
+#ifndef __EMSCRIPTEN__
+		bool status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) != 0;
+		LK_CORE_ASSERT(status, "Failed to initialize GLAD");
+		if (status)
+		{
+#endif
+			LK_CORE_INFO("OpenGL info:");
 		LK_CORE_INFO("  Vendor: {0}", (const char*) glGetString(GL_VENDOR));
 		LK_CORE_INFO("  Renderer: {0}", (const char*) glGetString(GL_RENDERER));
 		LK_CORE_INFO("  Version: {0}", (const char*) glGetString(GL_VERSION));
 
-		#ifdef ENABLE_ASSERTS
+#ifdef ENABLE_ASSERTS
 
-		int versionMajor, versionMinor;
-		glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
-		glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
+			int versionMajor, versionMinor;
+			glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
+			glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
 
-		LK_CORE_ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 0), "Lucky requires at least OpenGL 3.0 ES!");
+			LK_CORE_ASSERT(versionMajor > 3 || (versionMajor >= 3 && versionMinor >= 0), "Lucky requires at least OpenGL 3.0 ES!");
 
-		#endif
+#endif
+#ifndef __EMSCRIPTEN__
+		}
+#endif
 	}
 
 	void OpenGLES3Context::SwapBuffers()
