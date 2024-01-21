@@ -1,3 +1,5 @@
+include "Dependencies.lua"
+
 workspace "Lucky"  
 	startproject "Lucky-Editor"
 	configurations 
@@ -19,20 +21,22 @@ if _ACTION == "gmake2" then
 	tmpdir = "browser"
 end
 
-includeDir = {}
-includeDir["spdlog"]="../Vendors/spdlog/include"
-includeDir["GLFW"]="../Vendors/GLFW/include"
-includeDir["GLAD"]="../Vendors/GLAD/include"
-includeDir["ImGui"]="../Vendors/ImGui"
-includeDir["GLM"]="../Vendors/GLM"
-includeDir["stb"]="../Vendors/stb"
-includeDir["entt"]="../Vendors/entt/include"
-includeDir["yaml"]="../Vendors/yaml-cpp/include"
-includeDir["ImGuizmo"]="../Vendors/ImGuizmo"
-includeDir["nameof"]="../Vendors/nameof"
+-- includeDir = {}
+-- includeDir["spdlog"]="../Vendors/spdlog/include"
+-- includeDir["GLFW"]="../Vendors/GLFW/include"
+-- includeDir["GLAD"]="../Vendors/GLAD/include"
+-- includeDir["ImGui"]="../Vendors/ImGui"
+-- includeDir["GLM"]="../Vendors/GLM"
+-- includeDir["stb"]="../Vendors/stb"
+-- includeDir["entt"]="../Vendors/entt/include"
+-- includeDir["yaml"]="../Vendors/yaml-cpp/include"
+-- includeDir["ImGuizmo"]="../Vendors/ImGuizmo"
+-- includeDir["nameof"]="../Vendors/nameof"
 
-libDir = {}
-libDir["GLFW"]= iif(_ACTION == "gmake2", "../Vendors/GLFW/lib-static-ucrt", "../Vendors/GLFW/lib-vc2022")
+-- libDir = {}
+if _ACTION == "gmake2" then
+	libDir["GLFW"] = "../Vendors/GLFW/lib-static-ucrt"
+end
 
 group "Dependencies"
 	if _ACTION == "vs2022" then

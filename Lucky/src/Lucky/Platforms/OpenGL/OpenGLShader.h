@@ -11,7 +11,7 @@ namespace Lucky
 		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader();
 
-		inline const std::string& GetName() const override { return m_Name; }
+		const std::string& GetName() const override { return m_Name; }
 
 		void Bind() const override;
 		void Unbind() const override;
@@ -29,11 +29,20 @@ namespace Lucky
 
 	private:
 		std::string ReadFile(const std::string& filepath);
-		std::unordered_map<uint32_t, std::string> PreProcess(const std::string& source);
-		std::string GetHeader(uint32_t shaderType);
-		void Compile(const std::unordered_map<uint32_t, std::string>& shaderSources);
+		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
+		std::string GetHeader(GLenum shaderType);
+
+		void CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shaderSources);
+		void CompileOrGetOpenGLBinaries();
+		void CreateProgram();
+		void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
 
 		uint32_t m_ProgramId;
+		std::string m_FilePath;
 		std::string m_Name;
+
+		std::unordered_map<GLenum, std::vector<uint32_t>> m_VulkanSPIRV;
+		std::unordered_map<GLenum, std::vector<uint32_t>> m_OpenGLSPIRV;
+		std::unordered_map<GLenum, std::string> m_OpenGLSourceCode;
 	};
 }

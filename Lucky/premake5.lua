@@ -13,20 +13,6 @@ project "Lucky"
 	{ 
 		"**.h",
 		"**.cpp",
-		-- "src/*.h", 
-		-- "src/*.cpp", 
-		-- "src/Lucky/*.h", 
-		-- "src/Lucky/*.cpp", 
-		-- "src/Lucky/Application/**.h",
-		-- "src/Lucky/Application/**.cpp",
-		-- "src/Lucky/Core/**.h",
-		-- "src/Lucky/Core/**.cpp",
-		-- "src/Lucky/Math/**.h",
-		-- "src/Lucky/Math/**.cpp",
-		-- "src/Lucky/Renderer/**.h",
-		-- "src/Lucky/Renderer/**.cpp",
-		-- "src/Lucky/Scene/**.h",
-		-- "src/Lucky/Scene/**.cpp",
 		"%{includeDir.GLM}/glm/**.hpp", 
 		"%{includeDir.GLM}/glm/**.inl",
 		"%{includeDir.stb}/**.h", 
@@ -57,7 +43,8 @@ project "Lucky"
 		"%{includeDir.entt}",
 		"%{includeDir.yaml}",
 		"%{includeDir.ImGuizmo}",
-		"%{includeDir.nameof}"
+		"%{includeDir.nameof}",
+		"%{includeDir.VulkanSDK}"
 	}
 
 	libdirs 
@@ -117,19 +104,11 @@ AR = emar
 			"src/Lucky/Platforms/OpenGL/**.h",
 			"src/Lucky/Platforms/OpenGL/**.cpp",
 		}
-		-- files
-		-- {
-		-- 	"src/Lucky/Platforms/Browser/**.h",
-		-- 	"src/Lucky/Platforms/Browser/**.cpp",
-		-- 	"src/Lucky/Platforms/OpenGLES3/**.h",
-		-- 	"src/Lucky/Platforms/OpenGLES3/**.cpp",
-		-- }
 
 	-- VS 2022
 	filter "action:vs2022"
 		defines { "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
 		disablewarnings { "4996" }
-		links { "glfw3_mt" }
 		excludes
 		{
 			"src/Lucky/Platforms/Browser/**.h",
@@ -137,12 +116,23 @@ AR = emar
 			"src/Lucky/Platforms/OpenGLES3/**.h",
 			"src/Lucky/Platforms/OpenGLES3/**.cpp",
 		}
-		-- files
-		-- {
-		-- 	"src/Lucky/Platforms/Windows/**.h",
-		-- 	"src/Lucky/Platforms/Windows/**.cpp",
-		-- 	"src/Lucky/Platforms/OpenGL/**.h",
-		-- 	"src/Lucky/Platforms/OpenGL/**.cpp",
-		-- }
+		links 
+		{ 
+			"glfw3_mt" 
+		}
 
-
+	filter { "action:vs2022", "configurations:Debug"}
+		links 
+		{
+			"%{library.ShaderC_Debug}",
+			"%{library.SPIRV_Cross_Debug}",
+			"%{library.SPIRV_Cross_GLSL_Debug}"
+		}
+	
+	filter { "action:vs2022", "configurations:Release"}
+		links 
+		{
+			"%{library.ShaderC_Release}",
+			"%{library.SPIRV_Cross_Release}",
+			"%{library.SPIRV_Cross_GLSL_Release}"
+		}

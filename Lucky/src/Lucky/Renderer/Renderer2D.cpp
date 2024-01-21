@@ -4,6 +4,7 @@
 #include "VertexArray.h"
 #include "ShaderLibrary.h"
 #include "RenderCommand.h"
+#include "UniformBuffer.h"
 
 namespace Lucky
 {
@@ -43,6 +44,13 @@ namespace Lucky
 		glm::vec4 QuadVertexPositions[4];
 
 		Renderer2D::Statictics Stats;
+
+		struct CameraData
+		{
+			glm::mat4 ViewProjection;
+		};
+		CameraData CameraBuffer;
+		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
 	static Renderer2DData s_Data;
@@ -102,15 +110,16 @@ namespace Lucky
 			shaderLibrary.LoadByApi("2DTexture.glsl");
 
 		s_Data.TextureShader = shaderLibrary.Get("2DTexture");
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
-
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
 		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
+
+#ifndef __EMSCRIPTEN__
+		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
+#endif		
 	}
 
 	void Renderer2D::Shutdown()
@@ -124,8 +133,13 @@ namespace Lucky
 
 		const auto view = camera.GetProjection() * glm::inverse(transform);
 
+#ifndef __EMSCRIPTEN__
+		s_Data.CameraBuffer.ViewProjection = view;
+		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+#else
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetMat4("u_ViewProjection", view);
+#endif
 
 		StartBatch();
 	}
@@ -136,14 +150,16 @@ namespace Lucky
 
 		const auto view = camera.GetProjection() * glm::inverse(transform);
 
-		int32_t samplers[32];
-		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
-			samplers[i] = i;
-
 		pass.Framebuffer->Bind();
 		pass.Shader->Bind();
-		pass.Shader->SetMat4("u_ViewProjection", view);
-		pass.Shader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+
+#ifndef __EMSCRIPTEN__
+		s_Data.CameraBuffer.ViewProjection = view;
+		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+#else
+		s_Data.CameraBuffer.ViewProjection = view;
+		pass.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+#endif
 
 		if (pass.BeforeRenderCallback)
 			pass.BeforeRenderCallback(pass);
@@ -154,8 +170,13 @@ namespace Lucky
 	void Renderer2D::BeginScene(const EditorCamera& camera)
 	{
 		LK_PROFILE_FUNCTION();
+#ifndef __EMSCRIPTEN__
+		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+#else
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
+#endif
 
 		StartBatch();
 	}
@@ -164,14 +185,16 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 
-		int32_t samplers[32];
-		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
-			samplers[i] = i;
-
 		pass.Framebuffer->Bind();
 		pass.Shader->Bind();
-		pass.Shader->SetMat4("u_ViewProjection", camera.GetViewProjection());
-		pass.Shader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+
+#ifndef __EMSCRIPTEN__
+		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+#else
+		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		pass.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+#endif
 
 		if (pass.BeforeRenderCallback)
 			pass.BeforeRenderCallback(pass);

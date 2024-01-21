@@ -11,7 +11,7 @@ namespace Lucky
 		OpenGLES3Shader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLES3Shader();
 
-		inline const std::string& GetName() const override { return m_Name; }
+		const std::string& GetName() const override { return m_Name; }
 
 		void Bind() const override;
 		void Unbind() const override;
@@ -27,7 +27,7 @@ namespace Lucky
 		void SetMat3(const std::string& name, const glm::mat3& value) override;
 		void SetMat4(const std::string& name, const glm::mat4& value) override;
 
-	private:
+	protected:
 		std::string ReadFile(const std::string& filepath);
 		std::unordered_map<uint32_t, std::string> PreProcess(const std::string& source);
 		std::string GetHeader(uint32_t shaderType);
@@ -35,5 +35,7 @@ namespace Lucky
 
 		uint32_t m_ProgramId;
 		std::string m_Name;
+
+		friend class OpenGLES3UniformBuffer;
 	};
 }

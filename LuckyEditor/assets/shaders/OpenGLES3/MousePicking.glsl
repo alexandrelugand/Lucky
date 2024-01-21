@@ -2,8 +2,10 @@
 layout(location = 0) in vec3 a_Position;
 layout(location = 5) in int a_EntityId;
 
-uniform mat4 u_ViewProjection;
-uniform mat4 u_Transform;
+layout(std140) uniform Camera
+{
+    mat4 u_ViewProjection;
+};
 
 flat out int v_EntityId;
 

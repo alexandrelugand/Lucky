@@ -162,7 +162,7 @@ namespace Lucky
 		if(shaderType == GL_VERTEX_SHADER)
 			return "#version 300 es\r\n";
 		else
-			return "#version 300 es\r\nprecision mediump float;\r\n";
+			return "#version 300 es\r\nprecision highp float;\r\n";
 	}
 
 	void OpenGLES3Shader::Compile(const std::unordered_map<uint32_t, std::string> &shaderSources)

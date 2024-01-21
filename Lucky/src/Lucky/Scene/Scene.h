@@ -7,6 +7,7 @@
 #include "Lucky/Renderer/EditorCamera.h"
 #include "Lucky/Renderer/Framebuffer.h"
 #include "Lucky/Renderer/Shader.h"
+#include "Lucky/Renderer/UniformBuffer.h"
 
 namespace Lucky
 {
@@ -23,6 +24,7 @@ namespace Lucky
 		std::string Name;
 		Ref<Framebuffer> Framebuffer;
 		Ref<Shader> Shader;
+		Ref<UniformBuffer> CameraUniformBuffer;
 		RenderPassCallbackFn BeforeRenderCallback = nullptr;
 		RenderPassCallbackFn AfterRenderCallback = nullptr;
 	};

@@ -567,6 +567,8 @@ namespace Lucky
 					}
 				}
 			};
+#else
+		m_RenderPassRenderer.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader, 0);
 #endif
 
 #ifdef __EMSCRIPTEN__
@@ -604,6 +606,7 @@ namespace Lucky
 					}
 				}
 			};
+		m_RenderPassMousePicking.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader, 0);
 
 		m_ActiveScene->AddPass(m_RenderPassMousePicking);
 #endif

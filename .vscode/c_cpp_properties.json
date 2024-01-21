@@ -10,12 +10,14 @@
                 "${workspaceFolder}/Vendors/GLFW/include",
                 "${workspaceFolder}/Vendors/ImGui",
                 "${workspaceFolder}/Vendors/ImGui/backends",
-                "${workspaceFolder}/Vendors/GLM"
+                "${workspaceFolder}/Vendors/GLM",
+                "${env:Emscripten}/system/include"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
-                "_UNICODE"
+                "_UNICODE",
+                "__EMSCRIPTEN__"
             ],
             "windowsSdkVersion": "10.0.22621.0",
             "intelliSenseMode": "windows-gcc-x64",

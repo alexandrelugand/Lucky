@@ -73,7 +73,8 @@
         "forward_list": "cpp",
         "list": "cpp",
         "set": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "cfenv": "cpp"
     },
     "cmake.configureOnOpen": false
 }
