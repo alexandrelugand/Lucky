@@ -136,4 +136,4 @@ namespace Lucky
 		indexBuffer->Bind();
 		m_IndexBuffer = indexBuffer;
 	}
-} // namespace Lucky
+}

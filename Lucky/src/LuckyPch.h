@@ -23,14 +23,15 @@
 	#include <Windows.h>
 #endif
 
-#ifdef __EMSCRIPTEN__
+#ifndef __EMSCRIPTEN__
+	#include <glad/glad.h>
+#else
 	#include <emscripten.h>
 	#include <GLES3/gl3.h>
-#else
-	#include <glad/glad.h>
 #endif
 #include <GLFW/glfw3.h>
 #include <imgui.h>
+#include <nameof.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -47,3 +48,5 @@
 #include "Lucky/Debug/Instrumentation.h"
 
 #include "stb/stb_image.h"
+#include "stb/stb_image.h"
+

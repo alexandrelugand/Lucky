@@ -43,4 +43,4 @@ namespace Lucky
 		EditorCamera m_EditorCamera;
 		Entity m_HoveredEntity{};
 	};
-} // namespace Lucky
+}

@@ -15,6 +15,7 @@ namespace Lucky
 
 		bool Exists(const std::string& name);
 
+		Ref<Shader> LoadByApi(const std::string& filename);
 		Ref<Shader> Load(const std::string& filepath);
 		Ref<Shader> Load(const std::string& name, const std::string& filepath);
 
@@ -27,4 +28,4 @@ namespace Lucky
 		std::unordered_map<std::string, Ref<Shader>> m_Shaders;
 
 	};
-} // namespace Lucky
+}

@@ -41,4 +41,4 @@ namespace Lucky
 	{
 		RenderCommand::SetViewport(0, 0, width, height);
 	}
-} // namespace Lucky
+}

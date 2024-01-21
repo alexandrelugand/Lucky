@@ -30,6 +30,6 @@ namespace Lucky
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-} // namespace Lucky
+}
 
 

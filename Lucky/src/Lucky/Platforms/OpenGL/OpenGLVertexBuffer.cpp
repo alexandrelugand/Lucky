@@ -43,4 +43,4 @@ namespace Lucky
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
-} // namespace Lucky
+}

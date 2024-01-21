@@ -11,14 +11,26 @@ project "Lucky"
 
 	files
 	{ 
-		"**.h", 
-		"**.cpp", 
+		"**.h",
+		"**.cpp",
+		-- "src/*.h", 
+		-- "src/*.cpp", 
+		-- "src/Lucky/*.h", 
+		-- "src/Lucky/*.cpp", 
+		-- "src/Lucky/Application/**.h",
+		-- "src/Lucky/Application/**.cpp",
+		-- "src/Lucky/Core/**.h",
+		-- "src/Lucky/Core/**.cpp",
+		-- "src/Lucky/Math/**.h",
+		-- "src/Lucky/Math/**.cpp",
+		-- "src/Lucky/Renderer/**.h",
+		-- "src/Lucky/Renderer/**.cpp",
+		-- "src/Lucky/Scene/**.h",
+		-- "src/Lucky/Scene/**.cpp",
 		"%{includeDir.GLM}/glm/**.hpp", 
 		"%{includeDir.GLM}/glm/**.inl",
 		"%{includeDir.stb}/**.h", 
 		"%{includeDir.stb}/**.cpp"
-		-- "%{includeDir.ImGuizmo}/*.h", 
-		-- "%{includeDir.ImGuizmo}/*.cpp"
 	}
 
 	vpaths 
@@ -29,8 +41,6 @@ project "Lucky"
 			"%{includeDir.GLM}/glm/**.inl",
 			"%{includeDir.stb}/**.h",
 			"%{includeDir.stb}/**.cpp"
-			-- "%{includeDir.ImGuizmo}/*.h", 
-			-- "%{includeDir.ImGuizmo}/*.cpp"
 		} 
 	}
 
@@ -46,7 +56,8 @@ project "Lucky"
 		"%{includeDir.stb}",
 		"%{includeDir.entt}",
 		"%{includeDir.yaml}",
-		"%{includeDir.ImGuizmo}"
+		"%{includeDir.ImGuizmo}",
+		"%{includeDir.nameof}"
 	}
 
 	libdirs 
@@ -99,11 +110,39 @@ AR = emar
 		targetextension  ".a"
 		buildoptions { "-Wall -Wformat -s DISABLE_EXCEPTION_CATCHING=1 -Wno-deprecated-include-gch" }
 		linkoptions { "-s DISABLE_EXCEPTION_CATCHING=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_GLFW=3 -s FULL_ES3=1 -s FORCE_FILESYSTEM=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 --use-preload-plugins --no-heap-copy" }
+		excludes
+		{
+			"src/Lucky/Platforms/Windows/**.h",
+			"src/Lucky/Platforms/Windows/**.cpp",
+			"src/Lucky/Platforms/OpenGL/**.h",
+			"src/Lucky/Platforms/OpenGL/**.cpp",
+		}
+		-- files
+		-- {
+		-- 	"src/Lucky/Platforms/Browser/**.h",
+		-- 	"src/Lucky/Platforms/Browser/**.cpp",
+		-- 	"src/Lucky/Platforms/OpenGLES3/**.h",
+		-- 	"src/Lucky/Platforms/OpenGLES3/**.cpp",
+		-- }
 
 	-- VS 2022
 	filter "action:vs2022"
 		defines { "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
 		disablewarnings { "4996" }
 		links { "glfw3_mt" }
+		excludes
+		{
+			"src/Lucky/Platforms/Browser/**.h",
+			"src/Lucky/Platforms/Browser/**.cpp",
+			"src/Lucky/Platforms/OpenGLES3/**.h",
+			"src/Lucky/Platforms/OpenGLES3/**.cpp",
+		}
+		-- files
+		-- {
+		-- 	"src/Lucky/Platforms/Windows/**.h",
+		-- 	"src/Lucky/Platforms/Windows/**.cpp",
+		-- 	"src/Lucky/Platforms/OpenGL/**.h",
+		-- 	"src/Lucky/Platforms/OpenGL/**.cpp",
+		-- }
 
 

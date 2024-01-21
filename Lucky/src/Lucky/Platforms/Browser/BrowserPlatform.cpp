@@ -1,7 +1,5 @@
 #include "LuckyPch.h"
 
-#ifdef __EMSCRIPTEN__
-
 #include "Lucky/Platforms/Platform.h"
 
 namespace Lucky
@@ -129,5 +127,3 @@ namespace Lucky
 		return std::string();
 	}
 }
-
-#endif

@@ -3,7 +3,11 @@
 
 #include "Renderer.h"
 #include "RendererApi.h"
+#ifndef __EMSCRIPTEN__
 #include "Lucky/Platforms/OpenGL/OpenGLShader.h"
+#else
+#include "Lucky/Platforms/OpenGLES3/OpenGLES3Shader.h"
+#endif
 
 namespace Lucky
 {
@@ -14,12 +18,17 @@ namespace Lucky
 		case RendererApi::Api::None:
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
+#ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLShader>(filepath);
+#else
+		case RendererApi::Api::OpenGLES3:
+			return CreateRef<OpenGLES3Shader>(filepath);
+#endif
+		default:
+			LK_CORE_ASSERT(false, "Renderer API is not supported!");
+			return nullptr;
 		}
-
-		LK_CORE_ASSERT(false, "Unknown renderer API!");
-		return nullptr;
 	}
 
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
@@ -29,12 +38,17 @@ namespace Lucky
 		case RendererApi::Api::None:
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
+#ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
+#else
+		case RendererApi::Api::OpenGLES3:
+			return CreateRef<OpenGLES3Shader>(name, vertexSrc, fragmentSrc);
+#endif
+		default:
+			LK_CORE_ASSERT(false, "Renderer API is not supported!");
+			return nullptr;
 		}
-
-		LK_CORE_ASSERT(false, "Unknown renderer API!");
-		return nullptr;
 	}
 }
 

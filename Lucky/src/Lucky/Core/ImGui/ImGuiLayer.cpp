@@ -195,4 +195,4 @@ namespace Lucky
 		ImGui::SaveIniSettingsToDisk(io.IniFilename);
 #endif	
 	}
-} // namespace Lucky
+}

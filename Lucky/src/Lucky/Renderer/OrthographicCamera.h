@@ -11,4 +11,4 @@ namespace Lucky
 
 		void SetProjection(float left, float right, float top, float bottom);
 	};
-} // namespace Lucky
+}

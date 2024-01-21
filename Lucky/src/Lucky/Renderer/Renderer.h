@@ -30,4 +30,4 @@ namespace Lucky
 		static SceneData* s_SceneData;
 	};
 
-} // namespace Lucky
+}

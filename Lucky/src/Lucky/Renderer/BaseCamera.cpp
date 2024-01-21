@@ -12,4 +12,4 @@ namespace Lucky
 		m_ViewMatrix = glm::inverse(transform);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
-} // namespace Lucky
+}

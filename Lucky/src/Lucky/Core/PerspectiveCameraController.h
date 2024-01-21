@@ -36,4 +36,4 @@ namespace Lucky
 		CameraBounds m_Bounds;
 		PerspectiveCamera m_Camera;
 	};
-} // namespace Lucky
+}

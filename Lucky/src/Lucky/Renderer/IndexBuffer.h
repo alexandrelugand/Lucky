@@ -13,4 +13,4 @@ namespace Lucky
 
 		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
 	};
-} // namespace Lucky
+}

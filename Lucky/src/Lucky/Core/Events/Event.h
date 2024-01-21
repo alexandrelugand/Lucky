@@ -92,4 +92,4 @@ namespace Lucky
     {
         return os << e.ToString();
     }
-} // namespace Lucky
+}

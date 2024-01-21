@@ -21,4 +21,4 @@ namespace Lucky
 
 		static Ref<VertexArray> Create();
 	};
-} // namespace Lucky
+}

@@ -111,5 +111,5 @@ namespace Lucky
 
         EVENT_CLASS_TYPE(MouseButtonReleased)
     };
-} // namespace Lucky
+}
 

@@ -107,4 +107,4 @@ namespace Lucky
         EVENT_CLASS_TYPE(AppRender)
         EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
     };
-} // namespace Lucky
+}

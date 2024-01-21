@@ -41,4 +41,4 @@ namespace Lucky
             m_Layers.erase(it);
     }
 
-} // namespace Lucky
+}

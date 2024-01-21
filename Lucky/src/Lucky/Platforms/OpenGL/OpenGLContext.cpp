@@ -13,12 +13,8 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 		glfwMakeContextCurrent(m_Window);
-#ifndef __EMSCRIPTEN__
         bool status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) != 0;
         LK_CORE_ASSERT(status, "Failed to initialize GLAD");
-#else
-		bool status = true;
-#endif
 		if(status)
 		{
 			LK_CORE_INFO("OpenGL info:");
@@ -32,11 +28,7 @@ namespace Lucky
 			glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
 			glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
 
-#ifndef __EMSCRIPTEN__
 			LK_CORE_ASSERT(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 1), "Lucky requires at least OpenGL 4.1!");
-#else
-			LK_CORE_ASSERT(versionMajor > 3 || (versionMajor == 3 && versionMinor >= 0), "Lucky requires at least OpenGL 3.0 ES!");
-#endif
 
 			#endif
 		}
@@ -47,4 +39,4 @@ namespace Lucky
 		LK_PROFILE_FUNCTION();
 		glfwSwapBuffers(m_Window);
 	}
-} // namespace Lucky
+}

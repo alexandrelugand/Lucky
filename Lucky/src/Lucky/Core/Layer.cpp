@@ -7,4 +7,4 @@ namespace Lucky
         : m_DebugName(name)
     {
     }
-} // namespace Lucky
+}

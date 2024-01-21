@@ -28,4 +28,4 @@ namespace Lucky
         std::vector<Layer*> m_Layers;
         uint32_t m_LayerInsertIndex = 0;
     };
-} // namespace Lucky
+}

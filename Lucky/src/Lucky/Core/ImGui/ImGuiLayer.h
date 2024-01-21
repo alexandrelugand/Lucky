@@ -27,4 +27,4 @@ namespace Lucky
 
 		bool m_BlockEvents = false;
     };
-} // namespace Lucky
+}

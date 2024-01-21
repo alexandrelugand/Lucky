@@ -5,11 +5,7 @@ namespace Utils
 {
 	static GLenum TextureTarget(bool multiSampled)
 	{
-#ifndef __EMSCRIPTEN__		
 		return multiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-#else
-		return GL_TEXTURE_2D;
-#endif		
 	}
 
 	static void CreateTextures(bool multiSampled, uint32_t* outId, size_t count)
@@ -25,14 +21,12 @@ namespace Utils
 	static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, GLenum type, uint32_t width, uint32_t height, size_t index)
 	{
 		bool multiSampled = samples > 1;
-#ifndef __EMSCRIPTEN__		
 		if (multiSampled)
 		{
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, (GLsizei)width, (GLsizei)height, GL_FALSE);
 		}
 		else
 		{
-#endif		
 			glTexImage2D(GL_TEXTURE_2D, 0, (GLsizei)internalFormat, (GLsizei)width, (GLsizei)height, 0, format, type, nullptr);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -40,9 +34,7 @@ namespace Utils
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#ifndef __EMSCRIPTEN__		
 		}
-#endif		
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (GLsizei)index, TextureTarget(multiSampled), id, 0);
 	}
@@ -50,14 +42,12 @@ namespace Utils
 	static void AttachDepthTexture(uint32_t id, int samples, GLenum format, GLenum attachmentType, uint32_t width, uint32_t height)
 	{
 		bool multiSampled = samples > 1;
-#ifndef __EMSCRIPTEN__		
 		if (multiSampled)
 		{
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, (GLsizei)width, (GLsizei)height, GL_FALSE);
 		}
 		else
 		{
-#endif		
 			glTexStorage2D(GL_TEXTURE_2D, 1, format, (GLsizei)width, (GLsizei)height);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -65,9 +55,7 @@ namespace Utils
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#ifndef __EMSCRIPTEN__		
 		}
-#endif		
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multiSampled), id, 0);
 	}
@@ -81,7 +69,6 @@ namespace Utils
 		}
 	}
 
-#ifndef __EMSCRIPTEN__		
 	static GLenum FBTextureFormatToGL(Lucky::FramebufferTextureFormat format)
 	{
 		switch (format)
@@ -95,7 +82,6 @@ namespace Utils
 			}
 		}
 	}
-#endif		
 }
 
 namespace Lucky
@@ -153,12 +139,8 @@ namespace Lucky
 	{
 		LK_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
 
-#ifndef __EMSCRIPTEN__		
 		auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
 		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::FBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
-#else
-		glClearBufferiv(GL_COLOR, attachmentIndex, &value);
-#endif
 	}
 
 	int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y) const

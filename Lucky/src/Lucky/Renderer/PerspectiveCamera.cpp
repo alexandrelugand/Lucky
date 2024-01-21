@@ -14,4 +14,4 @@ namespace Lucky
 		m_ProjectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, zNear, zFar);
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
-} // namespace Lucky
+}

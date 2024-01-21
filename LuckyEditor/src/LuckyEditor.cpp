@@ -10,9 +10,11 @@ namespace Lucky
 	{
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
 		if(!shaderLibrary.Exists("2DTexture"))
-			shaderLibrary.Load("assets/shaders/2DTexture.glsl");
+			shaderLibrary.LoadByApi("2DTexture.glsl");
+#ifdef __EMSCRIPTEN__
 		if (!shaderLibrary.Exists("MousePicking"))
-			shaderLibrary.Load("assets/shaders/MousePicking.glsl");
+			shaderLibrary.LoadByApi("MousePicking.glsl");
+#endif
 
         PushLayer(new EditorLayer());
 		LK_INFO("Application initialized");

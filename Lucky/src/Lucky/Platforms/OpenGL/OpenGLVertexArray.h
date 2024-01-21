@@ -25,4 +25,4 @@ namespace Lucky
 		uint32_t m_VertexArrayId;
 	};
 
-} // namespace Lucky
+}

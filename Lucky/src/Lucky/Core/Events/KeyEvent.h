@@ -79,4 +79,4 @@ namespace Lucky
 
         EVENT_CLASS_TYPE(KeyTyped)
     };
-} // namespace Lucky
+}

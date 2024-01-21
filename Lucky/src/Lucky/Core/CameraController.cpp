@@ -21,4 +21,4 @@ namespace Lucky
 		return nullptr;
 	}
 
-} // namespace Lucky
+}

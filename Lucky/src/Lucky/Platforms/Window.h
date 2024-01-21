@@ -40,4 +40,4 @@ namespace Lucky
 
         WindowData m_Data;
     };
-} // namespace Lucky
+}

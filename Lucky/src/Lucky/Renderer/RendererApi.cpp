@@ -3,5 +3,9 @@
 
 namespace Lucky
 {
+#ifndef __EMSCRIPTEN__
 	RendererApi::Api RendererApi::s_Api = RendererApi::Api::OpenGL;
-} // namespace Lucky
+#else
+	RendererApi::Api RendererApi::s_Api = RendererApi::Api::OpenGLES3;
+#endif
+}

@@ -22,4 +22,4 @@ namespace Lucky
     protected:
         std::string m_DebugName;
     };
-} // namespace Lucky
+}

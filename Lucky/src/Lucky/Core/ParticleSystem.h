@@ -41,4 +41,4 @@ namespace Lucky
 		std::vector<Particle> m_ParticlePool;
 		uint32_t m_PoolIndex;
 	};
-} // namespace Lucky
+}

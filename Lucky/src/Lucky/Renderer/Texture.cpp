@@ -3,7 +3,11 @@
 
 #include "Renderer.h"
 #include "RendererApi.h"
+#ifndef __EMSCRIPTEN__
 #include "Lucky/Platforms/OpenGL/OpenGLTexture2D.h"
+#else
+#include "Lucky/Platforms/OpenGLES3/OpenGLES3Texture2D.h"
+#endif
 
 namespace Lucky
 {
@@ -14,12 +18,17 @@ namespace Lucky
 		case RendererApi::Api::None:
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
+#ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLTexture2D>(width, height);
+#else
+		case RendererApi::Api::OpenGLES3:
+			return CreateRef<OpenGLES3Texture2D>(width, height);
+#endif
+		default:
+			LK_CORE_ASSERT(false, "Renderer API is not supported!");
+			return nullptr;
 		}
-
-		LK_CORE_ASSERT(false, "Unknown renderer API!");
-		return nullptr;
 	}
 
 	Ref<Texture2D> Texture2D::Create(const std::string& path)
@@ -29,12 +38,17 @@ namespace Lucky
 		case RendererApi::Api::None:
 			LK_CORE_ASSERT(false, "None renderer API is not supported!");
 			return nullptr;
+#ifndef __EMSCRIPTEN__
 		case RendererApi::Api::OpenGL:
 			return CreateRef<OpenGLTexture2D>(path);
+#else
+		case RendererApi::Api::OpenGLES3:
+			return CreateRef<OpenGLES3Texture2D>(path);
+#endif
+		default:
+			LK_CORE_ASSERT(false, "Renderer API is not supported!");
+			return nullptr;
 		}
-
-		LK_CORE_ASSERT(false, "Unknown renderer API!");
-		return nullptr;
 	}
 	
-} // namespace Lucky
+}

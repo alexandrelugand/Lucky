@@ -15,4 +15,4 @@ namespace Lucky
 		static float GetMouseX();
 		static float GetMouseY();
 	};
-} // namespace Lucky
+}

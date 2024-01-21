@@ -44,4 +44,4 @@ namespace Lucky
 		LK_PROFILE_FUNCTION();
 		glViewport(x, y, width, height);
 	}
-} // namespace Lucky
+}

@@ -40,4 +40,4 @@ namespace Lucky
 	private:
 		static RendererApi* s_RendererApi;
 	};
-} // namespace Lucky
+}

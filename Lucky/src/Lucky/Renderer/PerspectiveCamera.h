@@ -12,4 +12,4 @@ namespace Lucky
 
 		void SetProjection(float fov, float aspectRatio, float zNear, float zFar);
 	};
-} // namespace Lucky
+}

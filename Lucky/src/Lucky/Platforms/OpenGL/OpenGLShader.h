@@ -36,4 +36,4 @@ namespace Lucky
 		uint32_t m_ProgramId;
 		std::string m_Name;
 	};
-} // namespace Lucky
+}

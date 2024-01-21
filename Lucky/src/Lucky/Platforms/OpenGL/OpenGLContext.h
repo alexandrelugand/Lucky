@@ -15,4 +15,4 @@ namespace Lucky
 	private:
 		GLFWwindow* m_Window;
 	};
-} // namespace Lucky
+}

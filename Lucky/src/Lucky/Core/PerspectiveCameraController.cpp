@@ -126,4 +126,4 @@ namespace Lucky
 		return false;
 	}
 
-} // namespace Lucky
+}

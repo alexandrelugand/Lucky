@@ -24,4 +24,4 @@ namespace Lucky
 		uint32_t m_VertexBufferId;
 		VertexBufferLayout m_Layout;
 	};
-} // namespace Lucky
+}

@@ -10,7 +10,8 @@ namespace Lucky
 		enum class Api
 		{
 			None = 0,
-			OpenGL
+			OpenGL,
+			OpenGLES3,
 		};
 
 		~RendererApi() = default;
@@ -30,4 +31,4 @@ namespace Lucky
 		static Api s_Api;
 	};
 
-} // namespace Lucky
+}

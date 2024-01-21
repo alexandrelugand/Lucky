@@ -16,4 +16,4 @@ namespace Lucky
         uint32_t Width, Height;
         bool VSync;
     };
-} // namespace Lucky
+}

@@ -103,5 +103,5 @@ namespace Lucky
 	{
 		return std::wstring(str.begin(), str.end());
 	}
-} // namespace Lucky
+}
 

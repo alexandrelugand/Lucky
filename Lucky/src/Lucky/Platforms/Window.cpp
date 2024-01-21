@@ -1,11 +1,15 @@
 #include "LuckyPch.h"
-#include "WindowsWindow.h"
+#include "Window.h"
 
-#include "Lucky/Platforms/OpenGL/OpenGLContext.h"
 #include "Lucky/Core/Events/Event.h"
 #include "Lucky/Core/Events/KeyEvent.h"
 #include "Lucky/Core/Events/MouseEvent.h"
 #include "Lucky/Core/Events/ApplicationEvent.h"
+#ifndef __EMSCRIPTEN__
+#include "Lucky/Platforms/OpenGL/OpenGLContext.h"
+#else
+#include "Lucky/Platforms/OpenGLES3/OpenGLES3Context.h"
+#endif
 
 namespace Lucky
 {
@@ -77,8 +81,10 @@ namespace Lucky
         int max_width  = GetSystemMetrics(SM_CXSCREEN);
         int max_hieght = GetSystemMetrics(SM_CYSCREEN);
         glfwSetWindowMonitor(m_Window, NULL, (max_width/2)-(m_Data.Width/2), (max_hieght/2) - (m_Data.Height/2), m_Data.Width, m_Data.Height, GLFW_DONT_CARE);
-#endif
         m_Context = new OpenGLContext(m_Window);
+#else        
+        m_Context = new OpenGLES3Context(m_Window);
+#endif
         m_Context->Init();
 
         glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -181,4 +187,4 @@ namespace Lucky
 		glfwDestroyWindow(m_Window);
         glfwTerminate();
     }
-} // namespace Lucky
+}

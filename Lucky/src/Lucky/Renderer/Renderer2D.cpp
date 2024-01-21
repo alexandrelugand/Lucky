@@ -99,7 +99,7 @@ namespace Lucky
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
 
 		if(!shaderLibrary.Exists("2DTexture"))
-			shaderLibrary.Load("assets/shaders/2DTexture.glsl");
+			shaderLibrary.LoadByApi("2DTexture.glsl");
 
 		s_Data.TextureShader = shaderLibrary.Get("2DTexture");
 		s_Data.TextureShader->Bind();
@@ -491,4 +491,4 @@ namespace Lucky
 
 		s_Data.TextureSlotIndex = 1;
 	}
-} // namespace Lucky
+}

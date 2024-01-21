@@ -25,4 +25,4 @@ namespace Lucky
 
         static Scope<Window> Create(const WindowProps& props = WindowProps());
     };
-} // namespace Lucky
+}

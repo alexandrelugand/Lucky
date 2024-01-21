@@ -102,4 +102,4 @@ namespace Lucky
 		uint32_t m_Stride;
 	};
 	
-} // namespace Lucky
+}

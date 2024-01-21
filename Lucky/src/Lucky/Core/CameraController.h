@@ -35,4 +35,4 @@ namespace Lucky
 
 		static Scope<CameraController> Create(CameraType type, const Camera::Settings& settings);
 	};
-} // namespace Lucky
+}

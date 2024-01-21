@@ -526,7 +526,11 @@ namespace Lucky
 		m_ActiveScene = CreateRef<Scene>();
 
 		FramebufferSpecification fbSpec;
+#ifndef __EMSCRIPTEN__
+		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER,  FramebufferTextureFormat::Depth };
+#else
 		fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+#endif
 		fbSpec.Width = window.GetWidth();
 		fbSpec.Height = window.GetHeight();
 		m_RenderPassRenderer.Name = "Renderer";
@@ -538,9 +542,34 @@ namespace Lucky
 			{
 				RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 				RenderCommand::Clear();
+#ifndef __EMSCRIPTEN__
+				pass.Framebuffer->ClearAttachment(1, -1);
+#endif
 			}
 		};
+#ifndef __EMSCRIPTEN__
+		m_RenderPassRenderer.AfterRenderCallback = [this](const auto& pass)
+			{
+				if (pass.Name == "Renderer")
+				{
+					auto [mx, my] = ImGui::GetMousePos();
+					mx -= m_ViewportBounds[0].x;
+					my -= m_ViewportBounds[0].y;
+					glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
 
+					int mouseX = (int)mx;
+					int mouseY = (int)(viewportSize.y - my);
+
+					if (mouseX >= 0 && mouseY >= 0 && mouseX < viewportSize.x && mouseY < viewportSize.y)
+					{
+						auto entityId = pass.Framebuffer->ReadPixel(1, mouseX, mouseY);
+						m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
+					}
+				}
+			};
+#endif
+
+#ifdef __EMSCRIPTEN__
 		FramebufferSpecification fbSpec2;
 		fbSpec2.AttachmentSpecs = { FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
 		fbSpec2.Width = window.GetWidth();
@@ -577,9 +606,10 @@ namespace Lucky
 			};
 
 		m_ActiveScene->AddPass(m_RenderPassMousePicking);
+#endif
 		m_ActiveScene->AddPass(m_RenderPassRenderer);
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
-} // namespace Lucky
+}

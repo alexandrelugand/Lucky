@@ -67,4 +67,4 @@ namespace Lucky
 		static void StartBatch();
 		static void NextBatch();
 	};
-} // namespace Lucky
+}

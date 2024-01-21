@@ -127,4 +127,4 @@ namespace Lucky
 		m_Bounds = { -m_Settings.AspectRatio * m_Settings.ZoomLevel, m_Settings.AspectRatio * m_Settings.ZoomLevel, -m_Settings.ZoomLevel, m_Settings.ZoomLevel };
 		m_Camera.SetProjection(m_Bounds.Left, m_Bounds.Right, m_Bounds.Top, m_Bounds.Bottom);
 	}
-} // namespace Lucky
+}

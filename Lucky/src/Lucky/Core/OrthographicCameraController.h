@@ -37,4 +37,4 @@ namespace Lucky
 		CameraBounds m_Bounds;
 		OrthographicCamera m_Camera;
 	};
-} // namespace Lucky
+}

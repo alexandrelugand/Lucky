@@ -18,4 +18,4 @@ namespace Lucky
 	private:
 		float m_Time;
 	};
-} // namespace Lucky
+}

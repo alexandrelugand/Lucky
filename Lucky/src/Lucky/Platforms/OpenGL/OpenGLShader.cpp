@@ -159,14 +159,7 @@ namespace Lucky
 
 	std::string OpenGLShader::GetHeader(uint32_t shaderType)
 	{
-#ifndef __EMSCRIPTEN__
 		return "#version 410\r\n";
-#else
-		if(shaderType == GL_VERTEX_SHADER)
-			return "#version 300 es\r\n";
-		else
-			return "#version 300 es\r\nprecision mediump float;\r\n";
-#endif
 	}
 
 	void OpenGLShader::Compile(const std::unordered_map<uint32_t, std::string> &shaderSources)
@@ -252,4 +245,4 @@ namespace Lucky
 
 		m_ProgramId = programId;
 	}
-} // namespace Lucky
+}

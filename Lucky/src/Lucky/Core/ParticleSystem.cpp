@@ -71,4 +71,4 @@ namespace Lucky
 
 		m_PoolIndex = m_PoolIndex % m_ParticlePool.size();
 	}
-} // namespace Lucky
+}

@@ -19,4 +19,4 @@ namespace Lucky
 		uint32_t m_Count;
 	};
 	
-} // namespace Lucky
+}

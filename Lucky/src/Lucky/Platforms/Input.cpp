@@ -39,4 +39,4 @@ namespace Lucky
 		return y;
 	}
 
-} // namespace Lucky
+}

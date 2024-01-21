@@ -24,4 +24,4 @@ namespace Lucky
 		uint32_t m_Width, m_Height;
 		uint32_t m_InternalFormat, m_DataFormat;
 	};
-} // namespace Lucky
+}
