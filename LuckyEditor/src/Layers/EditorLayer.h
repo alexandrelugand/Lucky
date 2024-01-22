@@ -2,6 +2,8 @@
 #include <Lucky.h>
 
 #include <ImGuizmo.h>
+
+#include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 
 namespace Lucky
@@ -20,6 +22,7 @@ namespace Lucky
 	private:
 		void NewScene();
 		void OpenScene();
+		void OpenScene(const std::filesystem::path& filePath);
 		void SaveScene();
 		void LoadLayout();
 		void SaveLayout();
@@ -38,6 +41,7 @@ namespace Lucky
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
 		bool m_NewScene = false, m_OpenScene = false, m_SaveScene = false, m_SaveLayout = false, m_LoadLayout = false;
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 		int m_GizmoType = -1;
 
 		EditorCamera m_EditorCamera;

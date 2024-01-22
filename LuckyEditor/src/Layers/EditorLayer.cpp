@@ -260,6 +260,7 @@ namespace Lucky
 		}
 
 		m_SceneHierarchyPanel.OnImGuiRenderer();
+		m_ContentBrowserPanel.OnImGuiRenderer();
 
 		auto stats = Renderer2D::GetStats();
 
@@ -308,6 +309,19 @@ namespace Lucky
 		m_ViewportSize = *((glm::vec2*)&viewportPanelSize);
 
 		ImGui::Image((ImTextureID)(intptr_t)m_RenderPassRenderer.Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+		if(ImGui::BeginDragDropTarget())
+		{
+			if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			{
+				#ifdef PLATFORM_WINDOWS
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				#else
+				const char* path = (const char*)payload->Data;
+				#endif
+				OpenScene(path);
+			}
+		}
 
 		// Gizmos
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
@@ -401,12 +415,18 @@ namespace Lucky
 	{
 		std::string filePath = Platform::OpenFile("Lucky Scene (*.lucky)\0*.lucky\0All files\0*.*\0\0", STRCAT(ASSETS, "/scenes"));
 		if (!filePath.empty())
+			OpenScene(filePath);
+	}
+
+	void EditorLayer::OpenScene(const std::filesystem::path& filePath)
+	{
+		if (!filePath.empty())
 		{
 			if (filePath != "##Cancel")
 			{
 				InitScene();
 				SceneSerializer serializer(m_ActiveScene);
-				serializer.Deserialize(filePath);
+				serializer.Deserialize(filePath.string());
 			}
 			m_OpenScene = false;
 		}

@@ -11,8 +11,10 @@ namespace Lucky
 		OpenGLES3Texture2D(const std::string& path);
 		virtual ~OpenGLES3Texture2D();
 
-		inline uint32_t GetWidth() const override { return m_Width; }
-		inline uint32_t GetHeight() const override { return m_Height; }
+		uint32_t GetRendererId() const override { return m_TextureId; }
+
+		uint32_t GetWidth() const override { return m_Width; }
+		uint32_t GetHeight() const override { return m_Height; }
 
 		void Bind(uint32_t slot = 0) override;
 		void SetData(void* data, uint32_t size) override;
