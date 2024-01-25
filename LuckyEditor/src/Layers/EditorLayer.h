@@ -31,6 +31,11 @@ namespace Lucky
 		void InitScene();
 		bool CanPick() const { return m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(KeyCode::LeftAlt); }
 
+		// UI Toolbar
+		void UI_Toolbar();
+		void OnScenePlay();
+		void OnSceneStop();
+
 		Ref<Scene> m_ActiveScene;
 		RenderPass m_RenderPassRenderer;
 		RenderPass m_RenderPassMousePicking;
@@ -46,5 +51,14 @@ namespace Lucky
 
 		EditorCamera m_EditorCamera;
 		Entity m_HoveredEntity{};
+
+		enum class SceneState
+		{
+			Edit = 0,
+			Play
+		};
+
+		SceneState m_SceneState = SceneState::Edit;
+		Ref<Texture2D> m_IconPlay, m_IconStop;
 	};
 }

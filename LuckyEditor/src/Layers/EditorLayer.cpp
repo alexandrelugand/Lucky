@@ -3,6 +3,7 @@
 
 #include "Lucky/Platforms/Platform.h"
 #include "Lucky/Math/Math.h"
+#include "Scripts/CameraScript.h"
 
 namespace Lucky
 {
@@ -24,135 +25,19 @@ namespace Lucky
 			auto sceneFilePath = commandLineArgs[1];
 			SceneSerializer serializer(m_ActiveScene);
 			serializer.Deserialize(sceneFilePath);
+
+			auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
+			if (cameraEntity)
+				cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraScript>();
 		}
-#if 0
-		Camera::Settings settings;
-		settings.ProjectionType = Camera::ProjectionType::Orthographic;
-		settings.AspectRatio = (float)window.GetWidth() / (float)window.GetHeight();
-		settings.EnableRotation = true;
-		settings.TranslationSpeed = 10.0f;
-		settings.RotationSpeed = 90.0f;
-		settings.ZoomSpeed = 0.5f;
-		settings.ZoomLevel = 1.0f;
-		settings.OrthographicSize = 10.0f;
-		settings.OrthographicNearClip = -100.0f;
-		settings.OrthographicFarClip = 100.0f;
 
-		class CameraController : public ScriptableEntity
-		{
-			const Camera::Settings c_Settings;
-
-		public:
-			CameraController(const Entity& entity)
-				: ScriptableEntity(entity)
-			{
-			}
-
-			void OnCreate() override
-			{
-			}
-
-			void OnDestroy() override
-			{
-			}
-
-			void OnUpdate(Timestep ts) override
-			{
-				auto& tc = GetComponent<TransformComponent>();
-
-#ifndef __EMSCRIPTEN__
-				if (Input::IsKeyPressed(KeyCode::A))
-#else
-				if (Input::IsKeyPressed(KeyCode::Q))
-#endif
-				{
-					tc.Translation.x -= cos(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
-					tc.Translation.y -= sin(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
-				}
-				else
-					if (Input::IsKeyPressed(KeyCode::D))
-					{
-						tc.Translation.x += cos(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
-						tc.Translation.y += sin(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
-					}
-
-				if (Input::IsKeyPressed(KeyCode::S))
-				{
-					tc.Translation.x -= -sin(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
-					tc.Translation.y -= cos(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
-				}
-				else
-#ifndef __EMSCRIPTEN__
-					if (Input::IsKeyPressed(KeyCode::W))
-#else
-					if (Input::IsKeyPressed(KeyCode::Z))
-#endif
-					{
-						tc.Translation.x += -sin(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
-						tc.Translation.y += cos(tc.Rotation.z) * c_Settings.TranslationSpeed * ts;
-					}
-
-
-				if (Input::IsKeyPressed(KeyCode::E))
-					tc.Rotation.z -= c_Settings.RotationSpeed * ts;
-				else
-#ifndef __EMSCRIPTEN__
-					if (Input::IsKeyPressed(KeyCode::Q))
-#else
-					if (Input::IsKeyPressed(KeyCode::A))
-#endif
-						tc.Rotation.z += c_Settings.RotationSpeed * ts;
-
-				if (Input::IsKeyPressed(KeyCode::Space))
-				{
-					tc.Translation = glm::vec3(0.0f);
-					tc.Rotation.z = 0.0f;
-				}
-			}
-
-			void OnEvent(Event& e) override
-			{
-				EventDispatcher dispatcher(e);
-				dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FN(CameraController::OnMouseScrolled));
-			}
-
-			bool OnMouseScrolled(MouseScrolledEvent& e)
-			{
-				auto [tc, cc] = GetComponent<TransformComponent, CameraComponent>();
-				auto& settings = cc.Camera.GetSettings();
-
-				if (settings.ProjectionType == Camera::ProjectionType::Perspective)
-				{
-					tc.Translation.z -= e.GetYOffset() * settings.ZoomSpeed;
-				}
-				else
-				{
-					cc.Camera.SetOrthographicSize(cc.Camera.GetOrthographicSize() - e.GetYOffset() * settings.ZoomSpeed);
-				}
-				return false;
-			}
-		};
-
-		auto cameraA = m_ActiveScene->CreateEntity("Camera A");
-		cameraA.AddComponent<CameraComponent>(settings);
-		cameraA.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
-		auto cameraB = m_ActiveScene->CreateEntity("Camera B");
-		cameraB.AddComponent<CameraComponent>(settings).Primary = false;
-
-		auto greenSquare = m_ActiveScene->CreateEntity("Green Square");
-		greenSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
-		greenSquare.GetComponent<TransformComponent>().Translation = glm::vec3{ -2.0f, 0.0f, 0.0f };
-
-		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
-		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
-		redSquare.GetComponent<TransformComponent>().Translation = glm::vec3{ 2.0f, 0.0f, -10.0f };
-#endif
-		
 #ifdef __EMSCRIPTEN__ 
 		LK_TRACE("Load default layout");
 		ImGui::LoadIniSettingsFromDisk("assets/layout/imgui.ini");
-#endif	
+#endif
+
+		m_IconPlay = Texture2D::Create("resources/icons/PlayButton.png");
+		m_IconStop = Texture2D::Create("resources/icons/StopButton.png");
 	}
 
 	void EditorLayer::OnDetach()
@@ -173,16 +58,29 @@ namespace Lucky
 				pass.Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 				m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+				auto camera = m_ActiveScene->GetPrimaryCamera();
+				if(camera)
+				{
+					auto& cameraComponent = camera.GetComponent<CameraComponent>();
+					cameraComponent.Camera.SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+				}
 			}
 		}
 
-		m_EditorCamera.OnUpdate(ts);
-
-		// Prepare scene
-		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-		RenderCommand::Clear();
-
-		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+		switch (m_SceneState)
+		{
+			case SceneState::Edit:
+			{
+				m_EditorCamera.OnUpdate(ts);
+				m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+				break;
+			}
+			case SceneState::Play:
+			{
+				m_ActiveScene->OnUpdateRuntime(ts);
+				break;
+			}
+		}
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -321,6 +219,7 @@ namespace Lucky
 				#endif
 				OpenScene(path);
 			}
+			ImGui::EndDragDropTarget();
 		}
 
 		// Gizmos
@@ -367,6 +266,8 @@ namespace Lucky
 
 		ImGui::End(); // Viewport
 		ImGui::PopStyleVar();
+
+		UI_Toolbar();
 
 		ImGui::End(); // Lucky Editor
 		ImGui::PopStyleVar(2);
@@ -420,6 +321,10 @@ namespace Lucky
 
 	void EditorLayer::OpenScene(const std::filesystem::path& filePath)
 	{
+		m_GizmoType = -1;
+		if (m_SceneState == SceneState::Play)
+			OnSceneStop();
+
 		if (!filePath.empty())
 		{
 			if (filePath != "##Cancel")
@@ -427,6 +332,10 @@ namespace Lucky
 				InitScene();
 				SceneSerializer serializer(m_ActiveScene);
 				serializer.Deserialize(filePath.string());
+
+				auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
+				if(cameraEntity)
+					cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraScript>();
 			}
 			m_OpenScene = false;
 		}
@@ -460,6 +369,9 @@ namespace Lucky
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 	{
+		if (m_SceneState == SceneState::Play)
+			return false;
+
 		if (e.GetRepeatCount() > 0)
 			return false;
 
@@ -542,7 +454,6 @@ namespace Lucky
 
 	void EditorLayer::InitScene()
 	{
-		auto& window = Application::Get().GetWindow();
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
 
 		m_ActiveScene = CreateRef<Scene>();
@@ -551,8 +462,8 @@ namespace Lucky
 		if(RendererApi::GetApi() == RendererApi::Api::OpenGL)
 		{
 			fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER,  FramebufferTextureFormat::Depth };
-			fbSpec.Width = window.GetWidth();
-			fbSpec.Height = window.GetHeight();
+			fbSpec.Width = (uint32_t)m_ViewportSize.x;
+			fbSpec.Height = (uint32_t)m_ViewportSize.y;
 			m_RenderPassRenderer.Name = "Renderer";
 			m_RenderPassRenderer.Framebuffer = Framebuffer::Create(fbSpec);
 			m_RenderPassRenderer.Shader = shaderLibrary.Get("2DTexture");
@@ -590,8 +501,8 @@ namespace Lucky
 		else
 		{
 			fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
-			fbSpec.Width = window.GetWidth();
-			fbSpec.Height = window.GetHeight();
+			fbSpec.Width = (uint32_t)m_ViewportSize.x;
+			fbSpec.Height = (uint32_t)m_ViewportSize.y;
 			m_RenderPassRenderer.Name = "Renderer";
 			m_RenderPassRenderer.Framebuffer = Framebuffer::Create(fbSpec);
 			m_RenderPassRenderer.Shader = shaderLibrary.Get("2DTexture");
@@ -607,8 +518,8 @@ namespace Lucky
 
 			FramebufferSpecification fbSpec2;
 			fbSpec2.AttachmentSpecs = { FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
-			fbSpec2.Width = window.GetWidth();
-			fbSpec2.Height = window.GetHeight();
+			fbSpec2.Width = (uint32_t)m_ViewportSize.x;
+			fbSpec2.Height = (uint32_t)m_ViewportSize.y;
 			m_RenderPassMousePicking.Name = "MousePicking";
 			m_RenderPassMousePicking.Framebuffer = Framebuffer::Create(fbSpec2);
 			m_RenderPassMousePicking.Shader = shaderLibrary.Get("MousePicking");
@@ -647,5 +558,44 @@ namespace Lucky
 
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
+	void EditorLayer::UI_Toolbar()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		auto& colors = ImGui::GetStyle().Colors;
+		const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+		const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+		float size = ImGui::GetWindowHeight() - 4.0f;
+		Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+		if (ImGui::ImageButton((ImTextureID)(intptr_t)icon->GetRendererId(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
+		{
+			if (m_SceneState == SceneState::Edit)
+				OnScenePlay();
+			else if (m_SceneState == SceneState::Play)
+				OnSceneStop();
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+		ImGui::End();
+	}
+
+	void EditorLayer::OnScenePlay()
+	{
+		m_GizmoType = -1;
+		m_SceneState = SceneState::Play;
+	}
+
+	void EditorLayer::OnSceneStop()
+	{
+		m_SceneState = SceneState::Edit;
 	}
 }

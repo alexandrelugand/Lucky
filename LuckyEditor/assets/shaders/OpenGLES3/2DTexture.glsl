@@ -13,8 +13,8 @@ layout(std140) uniform Camera
 
 out vec2 v_TexCoord;
 out vec4 v_Color;
-out float v_TexIndex;
 out float v_TilingFactor;
+flat out float v_TexIndex;
 flat out int v_EntityId;
 
 void main()
@@ -32,17 +32,12 @@ layout(location = 0) out vec4 color;
 layout(location = 1) out int entityId;
 in vec2 v_TexCoord;
 in vec4 v_Color;
-in float v_TexIndex;
 in float v_TilingFactor;
+flat in float v_TexIndex;
 flat in int v_EntityId;
 
-#ifndef GL_ES
-uniform sampler2D u_Textures[32];
-#else
 uniform sampler2D u_Textures[16];
-#endif
 
-#ifdef GL_ES
 vec4 GetTextureColor(int index, vec2 texCoord)
 {
 	switch (index)
@@ -66,14 +61,9 @@ vec4 GetTextureColor(int index, vec2 texCoord)
 		default: return texture(u_Textures[0], texCoord);
 	}
 }
-#endif
 
 void main()
 {
-	#ifndef GL_ES
-	color = texture(u_Textures[int(v_TexIndex)], v_TexCoord * v_TilingFactor) * v_Color;
-	#else
 	color = GetTextureColor(int(v_TexIndex), v_TexCoord * v_TilingFactor) * v_Color;
-	#endif
 	entityId = v_EntityId;
 }

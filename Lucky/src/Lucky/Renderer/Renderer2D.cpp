@@ -99,10 +99,6 @@ namespace Lucky
 		uint32_t whiteColor = 0xFFFFFFFF;
 		s_Data.WhiteTexture->SetData(&whiteColor, sizeof(uint32_t));
 
-		int32_t samplers[32];
-		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
-			samplers[i] = i;
-
 		// Shaders
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
 
@@ -155,6 +151,12 @@ namespace Lucky
 		pass.Framebuffer->Bind();
 		pass.Shader->Bind();
 
+		int32_t samplers[Renderer2DData::MaxTextureSlots];
+		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
+			samplers[i] = i;
+
+		pass.Shader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots);
+
 		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
 		{
 			s_Data.CameraBuffer.ViewProjection = view;
@@ -195,6 +197,12 @@ namespace Lucky
 
 		pass.Framebuffer->Bind();
 		pass.Shader->Bind();
+
+		int32_t samplers[Renderer2DData::MaxTextureSlots];
+		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
+			samplers[i] = i;
+
+		pass.Shader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots);
 
 		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
 		{
@@ -265,6 +273,10 @@ namespace Lucky
 		{
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
 			s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+
+			int32_t samplers[s_Data.MaxTextureSlots];
+			for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
+				samplers[i] = i;
 
 			//Bind textures
 			for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
@@ -502,7 +514,10 @@ namespace Lucky
 
 	void Renderer2D::DrawSprite(const glm::mat4& transform, const SpriteRendererComponent& spriteRenderComponent, int entityId)
 	{
-		DrawQuad(transform, spriteRenderComponent.Color, entityId);
+		if(spriteRenderComponent.Texture)
+			DrawQuad(transform, spriteRenderComponent.Texture, spriteRenderComponent.TilingFactor, spriteRenderComponent.Color, entityId);
+		else
+			DrawQuad(transform, spriteRenderComponent.Color, entityId);
 	}
 
 	void Renderer2D::ResetStats()

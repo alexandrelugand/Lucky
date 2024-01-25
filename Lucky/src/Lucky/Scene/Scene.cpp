@@ -94,7 +94,7 @@ namespace Lucky
 		auto view = m_Registry.view<CameraComponent, TransformComponent>();
 		for(auto entity : view)
 		{
-			auto [cameraCmp, transformCmp] = view.get<CameraComponent, TransformComponent>(entity);
+			const auto& [cameraCmp, transformCmp] = view.get<CameraComponent, TransformComponent>(entity);
 			if(cameraCmp.Primary)
 			{
 				mainCamera = &cameraCmp.Camera;
@@ -105,16 +105,19 @@ namespace Lucky
 
 		if(mainCamera)
 		{
-			Renderer2D::BeginScene(*mainCamera, cameraTransform);
-
-			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-			for (auto entity : group)
+			for (auto& pass : m_RenderPasses)
 			{
-				const auto& [tc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-				Renderer2D::DrawQuad(tc.GetTransform(), sprite.Color);
-			}
+				Renderer2D::BeginScene(*mainCamera, cameraTransform, pass);
 
-			Renderer2D::EndScene();
+				auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+				for (auto entity : group)
+				{
+					const auto& [tc, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+					Renderer2D::DrawSprite(tc.GetTransform(), sprite, (int)entity);
+				}
+
+				Renderer2D::EndScene(pass);
+			}
 		}
 	}
 
@@ -141,7 +144,8 @@ namespace Lucky
 	{
 		m_Registry.view<NativeScriptComponent>().each([&](NativeScriptComponent& nsc)
 		{
-			nsc.Instance->OnEvent(e);
+			if (nsc.Instance)
+				nsc.Instance->OnEvent(e);
 		});
 	}
 

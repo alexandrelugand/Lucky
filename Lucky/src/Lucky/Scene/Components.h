@@ -4,6 +4,7 @@
 
 #include "SceneCamera.h"
 #include "ScriptableEntity.h"
+#include "Lucky/Renderer/Texture.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
@@ -12,12 +13,12 @@ namespace Lucky
 {
 	struct TagComponent
 	{
+		std::string Tag;
+
 		TagComponent() = default;
 		TagComponent(const TagComponent& other) = default;
 		TagComponent(const std::string& tag = std::string())
 			: Tag(tag) { }
-
-		std::string Tag;
 
 		operator std::string& () { return Tag; }
 		operator const std::string& () const { return Tag; }
@@ -25,14 +26,14 @@ namespace Lucky
 
 	struct TransformComponent
 	{
+		glm::vec3 Translation{ 0.0f, 0.0f, 0.0f };
+		glm::vec3 Rotation{ 0.0f, 0.0f, 0.0f };
+		glm::vec3 Scale{ 1.0f, 1.0f, 1.0f };
+
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent& other) = default;
 		TransformComponent(const glm::vec3& translation)
 			: Translation(translation) { }
-
-		glm::vec3 Translation{ 0.0f, 0.0f, 0.0f };
-		glm::vec3 Rotation{ 0.0f, 0.0f, 0.0f };
-		glm::vec3 Scale{ 1.0f, 1.0f, 1.0f };
 
 		glm::mat4 GetTransform() const
 		{
@@ -46,12 +47,14 @@ namespace Lucky
 
 	struct SpriteRendererComponent
 	{
+		glm::vec4 Color{ 1.0f };
+		Ref<Texture2D> Texture;
+		float TilingFactor = 1.0f;
+
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent& other) = default;
 		SpriteRendererComponent(const glm::vec4& color)
 			: Color(color) { }
-
-		glm::vec4 Color{ 1.0f };
 
 		operator glm::vec4& () { return Color; }
 		operator const glm::vec4& () const { return Color; }
@@ -72,13 +75,12 @@ namespace Lucky
 
 	struct NativeScriptComponent
 	{
+		ScriptableEntity* Instance = nullptr;
+		std::function<ScriptableEntity* (Entity&&)> InitScript;
+		std::function<void()> DestroyScript;
+
 		NativeScriptComponent() = default;
 		NativeScriptComponent(const NativeScriptComponent& other) = default;
-
-		ScriptableEntity* Instance = nullptr;
-
-		std::function<ScriptableEntity*(Entity&&)> InitScript;
-		std::function<void()> DestroyScript;
 
 		template<typename T>
 		void Bind()

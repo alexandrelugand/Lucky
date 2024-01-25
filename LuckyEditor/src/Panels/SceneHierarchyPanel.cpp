@@ -367,6 +367,26 @@ namespace Lucky
 		DrawComponent<SpriteRendererComponent>("Sprite", entity, [](auto& component)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+
+			// Texture
+			ImGui::Button("Texture", ImVec2(100.0f, 0.0f));
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+#ifdef PLATFORM_WINDOWS
+					const wchar_t* path = (const wchar_t*)payload->Data;
+#else
+					const char* path = (const char*)payload->Data;
+#endif
+					const std::filesystem::path texturePath = path;
+					auto texture = Texture2D::Create(texturePath.string());
+					component.Texture = texture;
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
 		});
 	}
 }
