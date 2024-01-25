@@ -21,6 +21,7 @@ namespace Lucky
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string &path)
+		: m_Path(path)
 	{
 		LK_PROFILE_FUNCTION();
 		int width, height;

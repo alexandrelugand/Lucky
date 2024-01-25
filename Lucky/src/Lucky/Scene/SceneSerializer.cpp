@@ -171,6 +171,7 @@ namespace Lucky
 
 			auto& src = entity.GetComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << src.Color;
+			out << YAML::Key << "Texture" << YAML::Value << src.Texture->GetPath();
 
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
@@ -347,6 +348,11 @@ namespace Lucky
 					{
 						auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
 						src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
+						if (spriteRendererComponent["Texture"])
+						{
+							auto texturePath = spriteRendererComponent["Texture"].as<std::string>();
+							src.Texture = Texture2D::Create(texturePath);
+						}
 					}
 				}
 			}
