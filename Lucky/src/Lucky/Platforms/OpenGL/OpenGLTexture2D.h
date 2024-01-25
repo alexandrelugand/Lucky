@@ -21,6 +21,8 @@ namespace Lucky
 		void Bind(uint32_t slot = 0) override;
 		void SetData(void* data, uint32_t size) override;
 
+		bool IsLoaded() const override { return m_IsLoaded; }
+
 		bool operator==(const Texture& other) const override { return m_TextureId == ((OpenGLTexture2D&)other).m_TextureId; }
 
 	private:
@@ -28,5 +30,6 @@ namespace Lucky
 		uint32_t m_Width, m_Height;
 		uint32_t m_InternalFormat, m_DataFormat;
 		std::string m_Path = "";
+		bool m_IsLoaded = false;
 	};
 }

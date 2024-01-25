@@ -381,7 +381,10 @@ namespace Lucky
 #endif
 					const std::filesystem::path texturePath = path;
 					auto texture = Texture2D::Create(texturePath.string());
-					component.Texture = texture;
+					if(texture->IsLoaded())
+						component.Texture = std::move(texture);
+					else
+						LK_WARN("Could not load texture {0}", texturePath.filename().string());
 				}
 				ImGui::EndDragDropTarget();
 			}

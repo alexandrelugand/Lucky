@@ -10,25 +10,19 @@ namespace Lucky
 	EditorLayer::EditorLayer()
 		: Layer("EditorLayer")
 	{
-		m_ActiveScene = CreateRef<Scene>();
 	}
 
 	void EditorLayer::OnAttach()
 	{
 		LK_PROFILE_FUNCTION();		
 
-		InitScene();
+		m_ActiveScene = InitScene();
 
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if(commandLineArgs.Count > 1)
 		{
 			auto sceneFilePath = commandLineArgs[1];
-			SceneSerializer serializer(m_ActiveScene);
-			serializer.Deserialize(sceneFilePath);
-
-			auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
-			if (cameraEntity)
-				cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraScript>();
+			OpenScene(sceneFilePath);
 		}
 
 #ifdef __EMSCRIPTEN__ 
@@ -298,7 +292,8 @@ namespace Lucky
 
 	void EditorLayer::OnEvent(Event& event)
 	{
-		m_ActiveScene->OnEvent(event);
+		if(m_SceneState == SceneState::Play)
+			m_ActiveScene->OnEvent(event);
 		m_EditorCamera.OnEvent(event);
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(EditorLayer::OnKeyPressed));
@@ -329,13 +324,24 @@ namespace Lucky
 		{
 			if (filePath != "##Cancel")
 			{
-				InitScene();
-				SceneSerializer serializer(m_ActiveScene);
-				serializer.Deserialize(filePath.string());
+				if (filePath.extension().string() != ".lucky")
+				{
+					LK_WARN("Could not load {0} - not a scene file", filePath.filename().string());
+					return;
+				}
 
-				auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
-				if(cameraEntity)
-					cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraScript>();
+				auto scene = InitScene();
+				SceneSerializer serializer(scene);
+				if(serializer.Deserialize(filePath.string()))
+				{
+					m_ActiveScene = std::move(scene);
+					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+					m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+					auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
+					if (cameraEntity)
+						cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraScript>();
+				}
 			}
 			m_OpenScene = false;
 		}
@@ -452,11 +458,11 @@ namespace Lucky
 		return false;
 	}
 
-	void EditorLayer::InitScene()
+	Ref<Scene> EditorLayer::InitScene()
 	{
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
 
-		m_ActiveScene = CreateRef<Scene>();
+		Ref<Scene> scene = CreateRef<Scene>();
 
 		FramebufferSpecification fbSpec;
 		if(RendererApi::GetApi() == RendererApi::Api::OpenGL)
@@ -496,7 +502,7 @@ namespace Lucky
 					}
 				};
 
-			m_ActiveScene->AddPass(m_RenderPassRenderer);
+			scene->AddPass(m_RenderPassRenderer);
 		}
 		else
 		{
@@ -552,12 +558,11 @@ namespace Lucky
 				};
 			m_RenderPassMousePicking.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader.get(), 0);
 
-			m_ActiveScene->AddPass(m_RenderPassMousePicking);
-			m_ActiveScene->AddPass(m_RenderPassRenderer);
+			scene->AddPass(m_RenderPassMousePicking);
+			scene->AddPass(m_RenderPassRenderer);
 		}
 
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		return scene;
 	}
 
 	void EditorLayer::UI_Toolbar()

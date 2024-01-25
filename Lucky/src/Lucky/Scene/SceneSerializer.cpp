@@ -359,6 +359,11 @@ namespace Lucky
 
 			return true;
 		}
+		catch (const YAML::ParserException& e)
+		{
+			LK_CORE_ERROR("Deserialize scene failed. YAML Error: {0}", e.what());
+			return false;
+		}
 		catch(const std::exception& e)
 		{
 			LK_CORE_ERROR("Deserialize scene failed: {0}", e.what());

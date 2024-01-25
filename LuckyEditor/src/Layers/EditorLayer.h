@@ -28,7 +28,7 @@ namespace Lucky
 		void SaveLayout();
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonEvent& e);
-		void InitScene();
+		Ref<Scene> InitScene();
 		bool CanPick() const { return m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(KeyCode::LeftAlt); }
 
 		// UI Toolbar

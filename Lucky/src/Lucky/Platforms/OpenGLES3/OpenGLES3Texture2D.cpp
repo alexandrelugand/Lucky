@@ -32,39 +32,43 @@ namespace Lucky
 			LK_PROFILE_SCOPE("OpenGLES3Texture2D::OpenGLES3Texture2D - stbi_load");
 			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 		}
-		LK_CORE_ASSERT(data, "Failed to load image!");
 
-		m_Width = width;
-		m_Height = height;
-		if(channels == 4)
+		if(data)
 		{
-			m_InternalFormat = GL_RGBA8;
-			m_DataFormat = GL_RGBA;
+			m_IsLoaded = true;
+
+			m_Width = width;
+			m_Height = height;
+			if (channels == 4)
+			{
+				m_InternalFormat = GL_RGBA8;
+				m_DataFormat = GL_RGBA;
+			}
+			else if (channels == 3)
+			{
+				m_InternalFormat = GL_RGB8;
+				m_DataFormat = GL_RGB;
+			}
+
+			LK_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
+
+			LK_CORE_TRACE("Image path: {0}", path);
+			LK_CORE_TRACE("Image {0}x{1} pixels", m_Width, m_Height);
+
+			glGenTextures(1, &m_TextureId);
+			glBindTexture(GL_TEXTURE_2D, m_TextureId);
+			glTexStorage2D(GL_TEXTURE_2D, 1, m_InternalFormat, m_Width, m_Height);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			stbi_image_free(data);
 		}
-		else if(channels == 3)
-		{
-			m_InternalFormat = GL_RGB8;
-			m_DataFormat = GL_RGB;
-		}
-
-		LK_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
-
-		LK_CORE_TRACE("Image path: {0}", path);
-		LK_CORE_TRACE("Image {0}x{1} pixels", m_Width, m_Height);
-
-		glGenTextures(1, &m_TextureId);
-		glBindTexture(GL_TEXTURE_2D, m_TextureId);
-		glTexStorage2D(GL_TEXTURE_2D, 1, m_InternalFormat, m_Width, m_Height);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		stbi_image_free(data);
 	}
 
 	OpenGLES3Texture2D::~OpenGLES3Texture2D()

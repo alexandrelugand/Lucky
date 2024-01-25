@@ -1,21 +1,28 @@
 import os
 import subprocess
-import CheckPython
+import platform
+
+from SetupPython import PythonConfiguration as PythonRequirements
 
 # Make sure everything we need is installed
-CheckPython.ValidatePackages()
+PythonRequirements.Validate()
 
-import Vulkan
+from SetupPremake import PremakeConfiguration as PremakeRequirements
+from SetupVulkan import VulkanConfiguration as VulkanRequirements
+os.chdir('./../') # Change from devtools/scripts directory to root
 
-# Change from Scripts directory to root
-os.chdir('../')
+premakeInstalled = PremakeRequirements.Validate()
+VulkanRequirements.Validate()
 
-if (not Vulkan.CheckVulkanSDK()):
-    print("Vulkan SDK not installed.")
-    
-# if (not Vulkan.CheckVulkanSDKDebugLibs()):
-#     print("Vulkan SDK debug libs not found.")
+print("\nUpdating submodules...")
+subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
 
-print("Running premake...")
-subprocess.call(["Vendors/Binaries/premake/windows/premake5.exe", "gmake2"])
-subprocess.call(["Vendors/Binaries/premake/windows/premake5.exe", "vs2022"])
+if (premakeInstalled):
+    if platform.system() == "Windows":
+        print("\nRunning premake...")
+        subprocess.call(["Vendors/Binaries/premake/windows/premake5.exe", "gmake2"])
+        subprocess.call(["Vendors/Binaries/premake/windows/premake5.exe", "vs2022"])
+
+    print("\nSetup completed!")
+else:
+    print("Hazel requires Premake to generate project files.")
