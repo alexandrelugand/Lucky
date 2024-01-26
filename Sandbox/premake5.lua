@@ -48,7 +48,8 @@ project "Sandbox"
 		"Lucky",
 		"ImGui",
 		"ImGuizmo",
-		"yaml-cpp"
+		"yaml-cpp",
+		"Box2D"
 	}
 
 	-- Precompile header

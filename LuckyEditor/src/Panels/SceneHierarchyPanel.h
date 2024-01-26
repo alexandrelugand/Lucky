@@ -8,7 +8,6 @@ namespace Lucky
 	{
 	public:
 		SceneHierarchyPanel() = default;
-		SceneHierarchyPanel(const Ref<Scene> context);
 
 		void SetContext(const Ref<Scene>& context);
 		void OnImGuiRenderer();

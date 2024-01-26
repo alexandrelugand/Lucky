@@ -17,6 +17,7 @@ namespace Lucky
 		LK_PROFILE_FUNCTION();		
 
 		m_ActiveScene = InitScene();
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if(commandLineArgs.Count > 1)
@@ -596,11 +597,13 @@ namespace Lucky
 	void EditorLayer::OnScenePlay()
 	{
 		m_GizmoType = -1;
+		m_ActiveScene->OnRuntimeStart();
 		m_SceneState = SceneState::Play;
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
+		m_ActiveScene->OnRuntimeStop();
 		m_SceneState = SceneState::Edit;
 	}
 }

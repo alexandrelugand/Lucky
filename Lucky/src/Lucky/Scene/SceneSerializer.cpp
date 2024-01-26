@@ -110,6 +110,16 @@ namespace Lucky
 	{
 	}
 
+	static RigidBody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string& bodyType)
+	{
+		if (bodyType == NAMEOF_ENUM(RigidBody2DComponent::BodyType::Static).data()) return RigidBody2DComponent::BodyType::Static;
+		if (bodyType == NAMEOF_ENUM(RigidBody2DComponent::BodyType::Dynamic).data()) return RigidBody2DComponent::BodyType::Dynamic;
+		if (bodyType == NAMEOF_ENUM(RigidBody2DComponent::BodyType::Kinematic).data()) return RigidBody2DComponent::BodyType::Kinematic;
+
+		LK_CORE_ASSERT(false, "Unknown body type");
+		return {};
+	}
+
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		out << YAML::BeginMap; // Entity
@@ -171,9 +181,38 @@ namespace Lucky
 
 			auto& src = entity.GetComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << src.Color;
-			out << YAML::Key << "Texture" << YAML::Value << src.Texture->GetPath();
+			if(src.Texture)
+				out << YAML::Key << "Texture" << YAML::Value << src.Texture->GetPath();
 
 			out << YAML::EndMap; // SpriteRendererComponent
+		}
+
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			out << YAML::Key << "RigidBody2DComponent";
+			out << YAML::BeginMap; // RigidBody2DComponent
+
+			auto& rb2d = entity.GetComponent<RigidBody2DComponent>();
+			out << YAML::Key << "Type" << YAML::Value << NAMEOF_ENUM(rb2d.Type).data();
+			out << YAML::Key << "FixedRotation" << YAML::Value << rb2d.FixedRotation;
+
+			out << YAML::EndMap; // RigidBody2DComponent
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>())
+		{
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::BeginMap; // RigidBody2DComponent
+
+			auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+			out << YAML::Key << "Offset" << YAML::Value << bc2d.Offset;
+			out << YAML::Key << "Size" << YAML::Value << bc2d.Size;
+			out << YAML::Key << "Density" << YAML::Value << bc2d.Density;
+			out << YAML::Key << "Friction" << YAML::Value << bc2d.Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << bc2d.Restitution;
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << bc2d.RestitutionThreshold;
+
+			out << YAML::EndMap; // BoxCollider2DComponent
 		}
 
 		out << YAML::EndMap; // Entity
@@ -353,6 +392,26 @@ namespace Lucky
 							auto texturePath = spriteRendererComponent["Texture"].as<std::string>();
 							src.Texture = Texture2D::Create(texturePath);
 						}
+					}
+
+					auto rigidBody2DComponent = entity["RigidBody2DComponent"];
+					if (rigidBody2DComponent)
+					{
+						auto& rb2d = deserializedEntity.AddComponent<RigidBody2DComponent>();
+						rb2d.Type = RigidBody2DBodyTypeFromString(rigidBody2DComponent["Type"].as<std::string>());
+						rb2d.FixedRotation = rigidBody2DComponent["FixedRotation"].as<bool>();
+					}
+
+					auto boxCollider2DComponent = entity["BoxCollider2DComponent"];
+					if (boxCollider2DComponent)
+					{
+						auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
+						bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
+						bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
+						bc2d.Density = boxCollider2DComponent["Density"].as<float>();
+						bc2d.Friction = boxCollider2DComponent["Friction"].as<float>();
+						bc2d.Restitution = boxCollider2DComponent["Restitution"].as<float>();
+						bc2d.RestitutionThreshold = boxCollider2DComponent["RestitutionThreshold"].as<float>();
 					}
 				}
 			}

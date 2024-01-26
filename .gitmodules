@@ -10,3 +10,6 @@
 [submodule "Vendors/ImGuizmo"]
 	path = Vendors/ImGuizmo
 	url = https://github.com/alexandrelugand/ImGuizmo.git
+[submodule "Vendors/Box2D"]
+	path = Vendors/Box2D
+	url = https://github.com/alexandrelugand/box2D.git

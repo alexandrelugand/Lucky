@@ -44,6 +44,7 @@ project "Lucky"
 		"%{includeDir.yaml}",
 		"%{includeDir.ImGuizmo}",
 		"%{includeDir.nameof}",
+		"%{includeDir.Box2D}",
 		"%{includeDir.VulkanSDK}"
 	}
 
@@ -58,7 +59,8 @@ project "Lucky"
 		"GLAD",
 		"ImGui",
 		"ImGuizmo",
-		"yaml-cpp"
+		"yaml-cpp",
+		"Box2D"
 	}
 
 	defines

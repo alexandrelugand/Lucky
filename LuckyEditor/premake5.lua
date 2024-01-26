@@ -51,7 +51,8 @@ project "LuckyEditor"
 		"Lucky",
 		"ImGui",
 		"ImGuizmo",
-		"yaml-cpp"
+		"yaml-cpp",
+		"Box2D"
 	}
 
 	-- Precompile header

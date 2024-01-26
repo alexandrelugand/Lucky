@@ -19,22 +19,6 @@ tmpdir = "%{cfg.system}\\%{cfg.architecture}"
 if _ACTION == "gmake2" then
 	outputdir = "browser\\%{cfg.buildcfg}"
 	tmpdir = "browser"
-end
-
--- includeDir = {}
--- includeDir["spdlog"]="../Vendors/spdlog/include"
--- includeDir["GLFW"]="../Vendors/GLFW/include"
--- includeDir["GLAD"]="../Vendors/GLAD/include"
--- includeDir["ImGui"]="../Vendors/ImGui"
--- includeDir["GLM"]="../Vendors/GLM"
--- includeDir["stb"]="../Vendors/stb"
--- includeDir["entt"]="../Vendors/entt/include"
--- includeDir["yaml"]="../Vendors/yaml-cpp/include"
--- includeDir["ImGuizmo"]="../Vendors/ImGuizmo"
--- includeDir["nameof"]="../Vendors/nameof"
-
--- libDir = {}
-if _ACTION == "gmake2" then
 	libDir["GLFW"] = "../Vendors/GLFW/lib-static-ucrt"
 end
 
@@ -45,6 +29,7 @@ group "Dependencies"
 	include "Vendors/ImGui/premake5.lua"
 	include "Vendors/ImGuizmo/premake5.lua"
 	include "Vendors/yaml-cpp/premake5.lua"
+	include "Vendors/Box2D/premake5.lua"
 
 group ""
 	include "Lucky/premake5.lua"

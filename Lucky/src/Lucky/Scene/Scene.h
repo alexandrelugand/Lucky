@@ -9,6 +9,8 @@
 #include "Lucky/Renderer/Shader.h"
 #include "Lucky/Renderer/UniformBuffer.h"
 
+class b2World;
+
 namespace Lucky
 {
 	class Entity;
@@ -43,6 +45,9 @@ namespace Lucky
 		void AddPass(const RenderPass& pass);
 		void ClearPass();
 
+		void OnRuntimeStart();
+		void OnRuntimeStop();
+
 		void OnUpdateRuntime(Timestep ts);
 		void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera);
 		void OnEvent(Event& e);
@@ -58,6 +63,8 @@ namespace Lucky
 		entt::registry m_Registry;
 		uint32_t m_ViewportWidth = 1, m_ViewportHeight = 1;
 		std::vector<RenderPass> m_RenderPasses;
+
+		b2World* m_PhysicsWorld = nullptr;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;
