@@ -6,6 +6,7 @@
 #include "Lucky/Renderer/Texture.h"
 #include "Lucky/Renderer/SubTexture2D.h"
 #include "Lucky/Scene/Components.h"
+#include "Lucky/Scene/Scene.h"
 
 namespace Lucky
 {

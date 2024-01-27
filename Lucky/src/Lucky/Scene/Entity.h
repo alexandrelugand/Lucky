@@ -1,6 +1,8 @@
 #pragma once
 
 #include <entt.hpp>
+
+#include "Components.h"
 #include "Scene.h"
 
 namespace Lucky
@@ -39,6 +41,9 @@ namespace Lucky
 		{
 			return m_Scene->m_Registry.try_get<T>(m_Handle) != nullptr;
 		}
+
+		Uuid GetUuid() const { return GetComponent<IdComponent>().Id; }
+		glm::mat4 GetTransform() const { return GetComponent<TransformComponent>().GetTransform(); }
 
 		operator bool() const { return m_Handle != entt::null; }
 		operator entt::entity() const { return m_Handle; }

@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 #include "Entity.h"
+#include "ScriptableEntity.h"
 #include "Components.h"
 #include "Lucky/Renderer/Renderer2D.h"
 
@@ -36,7 +37,13 @@ namespace Lucky
 
 	Entity Scene::CreateEntity(const std::string& name)
 	{
+		return CreateEntity(Uuid(), name);
+	}
+
+	Entity Scene::CreateEntity(Uuid uuid, const std::string& name)
+	{
 		Entity entity{ m_Registry.create(), this };
+		entity.AddComponent<IdComponent>(uuid);
 		entity.AddComponent<TransformComponent>();
 		auto tag = name.empty() ? "Entity" : name;
 		entity.AddComponent<TagComponent>(tag);
@@ -264,7 +271,11 @@ namespace Lucky
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component)
 	{
-		LK_CORE_ASSERT(false, "Not supported");
+	}
+
+	template<>
+	void Scene::OnComponentAdded(Entity entity, IdComponent& component)
+	{
 	}
 
 	template<>

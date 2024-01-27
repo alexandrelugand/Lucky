@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "SceneCamera.h"
-#include "ScriptableEntity.h"
+#include "Lucky/Core/Uuid.h"
 #include "Lucky/Renderer/Texture.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -11,6 +11,16 @@
 
 namespace Lucky
 {
+	struct IdComponent
+	{
+		Uuid Id;
+
+		IdComponent() = default;
+		IdComponent(uint64_t id)
+			: Id(id) {}
+		IdComponent(const IdComponent& other) = default;
+	};
+
 	struct TagComponent
 	{
 		std::string Tag;
@@ -72,6 +82,10 @@ namespace Lucky
 		bool Primary = true;
 		bool FixedAspectRatio = false;
 	};
+
+	//Forward declarations
+	class Entity;
+	class ScriptableEntity;
 
 	struct NativeScriptComponent
 	{

@@ -3,6 +3,7 @@
 #include <entt.hpp>
 
 #include "Lucky/Core/Timestep.h"
+#include "Lucky/Core/Uuid.h"
 #include "Lucky/Core/Events/Event.h"
 #include "Lucky/Renderer/EditorCamera.h"
 #include "Lucky/Renderer/Framebuffer.h"
@@ -38,6 +39,7 @@ namespace Lucky
 		~Scene();
 
 		Entity CreateEntity(const std::string& name = std::string());
+		Entity CreateEntity(Uuid uuid, const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 		void Clean();
 
