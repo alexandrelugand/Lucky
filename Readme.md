@@ -7,7 +7,7 @@ The native Makefiles are generated with Premake5 (binary is included in reposito
 
 A section with all necessary VS code extensions is described below.
 
-![Lucky](Docs/Lucky.jpg)
+![Lucky](Docs/Lucky.gif)
 
 # Setup
 

@@ -307,6 +307,10 @@ namespace Lucky
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
+		/*auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
+		if (cameraEntity)
+			cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraScript>();*/
+
 		m_EditorCamera.Reset();
 		m_NewScene = false;
 	}
