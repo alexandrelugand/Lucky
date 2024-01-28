@@ -35,6 +35,58 @@ namespace Lucky
 	{
 	}
 
+	template<typename Component>
+	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<Uuid, entt::entity> enttMap)
+	{
+		auto view = src.view<Component>();
+		for(auto e : view)
+		{
+			Uuid uuid = src.get<IdComponent>(e).Id;
+			LK_CORE_ASSERT(enttMap.contains(uuid));
+			entt::entity dstEntity = enttMap.at(uuid);
+
+			auto& component = src.get<Component>(e);
+			dst.emplace_or_replace<Component>(dstEntity, component);
+		}
+	}
+
+	template<typename Component>
+	static void CopyComponentIfExists(Entity dst, Entity src)
+	{
+		if (src.HasComponent<Component>())
+			dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+	}
+
+	Ref<Scene> Scene::Copy(Ref<Scene> other)
+	{
+		Ref<Scene> newScene = CreateRef<Scene>();
+
+		newScene->m_ViewportWidth = other->m_ViewportWidth;
+		newScene->m_ViewportHeight = other->m_ViewportHeight;
+		newScene->m_RenderPasses = other->m_RenderPasses;
+
+		std::unordered_map<Uuid, entt::entity> enttMap;
+
+		auto& srcSceneRegistry = other->m_Registry;
+		auto& dstSceneRegistry = newScene->m_Registry;
+		auto idView = srcSceneRegistry.view<IdComponent>();
+		for(auto e : idView)
+		{
+			Uuid uuid = srcSceneRegistry.get<IdComponent>(e).Id;
+			const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
+			enttMap[uuid] = newScene->CreateEntity(uuid, name);			 
+		}
+
+		CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		CopyComponent<RigidBody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+		CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+
+		return newScene;
+	}
+
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		return CreateEntity(Uuid(), name);
@@ -53,6 +105,19 @@ namespace Lucky
 	void Scene::DestroyEntity(Entity entity)
 	{
 		m_Registry.destroy(entity);
+	}
+
+	void Scene::DuplicateEntity(Entity entity)
+	{
+		std::string name = entity.GetName();
+		Entity newEntity = CreateEntity(name);
+
+		CopyComponentIfExists<TransformComponent>(newEntity, entity);
+		CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+		CopyComponentIfExists<CameraComponent>(newEntity, entity);
+		CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
+		CopyComponentIfExists<RigidBody2DComponent>(newEntity, entity);
+		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
 	}
 
 	void Scene::Clean()
@@ -125,6 +190,15 @@ namespace Lucky
 	{
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
+
+		m_Registry.view<NativeScriptComponent>().each([&](auto entity, NativeScriptComponent& nsc)
+		{
+			if (nsc.Instance)
+			{
+				nsc.DestroyScript();
+				nsc.Instance = nullptr;
+			}
+		});
 	}
 
 	void Scene::OnUpdateRuntime(Timestep ts)
@@ -144,7 +218,7 @@ namespace Lucky
 			{
 				if (!nsc.Instance)
 				{
-					nsc.InitScript(Entity{ entity, this });
+					nsc.Instance = nsc.InitScript(Entity{ entity, this });
 					nsc.Instance->OnCreate();
 				}
 

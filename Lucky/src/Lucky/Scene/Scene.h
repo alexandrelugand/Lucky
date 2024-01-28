@@ -38,9 +38,12 @@ namespace Lucky
 		Scene();
 		~Scene();
 
+		static Ref<Scene> Copy(Ref<Scene> other);
+
 		Entity CreateEntity(const std::string& name = std::string());
 		Entity CreateEntity(Uuid uuid, const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
+		void DuplicateEntity(Entity entity);
 		void Clean();
 
 		const std::vector<RenderPass>& GetPasses() const { return m_RenderPasses; }

@@ -24,8 +24,11 @@ namespace Lucky
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& filePath);
 		void SaveScene();
+		void SaveAsScene();
+		void SerializeScene(Ref<Scene> scene, const std::filesystem::path& filePath);
 		void LoadLayout();
 		void SaveLayout();
+		void DuplicatEntity();
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonEvent& e);
 		Ref<Scene> InitScene();
@@ -37,6 +40,8 @@ namespace Lucky
 		void OnSceneStop();
 
 		Ref<Scene> m_ActiveScene;
+		Ref<Scene> m_EditorScene;
+		std::filesystem::path m_EditorScenePath;
 		RenderPass m_RenderPassRenderer;
 		RenderPass m_RenderPassMousePicking;
 
@@ -44,7 +49,7 @@ namespace Lucky
 		glm::vec2 m_ViewportBounds[2];
 
 		bool m_ViewportFocused = false, m_ViewportHovered = false;
-		bool m_NewScene = false, m_OpenScene = false, m_SaveScene = false, m_SaveLayout = false, m_LoadLayout = false;
+		bool m_NewScene = false, m_OpenScene = false, m_SaveScene = false, m_SaveAsScene = false, m_DuplicateEntity = false, m_SaveLayout = false, m_LoadLayout = false;
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
 		int m_GizmoType = -1;

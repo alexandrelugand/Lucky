@@ -21,32 +21,35 @@ namespace Lucky
 	{
 		ImGui::Begin("Scene Hierarchy");
 
+		if (m_Context)
+		{
 #ifdef COMPILER_MSVC
 #pragma warning( push, 0)
 #else
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-		m_Context->m_Registry.each([&](entt::entity entity)
-		{
-			DrawEntityNode(Entity(entity, m_Context.get()));
-		});
+			m_Context->m_Registry.each([&](entt::entity entity)
+				{
+					DrawEntityNode(Entity(entity, m_Context.get()));
+				});
 #ifdef COMPILER_MSVC
 #pragma warning(pop)
 #else
 #pragma GCC diagnostic pop
 #endif		
 
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-			m_SelectedEntity = {};
+			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+				m_SelectedEntity = {};
 
-		// Right click on blank space
-		if(ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
-		{
-			if (ImGui::MenuItem("Create Empty Entity"))
-				m_Context->CreateEntity("Empty Entity");
+			// Right click on blank space
+			if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+			{
+				if (ImGui::MenuItem("Create Empty Entity"))
+					m_Context->CreateEntity("Empty Entity");
 
-			ImGui::EndPopup();
+				ImGui::EndPopup();
+			}
 		}
 
 		ImGui::End();

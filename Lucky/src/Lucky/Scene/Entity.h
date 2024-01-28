@@ -23,6 +23,15 @@ namespace Lucky
 			return component;
 		}
 
+
+		template<typename T, typename... Args>
+		T& AddOrReplaceComponent(Args&&... args)
+		{
+			T& component = m_Scene->m_Registry.emplace_or_replace<T>(m_Handle, std::forward<Args>(args)...);
+			m_Scene->OnComponentAdded(*this, component);
+			return component;
+		}
+
 		template<typename... Args>
 		decltype(auto) GetComponent() const
 		{
@@ -43,6 +52,7 @@ namespace Lucky
 		}
 
 		Uuid GetUuid() const { return GetComponent<IdComponent>().Id; }
+		std::string GetName() const { return GetComponent<TagComponent>().Tag; }
 		glm::mat4 GetTransform() const { return GetComponent<TransformComponent>().GetTransform(); }
 
 		operator bool() const { return m_Handle != entt::null; }

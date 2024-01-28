@@ -14,17 +14,13 @@ namespace Lucky
 
 	void EditorLayer::OnAttach()
 	{
-		LK_PROFILE_FUNCTION();		
+		LK_PROFILE_FUNCTION();
 
-		m_ActiveScene = InitScene();
-		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-
-		auto commandLineArgs = Application::Get().GetCommandLineArgs();
+		const auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if(commandLineArgs.Count > 1)
-		{
-			auto sceneFilePath = commandLineArgs[1];
-			OpenScene(sceneFilePath);
-		}
+			OpenScene(commandLineArgs[1]);
+		else
+			NewScene();
 
 #ifdef __EMSCRIPTEN__ 
 		LK_TRACE("Load default layout");
@@ -130,6 +126,9 @@ namespace Lucky
 
 				if (ImGui::MenuItem("Save...", "Shift+S"))
 					m_SaveScene = true;
+
+				if (ImGui::MenuItem("Save As...", "Control+Shift+S"))
+					m_SaveAsScene = true;
 
 				ImGui::Separator();
 
@@ -282,11 +281,17 @@ namespace Lucky
 		if (m_SaveScene)
 			SaveScene();
 
+		if (m_SaveAsScene)
+			SaveAsScene();
+
 		if (m_LoadLayout)
 			LoadLayout();
 
 		if (m_SaveLayout)
 			SaveLayout();
+
+		if (m_DuplicateEntity)
+			DuplicatEntity();
 
 		m_EditorCamera.Lock(lock);
 	}
@@ -308,6 +313,7 @@ namespace Lucky
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 		m_EditorCamera.Reset();
+		m_EditorScenePath = std::filesystem::path();
 		m_NewScene = false;
 	}
 
@@ -338,9 +344,12 @@ namespace Lucky
 				SceneSerializer serializer(scene);
 				if(serializer.Deserialize(filePath.string()))
 				{
-					m_ActiveScene = std::move(scene);
-					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-					m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+					m_EditorScene = scene;
+					m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+					m_SceneHierarchyPanel.SetContext(m_EditorScene);
+
+					m_ActiveScene = m_EditorScene;
+					m_EditorScenePath = filePath;
 
 					auto cameraEntity = m_ActiveScene->GetPrimaryCamera();
 					if (cameraEntity)
@@ -353,16 +362,31 @@ namespace Lucky
 
 	void EditorLayer::SaveScene()
 	{
+		if (!m_EditorScenePath.empty())
+			SerializeScene(m_ActiveScene, m_EditorScenePath);
+		else
+			SaveAsScene();
+		m_SaveScene = false;
+	}
+
+	void EditorLayer::SaveAsScene()
+	{
 		std::string filePath = Platform::SaveFile("Lucky Scene (*.lucky)\0*.lucky;\0\0", STRCAT(ASSETS, "/scenes"));
 		if (!filePath.empty())
 		{
 			if (filePath != "##Cancel")
 			{
-				SceneSerializer serializer(m_ActiveScene);
-				serializer.Serialize(filePath);
+				SerializeScene(m_ActiveScene, filePath);
+				m_EditorScenePath = filePath;
 			}
-			m_SaveScene = false;
+			m_SaveAsScene = false;
 		}
+	}
+
+	void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& filePath)
+	{
+		SceneSerializer serializer(scene);
+		serializer.Serialize(filePath.string());
 	}
 
 	void EditorLayer::LoadLayout()
@@ -377,6 +401,17 @@ namespace Lucky
 		m_SaveLayout = false;
 	}
 
+	void EditorLayer::DuplicatEntity()
+	{
+		if (m_SceneState == SceneState::Edit)
+		{
+			auto selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+			if (selectedEntity)
+				m_EditorScene->DuplicateEntity(selectedEntity);
+		}
+		m_DuplicateEntity = false;
+	}
+
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 	{
 		if (m_SceneState == SceneState::Play)
@@ -386,6 +421,7 @@ namespace Lucky
 			return false;
 
 		bool alt = Input::IsKeyPressed(KeyCode::LeftAlt) || Input::IsKeyPressed(KeyCode::RightAlt);
+		bool control = Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl);
 		bool shift = Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift);
 
 		// Shortcuts
@@ -401,9 +437,21 @@ namespace Lucky
 		case KeyCode::S:
 		{
 			if (shift)
-				m_SaveScene = true;
+			{
+				if(control)
+					m_SaveAsScene = true;
+				else
+					m_SaveScene = true;
+			}
 			if (alt)
 				m_SaveLayout = true;
+			break;
+		}
+
+		case KeyCode::C:
+		{
+			if (shift)
+				m_DuplicateEntity = true;
 			break;
 		}
 
@@ -599,14 +647,18 @@ namespace Lucky
 
 	void EditorLayer::OnScenePlay()
 	{
-		m_GizmoType = -1;
+		m_ActiveScene = Scene::Copy(m_EditorScene);
 		m_ActiveScene->OnRuntimeStart();
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_GizmoType = -1;
 		m_SceneState = SceneState::Play;
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
 		m_ActiveScene->OnRuntimeStop();
+		m_ActiveScene = m_EditorScene;
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_SceneState = SceneState::Edit;
 	}
 }
