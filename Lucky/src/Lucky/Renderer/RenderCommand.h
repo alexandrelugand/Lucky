@@ -32,6 +32,16 @@ namespace Lucky
 			s_RendererApi->DrawIndexed(vertexArray, indexCount);
 		}
 
+		static void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+		{
+			s_RendererApi->DrawLines(vertexArray, vertexCount);
+		}
+
+		static void SetLineWidth(float width)
+		{
+			s_RendererApi->SetLineWidth(width);
+		}
+
 		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 		{
 			s_RendererApi->SetViewport(x, y ,width, height);

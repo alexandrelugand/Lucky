@@ -40,6 +40,19 @@ namespace Lucky
 		glBindTexture(GL_TEXTURE_2D, 0); //Unbind texture 2D slot
 	}
 
+	void OpenGLES3RendererApi::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+	{
+		LK_PROFILE_FUNCTION();
+		vertexArray->Bind();
+		glDrawArrays(GL_LINES, 0, vertexCount);
+	}
+
+	void OpenGLES3RendererApi::SetLineWidth(float width)
+	{
+		LK_PROFILE_FUNCTION();
+		glLineWidth(width);
+	}
+
 	void OpenGLES3RendererApi::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
 		LK_PROFILE_FUNCTION();

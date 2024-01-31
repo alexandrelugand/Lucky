@@ -9,6 +9,7 @@ namespace Lucky
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_BLEND_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LINE_SMOOTH);
 	}
 
 	void OpenGLRendererApi::SetClearColor(const glm::vec4 &color)
@@ -38,6 +39,19 @@ namespace Lucky
 		vertexArray->Bind();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 		glBindTexture(GL_TEXTURE_2D, 0); //Unbind texture 2D slot
+	}
+
+	void OpenGLRendererApi::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+	{
+		LK_PROFILE_FUNCTION();
+		vertexArray->Bind();
+		glDrawArrays(GL_LINES, 0, vertexCount);
+	}
+
+	void OpenGLRendererApi::SetLineWidth(float width)
+	{
+		LK_PROFILE_FUNCTION();
+		glLineWidth(width);
 	}
 
 	void OpenGLRendererApi::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
