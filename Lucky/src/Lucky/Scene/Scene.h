@@ -26,7 +26,7 @@ namespace Lucky
 
 		std::string Name;
 		Ref<Framebuffer> Framebuffer;
-		Ref<Shader> Shader;
+		Shader* Shader = nullptr;
 		Ref<UniformBuffer> CameraUniformBuffer;
 		RenderPassCallbackFn BeforeRenderCallback = nullptr;
 		RenderPassCallbackFn AfterRenderCallback = nullptr;

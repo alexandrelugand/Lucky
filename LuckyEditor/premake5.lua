@@ -94,5 +94,5 @@ AR = emar
 
 	filter { "action:vs2022", "configurations:Debug" }
 		ignoredefaultlibraries { "LIBCMT" }
-		debugargs { "assets\\scenes\\TexturedCube.lucky" }
+		debugargs { "assets\\scenes\\Physics.lucky" }
 

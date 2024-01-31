@@ -7,10 +7,11 @@ namespace Lucky
 	OpenGLES3UniformBuffer::OpenGLES3UniformBuffer(const std::string& name, const Shader* shader, uint32_t binding)
 	{
 		LK_PROFILE_FUNCTION();
+
+		GLint blockSize = 0;
 		uint32_t programId = ((OpenGLES3Shader*)shader)->m_ProgramId;
 		GLuint blockId = glGetUniformBlockIndex(programId, name.c_str());
 		glUniformBlockBinding(programId, blockId, binding);
-		GLint blockSize = 0;
 		glGetActiveUniformBlockiv(programId, blockId, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
 
 		glGenBuffers(1, &m_UniformBufferId);

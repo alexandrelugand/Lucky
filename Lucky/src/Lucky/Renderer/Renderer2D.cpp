@@ -18,6 +18,16 @@ namespace Lucky
 		int EntityId = -1;
 	};
 
+	struct CircleVertex
+	{
+		glm::vec3 WorldPosition{ 0.0f, 0.0f, 0.0f };
+		glm::vec3 LocalPosition{ 0.0f, 0.0f, 0.0f };
+		glm::vec4 Color{ 1.0f, 1.0f , 1.0f , 1.0f };
+		float Thickness = 1.0f;
+		float Fade = 0.005f;;
+		int EntityId = -1;
+	};
+
 	struct Renderer2DData
 	{
 		const static uint32_t MaxQuads = 20000;
@@ -31,12 +41,20 @@ namespace Lucky
 
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
-		Ref<Shader> TextureShader;
+		Ref<Shader> QuadShader;
 		Ref<Texture> WhiteTexture;
+
+		Ref<VertexArray> CircleVertexArray;
+		Ref<VertexBuffer> CircleVertexBuffer;
+		Ref<Shader> CircleShader;
 
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
+
+		uint32_t CircleIndexCount = 0;
+		CircleVertex* CircleVertexBufferBase = nullptr;
+		CircleVertex* CircleVertexBufferPtr = nullptr;
 
 		std::array<Ref<Texture>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;
@@ -59,22 +77,20 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 
-		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
+		// Quad
 
 		s_Data.QuadVertexArray = VertexArray::Create();
-		s_Data.QuadVertexArray->Bind();
-
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
 		s_Data.QuadVertexBuffer->SetLayout({
-			{ShaderDataType::Float3, "a_Position" },
-			{ShaderDataType::Float2, "a_TexCoord" },
-			{ShaderDataType::Float4, "a_Color" },
-			{ShaderDataType::Float, "a_TexIndex" },
-			{ShaderDataType::Float, "a_TilingFactor" },
-			{ShaderDataType::Int, "a_EntityId" }
+			{ ShaderDataType::Float3,	"a_Position"     },
+			{ ShaderDataType::Float2,	"a_TexCoord"     },
+			{ ShaderDataType::Float4,	"a_Color"        },
+			{ ShaderDataType::Float,	"a_TexIndex"     },
+			{ ShaderDataType::Float,	"a_TilingFactor" },
+			{ ShaderDataType::Int,		"a_EntityId"     }
 		});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
-
+		
 		uint32_t* quadIndices = new uint32_t[s_Data.MaxIndices];
 
 		uint32_t offset = 0;
@@ -95,6 +111,23 @@ namespace Lucky
 		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
 
+		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
+
+		// Circles
+		s_Data.CircleVertexArray = VertexArray::Create();
+		s_Data.CircleVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(CircleVertex));
+		s_Data.CircleVertexBuffer->SetLayout({
+			{ ShaderDataType::Float3,	"a_WorldPosition" },
+			{ ShaderDataType::Float3,	"a_LocalPosition" },
+			{ ShaderDataType::Float4,	"a_Color"         },
+			{ ShaderDataType::Float,	"a_Thickness"     },
+			{ ShaderDataType::Float,	"a_Fade"          },
+			{ ShaderDataType::Int,		"a_EntityId"      }
+		});
+		s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
+		s_Data.CircleVertexArray->SetIndexBuffer(quadIB); // Use quad IB
+		s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
+
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
 		uint32_t whiteColor = 0xFFFFFFFF;
 		s_Data.WhiteTexture->SetData(&whiteColor, sizeof(uint32_t));
@@ -102,10 +135,14 @@ namespace Lucky
 		// Shaders
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
 
-		if(!shaderLibrary.Exists("2DTexture"))
-			shaderLibrary.LoadByApi("2DTexture.glsl");
+		if(!shaderLibrary.Exists("Quad"))
+			shaderLibrary.LoadByApi("Quad.glsl");
+		if (!shaderLibrary.Exists("Circle"))
+			shaderLibrary.LoadByApi("Circle.glsl");
 
-		s_Data.TextureShader = shaderLibrary.Get("2DTexture");
+
+		s_Data.QuadShader = shaderLibrary.Get("Quad");
+		s_Data.CircleShader = shaderLibrary.Get("Circle");
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
 		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
@@ -135,8 +172,11 @@ namespace Lucky
 		}
 		else
 		{
-			s_Data.TextureShader->Bind();
-			s_Data.TextureShader->SetMat4("u_ViewProjection", view);
+			s_Data.QuadShader->Bind();
+			s_Data.QuadShader->SetMat4("u_ViewProjection", view);
+
+			s_Data.CircleShader->Bind();
+			s_Data.CircleShader->SetMat4("u_ViewProjection", view);
 		}
 
 		StartBatch();
@@ -149,13 +189,8 @@ namespace Lucky
 		const auto view = camera.GetProjection() * glm::inverse(transform);
 
 		pass.Framebuffer->Bind();
-		pass.Shader->Bind();
-
-		int32_t samplers[Renderer2DData::MaxTextureSlots];
-		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
-			samplers[i] = i;
-
-		pass.Shader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots);
+		if (pass.Shader)
+			pass.Shader->Bind();
 
 		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
 		{
@@ -184,8 +219,11 @@ namespace Lucky
 		}
 		else
 		{
-			s_Data.TextureShader->Bind();
-			s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
+			s_Data.QuadShader->Bind();
+			s_Data.QuadShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
+
+			s_Data.CircleShader->Bind();
+			s_Data.CircleShader->SetMat4("u_ViewProjection", camera.GetViewProjection());
 		}
 
 		StartBatch();
@@ -196,13 +234,8 @@ namespace Lucky
 		LK_PROFILE_FUNCTION();
 
 		pass.Framebuffer->Bind();
-		pass.Shader->Bind();
-
-		int32_t samplers[Renderer2DData::MaxTextureSlots];
-		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
-			samplers[i] = i;
-
-		pass.Shader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots);
+		if(pass.Shader)
+			pass.Shader->Bind();
 
 		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
 		{
@@ -224,8 +257,8 @@ namespace Lucky
 	void Renderer2D::BeginScene(const BaseCamera& baseCamera)
 	{
 		LK_PROFILE_FUNCTION();
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", baseCamera.GetViewProjectionMatrix());
+		s_Data.QuadShader->Bind();
+		s_Data.QuadShader->SetMat4("u_ViewProjection", baseCamera.GetViewProjectionMatrix());
 
 		StartBatch();
 	}
@@ -233,8 +266,8 @@ namespace Lucky
 	void Renderer2D::BeginScene(const Scope<CameraController>& cameraController)
 	{
 		LK_PROFILE_FUNCTION();
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", cameraController->GetCamera().GetViewProjectionMatrix());
+		s_Data.QuadShader->Bind();
+		s_Data.QuadShader->SetMat4("u_ViewProjection", cameraController->GetCamera().GetViewProjectionMatrix());
 
 		StartBatch();
 	}
@@ -243,6 +276,9 @@ namespace Lucky
 	{
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+		s_Data.CircleIndexCount = 0;
+		s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
 
 		s_Data.TextureSlotIndex = 1;
 	}
@@ -258,12 +294,13 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 
-		Flush();
+		Flush(pass);
 
 		if (pass.AfterRenderCallback)
 			pass.AfterRenderCallback(pass);
 
-		pass.Shader->Unbind();
+		if (pass.Shader)
+			pass.Shader->Unbind();
 		pass.Framebuffer->Unbind();
 	}
 
@@ -274,6 +311,8 @@ namespace Lucky
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
 			s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
+			s_Data.QuadShader->Bind();
+
 			int32_t samplers[s_Data.MaxTextureSlots];
 			for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
 				samplers[i] = i;
@@ -282,7 +321,61 @@ namespace Lucky
 			for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 				s_Data.TextureSlots[i]->Bind(i);
 
+			s_Data.QuadShader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots);
+
 			RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+			s_Data.Stats.DrawCalls++;
+		}
+
+		if (s_Data.CircleIndexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.CircleVertexBufferPtr - (uint8_t*)s_Data.CircleVertexBufferBase);
+			s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
+
+			s_Data.CircleShader->Bind();
+			RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+			s_Data.Stats.DrawCalls++;
+		}
+	}
+
+	void Renderer2D::Flush(const RenderPass& pass)
+	{
+		if (s_Data.QuadIndexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
+			s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+
+			if (pass.Shader)
+			{
+				pass.Shader->Bind();
+			}
+			else
+			{
+				int32_t samplers[s_Data.MaxTextureSlots];
+				for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
+					samplers[i] = i;
+
+				//Bind textures
+				for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+					s_Data.TextureSlots[i]->Bind(i);
+
+				s_Data.QuadShader->Bind();
+				s_Data.QuadShader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots);
+			}
+			RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+			s_Data.Stats.DrawCalls++;
+		}
+
+		if (s_Data.CircleIndexCount)
+		{
+			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.CircleVertexBufferPtr - (uint8_t*)s_Data.CircleVertexBufferBase);
+			s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
+
+			if (pass.Shader)
+				pass.Shader->Bind();
+			else
+				s_Data.CircleShader->Bind();
+			RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
 			s_Data.Stats.DrawCalls++;
 		}
 	}
@@ -518,6 +611,30 @@ namespace Lucky
 			DrawQuad(transform, spriteRenderComponent.Texture, spriteRenderComponent.TilingFactor, spriteRenderComponent.Color, entityId);
 		else
 			DrawQuad(transform, spriteRenderComponent.Color, entityId);
+	}
+
+	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade, int entityId)
+	{
+		LK_PROFILE_FUNCTION();
+
+		// TODO: implements for circle
+		/*if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
+			NextBatch();*/
+
+		constexpr size_t quadVertexCount = 4;
+		for (size_t i = 0; i < quadVertexCount; i++)
+		{
+			s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPositions[i];
+			s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPositions[i] * 2.0f;
+			s_Data.CircleVertexBufferPtr->Color = color;
+			s_Data.CircleVertexBufferPtr->Thickness = thickness;
+			s_Data.CircleVertexBufferPtr->Fade = fade;
+			s_Data.CircleVertexBufferPtr->EntityId = entityId;
+			s_Data.CircleVertexBufferPtr++;
+		}
+
+		s_Data.CircleIndexCount += 6;
+		s_Data.Stats.QuadCount++;
 	}
 
 	void Renderer2D::ResetStats()

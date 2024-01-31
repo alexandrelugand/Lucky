@@ -187,6 +187,19 @@ namespace Lucky
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
 
+		if (entity.HasComponent<CircleRendererComponent>())
+		{
+			out << YAML::Key << "CircleRendererComponent";
+			out << YAML::BeginMap; // CircleRendererComponent
+
+			auto& crc = entity.GetComponent<CircleRendererComponent>();
+			out << YAML::Key << "Color" << YAML::Value << crc.Color;
+			out << YAML::Key << "Thickness" << YAML::Value << crc.Thickness;
+			out << YAML::Key << "Fade" << YAML::Value << crc.Fade;
+
+			out << YAML::EndMap; // CircleRendererComponent
+		}
+
 		if (entity.HasComponent<RigidBody2DComponent>())
 		{
 			out << YAML::Key << "RigidBody2DComponent";
@@ -392,6 +405,15 @@ namespace Lucky
 							auto texturePath = spriteRendererComponent["Texture"].as<std::string>();
 							src.Texture = Texture2D::Create(texturePath);
 						}
+					}
+
+					auto circleRendererComponent = entity["CircleRendererComponent"];
+					if (circleRendererComponent)
+					{
+						auto& crc = deserializedEntity.AddComponent<CircleRendererComponent>();
+						crc.Color = circleRendererComponent["Color"].as<glm::vec4>();
+						crc.Thickness = circleRendererComponent["Thickness"].as<float>();
+						crc.Fade = circleRendererComponent["Fade"].as<float>();
 					}
 
 					auto rigidBody2DComponent = entity["RigidBody2DComponent"];

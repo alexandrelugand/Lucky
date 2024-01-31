@@ -242,6 +242,15 @@ namespace Lucky
 				}
 			}
 
+			if (!m_SelectedEntity.HasComponent<CircleRendererComponent>())
+			{
+				if (ImGui::MenuItem("Circle"))
+				{
+					m_SelectedEntity.AddComponent<CircleRendererComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
 			if (!m_SelectedEntity.HasComponent<RigidBody2DComponent>())
 			{
 				if (ImGui::MenuItem("Rigidbody 2D"))
@@ -441,6 +450,13 @@ namespace Lucky
 			ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("RestitutionThreshold", &component.RestitutionThreshold, 0.01f, 0.0f);
+		});
+
+		DrawComponent<CircleRendererComponent>("Circle", entity, [](auto& component)
+		{
+			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+			ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f, 1.0f);
+			ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
 		});
 	}
 }

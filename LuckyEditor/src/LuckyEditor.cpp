@@ -9,9 +9,6 @@ namespace Lucky
 		Application(props, args)
 	{
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
-		if(!shaderLibrary.Exists("2DTexture"))
-			shaderLibrary.LoadByApi("2DTexture.glsl");
-
 		if (RendererApi::GetApi() == RendererApi::Api::OpenGLES3)
 		{
 			if (!shaderLibrary.Exists("MousePicking"))

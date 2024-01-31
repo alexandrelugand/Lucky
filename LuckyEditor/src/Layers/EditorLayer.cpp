@@ -524,7 +524,6 @@ namespace Lucky
 			fbSpec.Height = (uint32_t)m_ViewportSize.y;
 			m_RenderPassRenderer.Name = "Renderer";
 			m_RenderPassRenderer.Framebuffer = Framebuffer::Create(fbSpec);
-			m_RenderPassRenderer.Shader = shaderLibrary.Get("2DTexture");
 			m_RenderPassRenderer.BeforeRenderCallback = [](const auto& pass)
 				{
 					if (pass.Name == "Renderer")
@@ -563,7 +562,6 @@ namespace Lucky
 			fbSpec.Height = (uint32_t)m_ViewportSize.y;
 			m_RenderPassRenderer.Name = "Renderer";
 			m_RenderPassRenderer.Framebuffer = Framebuffer::Create(fbSpec);
-			m_RenderPassRenderer.Shader = shaderLibrary.Get("2DTexture");
 			m_RenderPassRenderer.BeforeRenderCallback = [](const auto& pass)
 				{
 					if (pass.Name == "Renderer")
@@ -572,7 +570,7 @@ namespace Lucky
 						RenderCommand::Clear();
 					}
 				};
-			m_RenderPassRenderer.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader.get(), 0);
+			m_RenderPassRenderer.CameraUniformBuffer = UniformBuffer::Create("Camera", ShaderLibrary::GetInstance().Get("Quad").get(), 0);
 
 			FramebufferSpecification fbSpec2;
 			fbSpec2.AttachmentSpecs = { FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
@@ -580,7 +578,7 @@ namespace Lucky
 			fbSpec2.Height = (uint32_t)m_ViewportSize.y;
 			m_RenderPassMousePicking.Name = "MousePicking";
 			m_RenderPassMousePicking.Framebuffer = Framebuffer::Create(fbSpec2);
-			m_RenderPassMousePicking.Shader = shaderLibrary.Get("MousePicking");
+			m_RenderPassMousePicking.Shader = shaderLibrary.Get("MousePicking").get();
 			m_RenderPassMousePicking.BeforeRenderCallback = [](const auto& pass)
 				{
 					if (pass.Name == "MousePicking")
@@ -608,7 +606,7 @@ namespace Lucky
 						}
 					}
 				};
-			m_RenderPassMousePicking.CameraUniformBuffer = UniformBuffer::Create("Camera", m_RenderPassRenderer.Shader.get(), 0);
+			m_RenderPassMousePicking.CameraUniformBuffer = UniformBuffer::Create("Camera", ShaderLibrary::GetInstance().Get("Quad").get(), 0);
 
 			scene->AddPass(m_RenderPassMousePicking);
 			scene->AddPass(m_RenderPassRenderer);
