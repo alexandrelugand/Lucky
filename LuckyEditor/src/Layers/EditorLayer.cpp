@@ -160,11 +160,12 @@ namespace Lucky
 		static bool lock = false;
 		auto renderApi = NAMEOF_ENUM(RendererApi::GetApi());
 		ImGui::Text("Render API: %s", renderApi.data());
-		ImGui::Checkbox("Lock camera", &lock);
 		std::string name = "None";
+		ImGui::Text("Hovered Entity: %s", name.c_str());
 		if (m_HoveredEntity)
 			name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
-		ImGui::Text("Hovered Entity: %s", name.c_str());
+		ImGui::Checkbox("Lock camera", &lock);
+		ImGui::Checkbox("Show Physics Colliders", &m_ShowPhysicsColliders);
 
 		ImGui::End(); // Settings
 
@@ -300,7 +301,8 @@ namespace Lucky
 	{
 		if(m_SceneState == SceneState::Play)
 			m_ActiveScene->OnEvent(event);
-		m_EditorCamera.OnEvent(event);
+		else
+			m_EditorCamera.OnEvent(event);
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 		dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
@@ -551,6 +553,8 @@ namespace Lucky
 							m_HoveredEntity = entityId == -1 ? Entity() : Entity((entt::entity)entityId, m_ActiveScene.get());
 						}
 					}
+
+					OnOverlayRender();
 				};
 
 			scene->AddPass(m_RenderPassRenderer);
@@ -569,6 +573,10 @@ namespace Lucky
 						RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 						RenderCommand::Clear();
 					}
+				};
+			m_RenderPassRenderer.AfterRenderCallback = [this](const auto& pass)
+				{
+					OnOverlayRender();
 				};
 			m_RenderPassRenderer.CameraUniformBuffer = UniformBuffer::Create("Camera", ShaderLibrary::GetInstance().Get("Quad").get(), 0);
 
@@ -613,6 +621,60 @@ namespace Lucky
 		}
 
 		return scene;
+	}
+
+	void EditorLayer::OnOverlayRender()
+	{
+
+		if(m_SceneState == SceneState::Play)
+		{
+			Entity camera = m_ActiveScene->GetPrimaryCamera();
+			Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetTransform());
+		}
+		else
+		{
+			Renderer2D::BeginScene(m_EditorCamera);
+		}
+
+		if (m_ShowPhysicsColliders)
+		{
+			// Box colliders
+			{
+				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+				for (auto entity : view)
+				{
+					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
+
+					glm::vec3 translation = tc.Translation + glm::vec3(bc2d.Offset, 0.001f);
+					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+						* glm::scale(glm::mat4(1.0f), scale);
+
+					Renderer2D::DrawRect(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+				}
+			}
+
+			// Circles colliders
+			{
+				auto view = m_ActiveScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+				for (auto entity : view)
+				{
+					auto [tc, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
+
+					glm::vec3 translation = tc.Translation + glm::vec3(cc2d.Offset, 0.001f);
+					glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2.0f);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* glm::scale(glm::mat4(1.0f), scale);
+
+					Renderer2D::DrawCircle(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.025f);
+				}
+			}
+		}
+
+		Renderer2D::EndScene();
 	}
 
 	void EditorLayer::UI_Toolbar()

@@ -33,6 +33,7 @@ namespace Lucky
 		bool OnMouseButtonPressed(MouseButtonEvent& e);
 		Ref<Scene> InitScene();
 		bool CanPick() const { return m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(KeyCode::LeftAlt); }
+		void OnOverlayRender();
 
 		// UI Toolbar
 		void UI_Toolbar();
@@ -53,6 +54,7 @@ namespace Lucky
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
 		int m_GizmoType = -1;
+		bool m_ShowPhysicsColliders = false;
 
 		EditorCamera m_EditorCamera;
 		Entity m_HoveredEntity{};

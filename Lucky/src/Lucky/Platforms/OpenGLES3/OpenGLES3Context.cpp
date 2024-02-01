@@ -20,9 +20,9 @@ namespace Lucky
 		{
 #endif
 			LK_CORE_INFO("OpenGL info:");
-		LK_CORE_INFO("  Vendor: {0}", (const char*) glGetString(GL_VENDOR));
-		LK_CORE_INFO("  Renderer: {0}", (const char*) glGetString(GL_RENDERER));
-		LK_CORE_INFO("  Version: {0}", (const char*) glGetString(GL_VERSION));
+			LK_CORE_INFO("  Vendor: {0}", (const char*) glGetString(GL_VENDOR));
+			LK_CORE_INFO("  Renderer: {0}", (const char*) glGetString(GL_RENDERER));
+			LK_CORE_INFO("  Version: {0}", (const char*) glGetString(GL_VERSION));
 
 #ifdef ENABLE_ASSERTS
 
