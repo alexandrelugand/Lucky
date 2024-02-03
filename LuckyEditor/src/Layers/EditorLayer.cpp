@@ -17,7 +17,7 @@ namespace Lucky
 		LK_PROFILE_FUNCTION();
 
 		const auto commandLineArgs = Application::Get().GetCommandLineArgs();
-		if(commandLineArgs.Count > 1)
+		if (commandLineArgs.Count > 1)
 			OpenScene(commandLineArgs[1]);
 		else
 			NewScene();
@@ -29,6 +29,7 @@ namespace Lucky
 
 		m_IconPlay = Texture2D::Create("resources/icons/PlayButton.png");
 		m_IconStop = Texture2D::Create("resources/icons/StopButton.png");
+		m_IconSimulate = Texture2D::Create("resources/icons/SimulateButton.png");
 	}
 
 	void EditorLayer::OnDetach()
@@ -50,7 +51,7 @@ namespace Lucky
 				m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 				auto camera = m_ActiveScene->GetPrimaryCamera();
-				if(camera)
+				if (camera)
 				{
 					auto& cameraComponent = camera.GetComponent<CameraComponent>();
 					cameraComponent.Camera.SetViewportSize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -60,17 +61,23 @@ namespace Lucky
 
 		switch (m_SceneState)
 		{
-			case SceneState::Edit:
-			{
-				m_EditorCamera.OnUpdate(ts);
-				m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
-				break;
-			}
-			case SceneState::Play:
-			{
-				m_ActiveScene->OnUpdateRuntime(ts);
-				break;
-			}
+		case SceneState::Edit:
+		{
+			m_EditorCamera.OnUpdate(ts);
+			m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+			break;
+		}
+		case SceneState::Simulate:
+		{
+			m_EditorCamera.OnUpdate(ts);
+			m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+			break;
+		}
+		case SceneState::Play:
+		{
+			m_ActiveScene->OnUpdateRuntime(ts);
+			break;
+		}
 		}
 	}
 
@@ -203,15 +210,15 @@ namespace Lucky
 
 		ImGui::Image((ImTextureID)(intptr_t)m_RenderPassRenderer.Framebuffer->GetColorAttachmentRendererId(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
-		if(ImGui::BeginDragDropTarget())
+		if (ImGui::BeginDragDropTarget())
 		{
-			if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 			{
-				#ifdef PLATFORM_WINDOWS
+#ifdef PLATFORM_WINDOWS
 				const wchar_t* path = (const wchar_t*)payload->Data;
-				#else
+#else
 				const char* path = (const char*)payload->Data;
-				#endif
+#endif
 				OpenScene(path);
 			}
 			ImGui::EndDragDropTarget();
@@ -238,10 +245,10 @@ namespace Lucky
 			bool snap = Input::IsKeyPressed(KeyCode::LeftControl);
 			float snapValue = 0.5f; // Snap to 0.5m for translation/scale
 			// Snap to 45 degrees for rotation
-			if(m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
 				snapValue = 45.0f;
 
-			float snapValues[3] = {snapValue, snapValue, snapValue};
+			float snapValues[3] = { snapValue, snapValue, snapValue };
 
 			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
 				(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
@@ -299,7 +306,7 @@ namespace Lucky
 
 	void EditorLayer::OnEvent(Event& event)
 	{
-		if(m_SceneState == SceneState::Play)
+		if (m_SceneState == SceneState::Play)
 			m_ActiveScene->OnEvent(event);
 		else
 			m_EditorCamera.OnEvent(event);
@@ -310,7 +317,8 @@ namespace Lucky
 
 	void EditorLayer::NewScene()
 	{
-		m_ActiveScene = InitScene();
+		m_EditorScene = InitScene();
+		m_ActiveScene = m_EditorScene;
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
@@ -329,7 +337,7 @@ namespace Lucky
 	void EditorLayer::OpenScene(const std::filesystem::path& filePath)
 	{
 		m_GizmoType = -1;
-		if (m_SceneState == SceneState::Play)
+		if (m_SceneState != SceneState::Edit)
 			OnSceneStop();
 
 		if (!filePath.empty())
@@ -344,7 +352,7 @@ namespace Lucky
 
 				auto scene = InitScene();
 				SceneSerializer serializer(scene);
-				if(serializer.Deserialize(filePath.string()))
+				if (serializer.Deserialize(filePath.string()))
 				{
 					m_EditorScene = scene;
 					m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -440,7 +448,7 @@ namespace Lucky
 		{
 			if (shift)
 			{
-				if(control)
+				if (control)
 					m_SaveAsScene = true;
 				else
 					m_SaveScene = true;
@@ -504,7 +512,7 @@ namespace Lucky
 
 	bool EditorLayer::OnMouseButtonPressed(MouseButtonEvent& e)
 	{
-		if(e.GetButton() == MouseButton::ButtonLeft)
+		if (e.GetButton() == MouseButton::ButtonLeft)
 		{
 			if (CanPick())
 				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
@@ -519,7 +527,7 @@ namespace Lucky
 		Ref<Scene> scene = CreateRef<Scene>();
 
 		FramebufferSpecification fbSpec;
-		if(RendererApi::GetApi() == RendererApi::Api::OpenGL)
+		if (RendererApi::GetApi() == RendererApi::Api::OpenGL)
 		{
 			fbSpec.AttachmentSpecs = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER,  FramebufferTextureFormat::Depth };
 			fbSpec.Width = (uint32_t)m_ViewportSize.x;
@@ -626,9 +634,12 @@ namespace Lucky
 	void EditorLayer::OnOverlayRender()
 	{
 
-		if(m_SceneState == SceneState::Play)
+		if (m_SceneState == SceneState::Play)
 		{
 			Entity camera = m_ActiveScene->GetPrimaryCamera();
+			if(!camera)
+				return;
+
 			Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetTransform());
 		}
 		else
@@ -691,14 +702,27 @@ namespace Lucky
 		ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
 		float size = ImGui::GetWindowHeight() - 4.0f;
-		Ref<Texture2D> icon = m_SceneState == SceneState::Edit ? m_IconPlay : m_IconStop;
-		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
-		if (ImGui::ImageButton((ImTextureID)(intptr_t)icon->GetRendererId(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
-			if (m_SceneState == SceneState::Edit)
-				OnScenePlay();
-			else if (m_SceneState == SceneState::Play)
-				OnSceneStop();
+			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate) ? m_IconPlay : m_IconStop;
+			ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - (size * 0.5f));
+			if (ImGui::ImageButton((ImTextureID)(intptr_t)icon->GetRendererId(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
+			{
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Simulate)
+					OnScenePlay();
+				else if (m_SceneState == SceneState::Play)
+					OnSceneStop();
+			}
+		}
+		ImGui::SameLine();
+		{
+			Ref<Texture2D> icon = (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play) ? m_IconSimulate : m_IconStop;
+			if (ImGui::ImageButton((ImTextureID)(intptr_t)icon->GetRendererId(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
+			{
+				if (m_SceneState == SceneState::Edit || m_SceneState == SceneState::Play)
+					OnSceneSimulate();
+				else if (m_SceneState == SceneState::Simulate)
+					OnSceneStop();
+			}
 		}
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
@@ -707,6 +731,9 @@ namespace Lucky
 
 	void EditorLayer::OnScenePlay()
 	{
+		if (m_SceneState == SceneState::Simulate)
+			OnSceneStop();
+
 		m_ActiveScene = Scene::Copy(m_EditorScene);
 		m_ActiveScene->OnRuntimeStart();
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
@@ -716,9 +743,26 @@ namespace Lucky
 
 	void EditorLayer::OnSceneStop()
 	{
-		m_ActiveScene->OnRuntimeStop();
+		LK_CORE_ASSERT(m_SceneState == SceneState::Play || m_SceneState == SceneState::Simulate);
+		if (m_SceneState == SceneState::Play)
+			m_ActiveScene->OnRuntimeStop();
+		else
+			m_ActiveScene->OnSimulationStop();
+
 		m_ActiveScene = m_EditorScene;
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_SceneState = SceneState::Edit;
+	}
+
+	void EditorLayer::OnSceneSimulate()
+	{
+		if (m_SceneState == SceneState::Play)
+			OnSceneStop();
+
+		m_ActiveScene = Scene::Copy(m_EditorScene);
+		m_ActiveScene->OnSimulationStart();
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_GizmoType = -1;
+		m_SceneState = SceneState::Simulate;
 	}
 }

@@ -53,7 +53,11 @@ namespace Lucky
 		void OnRuntimeStart();
 		void OnRuntimeStop();
 
+		void OnSimulationStart();
+		void OnSimulationStop();
+
 		void OnUpdateRuntime(Timestep ts);
+		void OnUpdateSimulation(Timestep ts, EditorCamera& editorCamera);
 		void OnUpdateEditor(Timestep ts, EditorCamera& editorCamera);
 		void OnEvent(Event& e);
 
@@ -70,6 +74,12 @@ namespace Lucky
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
+
+		void RenderScene(EditorCamera& editorCamera);
+		void DrawSprites();
+		void DrawCircles();
+		void OnPhysics2DStart();
+		void OnPhysics2DStop();
 
 		entt::registry m_Registry;
 		uint32_t m_ViewportWidth = 1, m_ViewportHeight = 1;

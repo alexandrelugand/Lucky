@@ -37,8 +37,10 @@ namespace Lucky
 
 		// UI Toolbar
 		void UI_Toolbar();
+
 		void OnScenePlay();
 		void OnSceneStop();
+		void OnSceneSimulate();
 
 		Ref<Scene> m_ActiveScene;
 		Ref<Scene> m_EditorScene;
@@ -62,10 +64,11 @@ namespace Lucky
 		enum class SceneState
 		{
 			Edit = 0,
-			Play
+			Play,
+			Simulate
 		};
 
 		SceneState m_SceneState = SceneState::Edit;
-		Ref<Texture2D> m_IconPlay, m_IconStop;
+		Ref<Texture2D> m_IconPlay, m_IconStop, m_IconSimulate;
 	};
 }
