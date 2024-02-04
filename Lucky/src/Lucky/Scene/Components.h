@@ -1,12 +1,11 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "SceneCamera.h"
 #include "Lucky/Core/Uuid.h"
 #include "Lucky/Renderer/Texture.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
 #include "glm/gtx/quaternion.hpp"
 
 namespace Lucky
@@ -161,4 +160,21 @@ namespace Lucky
 		CircleCollider2DComponent() = default;
 		CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
 	};
+
+	template<typename... Component>
+	struct ComponentGroup
+	{
+	};
+
+	using AllComponents =
+		ComponentGroup<
+			TransformComponent,
+			SpriteRendererComponent,
+			CircleRendererComponent,
+			CameraComponent,
+			NativeScriptComponent,
+			RigidBody2DComponent,
+			BoxCollider2DComponent,
+			CircleCollider2DComponent
+	>;
 }

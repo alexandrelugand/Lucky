@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Lucky/Core/Timestep.h"
+#include "Lucky/Platforms/Platform.h"
 #include "Lucky/Renderer/Renderer.h"
 #include "Lucky/Renderer/Renderer2D.h"
 
@@ -17,8 +18,8 @@ namespace Lucky
 
     Application* Application::s_Instance;
 
-    Application::Application(const WindowProps &props, const ApplicationCommandLineArgs& args)
-	    : m_CommandLineArgs(args)
+    Application::Application(const WindowProps &props, const ApplicationSpecification& specification)
+	    : m_Specification(specification)
     {
 		LK_PROFILE_FUNCTION();
 
@@ -26,6 +27,12 @@ namespace Lucky
         s_Instance = this;
         m_Minimized = false;
 		m_LastFrameTime = 0.0f;
+
+		// Set working directory here
+#ifndef __EMSCRIPTEN__        
+		if (!m_Specification.WorkingDirectory.empty())
+			std::filesystem::current_path(m_Specification.WorkingDirectory);
+#endif
         
         m_Window = Window::Create(props);
         m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
@@ -82,7 +89,7 @@ namespace Lucky
     void Application::RenderFrame() 
     {
 		LK_PROFILE_FUNCTION();
-		float time = (float)glfwGetTime();
+		float time = Time::GetTime();
         Timestep timestep = time - m_LastFrameTime;
         m_LastFrameTime = time;
 

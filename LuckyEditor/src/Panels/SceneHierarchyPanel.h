@@ -16,6 +16,9 @@ namespace Lucky
 		void SetSelectedEntity(Entity entity) { m_SelectedEntity = entity; }
 
 	private:
+		template<typename T>
+		void DisplayAddComponentEntry(const std::string& entryName);
+
 		void DrawEntityNode(const Entity& entity);
 		void DrawComponents(const Entity& entity);
 

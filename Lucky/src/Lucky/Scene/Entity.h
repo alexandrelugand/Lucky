@@ -1,9 +1,9 @@
 #pragma once
 
-#include <entt.hpp>
-
 #include "Components.h"
 #include "Scene.h"
+
+#include <entt.hpp>
 
 namespace Lucky
 {

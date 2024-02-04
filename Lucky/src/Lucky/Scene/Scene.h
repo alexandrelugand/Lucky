@@ -1,7 +1,5 @@
 #pragma once
 
-#include <entt.hpp>
-
 #include "Lucky/Core/Timestep.h"
 #include "Lucky/Core/Uuid.h"
 #include "Lucky/Core/Events/Event.h"
@@ -9,6 +7,8 @@
 #include "Lucky/Renderer/Framebuffer.h"
 #include "Lucky/Renderer/Shader.h"
 #include "Lucky/Renderer/UniformBuffer.h"
+
+#include <entt.hpp>
 
 class b2World;
 

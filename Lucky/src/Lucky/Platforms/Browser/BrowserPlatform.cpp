@@ -126,4 +126,9 @@ namespace Lucky
 		}
 		return std::string();
 	}
+
+	float Time::GetTime()
+	{
+		return (float)glfwGetTime();
+	}
 }

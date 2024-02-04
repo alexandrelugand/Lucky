@@ -16,9 +16,9 @@ namespace Lucky
 	{
 		LK_PROFILE_FUNCTION();
 
-		const auto commandLineArgs = Application::Get().GetCommandLineArgs();
-		if (commandLineArgs.Count > 1)
-			OpenScene(commandLineArgs[1]);
+		const auto specification = Application::Get().GetSpecification();
+		if (specification.CommandLineArgs.Count > 1)
+			OpenScene(specification.CommandLineArgs[1]);
 		else
 			NewScene();
 
@@ -30,6 +30,8 @@ namespace Lucky
 		m_IconPlay = Texture2D::Create("resources/icons/PlayButton.png");
 		m_IconStop = Texture2D::Create("resources/icons/StopButton.png");
 		m_IconSimulate = Texture2D::Create("resources/icons/SimulateButton.png");
+
+		Renderer2D::SetLineWidth(2.0f);
 	}
 
 	void EditorLayer::OnDetach()
@@ -168,9 +170,9 @@ namespace Lucky
 		auto renderApi = NAMEOF_ENUM(RendererApi::GetApi());
 		ImGui::Text("Render API: %s", renderApi.data());
 		std::string name = "None";
-		ImGui::Text("Hovered Entity: %s", name.c_str());
 		if (m_HoveredEntity)
 			name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+		ImGui::Text("Hovered Entity: %s", name.c_str());
 		ImGui::Checkbox("Lock camera", &lock);
 		ImGui::Checkbox("Show Physics Colliders", &m_ShowPhysicsColliders);
 
@@ -317,6 +319,9 @@ namespace Lucky
 
 	void EditorLayer::NewScene()
 	{
+		if(m_SceneState != SceneState::Edit)
+			return;
+
 		m_EditorScene = InitScene();
 		m_ActiveScene = m_EditorScene;
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -427,7 +432,7 @@ namespace Lucky
 		if (m_SceneState == SceneState::Play)
 			return false;
 
-		if (e.GetRepeatCount() > 0)
+		if (e.IsRepeat())
 			return false;
 
 		bool alt = Input::IsKeyPressed(KeyCode::LeftAlt) || Input::IsKeyPressed(KeyCode::RightAlt);
@@ -683,6 +688,13 @@ namespace Lucky
 					Renderer2D::DrawCircle(transform, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.025f);
 				}
 			}
+		}
+
+		// Draw selected entity outline 
+		if (Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity())
+		{
+			TransformComponent transform = selectedEntity.GetComponent<TransformComponent>();
+			Renderer2D::DrawRect(transform.GetTransform(), glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
 		}
 
 		Renderer2D::EndScene();

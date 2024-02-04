@@ -69,6 +69,10 @@ vec4 GetTextureColor(int index, vec2 texCoord)
 
 void main()
 {
-	o_Color = GetTextureColor(int(v_TexIndex), v_TexCoord * v_TilingFactor) * v_Color;
+	vec4 texColor = GetTextureColor(int(v_TexIndex), v_TexCoord * v_TilingFactor) * v_Color;
+	if(texColor.a == 0.0)
+		discard;
+
+	o_Color = texColor; 
 	o_EntityId = v_EntityId;
 }

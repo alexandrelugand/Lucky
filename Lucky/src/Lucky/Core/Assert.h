@@ -3,7 +3,6 @@
 #include "Base.h"
 #include "Log.h"
 
-
 #ifdef ENABLE_ASSERTS
 
 	// Alteratively we could use the same "default" message for both "WITH_MSG" and "NO_MSG" and

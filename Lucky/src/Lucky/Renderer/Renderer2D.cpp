@@ -719,10 +719,10 @@ namespace Lucky
 		glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 		glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 
-		DrawLine(p0, p1, color);
-		DrawLine(p1, p2, color);
-		DrawLine(p2, p3, color);
-		DrawLine(p3, p0, color);
+		DrawLine(p0, p1, color, entityId);
+		DrawLine(p1, p2, color, entityId);
+		DrawLine(p2, p3, color, entityId);
+		DrawLine(p3, p0, color, entityId);
 	}
 
 	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityId)
@@ -732,10 +732,10 @@ namespace Lucky
 		for (size_t i = 0; i < 4; i++)
 			vertices[i] = transform * s_Data.QuadVertexPositions[i];
 
-		DrawLine(vertices[0], vertices[1], color);
-		DrawLine(vertices[1], vertices[2], color);
-		DrawLine(vertices[2], vertices[3], color);
-		DrawLine(vertices[3], vertices[0], color);
+		DrawLine(vertices[0], vertices[1], color, entityId);
+		DrawLine(vertices[1], vertices[2], color, entityId);
+		DrawLine(vertices[2], vertices[3], color, entityId);
+		DrawLine(vertices[3], vertices[0], color, entityId);
 	}
 
 	float Renderer2D::GetLineWidth()

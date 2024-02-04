@@ -5,8 +5,8 @@
 
 namespace Lucky
 {
-	LuckyEditor::LuckyEditor(const WindowProps& props, const ApplicationCommandLineArgs& args) :
-		Application(props, args)
+	LuckyEditor::LuckyEditor(const WindowProps& props, const ApplicationSpecification& specification) :
+		Application(props, specification)
 	{
 		auto& shaderLibrary = ShaderLibrary::GetInstance();
 		if (RendererApi::GetApi() == RendererApi::Api::OpenGLES3)
@@ -18,13 +18,13 @@ namespace Lucky
         PushLayer(new EditorLayer());
 		LK_INFO("Application initialized");
 	}
-
-	LuckyEditor::~LuckyEditor()
-	{
-	}
 }
 
 Lucky::Application* CreateApplication(const Lucky::ApplicationCommandLineArgs& args)
 {
-	return new Lucky::LuckyEditor({ "Lucky Editor", 1600, 900, false }, args);
+	Lucky::ApplicationSpecification spec;
+	spec.WorkingDirectory = "../LuckyEditor";
+	spec.CommandLineArgs = args;
+
+	return new Lucky::LuckyEditor({ "Lucky Editor", 1600, 900, false }, spec);
 }

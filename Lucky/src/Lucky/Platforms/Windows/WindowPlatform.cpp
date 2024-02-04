@@ -1,12 +1,12 @@
 #include "LuckyPch.h"
 
 #ifdef PLATFORM_WINDOWS
+#include "Lucky/Platforms/Platform.h"
+#include "Lucky/Application/Application.h"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 #include <commdlg.h>
-#include "Lucky/Platforms/Platform.h"
-#include "Lucky/Application/Application.h"
 
 namespace Lucky
 {
@@ -60,6 +60,11 @@ namespace Lucky
 		}
 
 		return std::string("##Cancel");
+	}
+
+	float Time::GetTime()
+	{
+		return (float)glfwGetTime();
 	}
 }
 

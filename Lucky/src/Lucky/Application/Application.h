@@ -25,11 +25,17 @@ namespace Lucky
 			return Args[index];
 		}
     };
+
+	struct ApplicationSpecification
+	{
+		std::string WorkingDirectory;
+		ApplicationCommandLineArgs CommandLineArgs;
+	};
     
     class Application
     {
     public:
-        Application(const WindowProps& props, const ApplicationCommandLineArgs& args = ApplicationCommandLineArgs());
+        Application(const WindowProps& props, const ApplicationSpecification& specification);
         virtual ~Application();
 
         static Application& Get() { return *s_Instance; }
@@ -42,10 +48,10 @@ namespace Lucky
         Window& GetWindow() const { return *m_Window; }
 		ImGuiLayer* GetImGuiLayer() const { return m_ImGuiLayer; }
 
-		ApplicationCommandLineArgs GetCommandLineArgs() const { return m_CommandLineArgs; }
+		ApplicationSpecification GetSpecification() const { return m_Specification; }
 
     private:
-		ApplicationCommandLineArgs m_CommandLineArgs;
+		ApplicationSpecification m_Specification;
         static Application* s_Instance;
         WASM_API Scope<Window> m_Window;
         WASM_API ImGuiLayer* m_ImGuiLayer;

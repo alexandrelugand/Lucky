@@ -23,7 +23,7 @@ namespace Lucky
 
 		bool IsLoaded() const override { return m_IsLoaded; }
 
-		bool operator==(const Texture& other) const override { return m_TextureId == ((OpenGLTexture2D&)other).m_TextureId; }
+		bool operator==(const Texture& other) const override { return m_TextureId == other.GetRendererId(); }
 
 	private:
 		uint32_t m_TextureId;

@@ -9,7 +9,6 @@ namespace Lucky
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_BLEND_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_LINE_SMOOTH);
 	}
 
 	void OpenGLES3RendererApi::SetClearColor(const glm::vec4 &color)

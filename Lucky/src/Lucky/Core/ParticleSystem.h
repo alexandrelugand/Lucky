@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Timestep.h"
+
 #include <vector>
 #include <glm/glm.hpp>
-#include "Timestep.h"
 
 namespace Lucky
 {

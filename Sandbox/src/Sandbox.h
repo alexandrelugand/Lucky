@@ -6,6 +6,5 @@
 class SandBox : public Lucky::Application
 {
 public:
-    SandBox(const Lucky::WindowProps& props, const Lucky::ApplicationCommandLineArgs& args);
-    virtual ~SandBox();
+    SandBox(const Lucky::WindowProps& props, const Lucky::ApplicationSpecification& specification);
 };

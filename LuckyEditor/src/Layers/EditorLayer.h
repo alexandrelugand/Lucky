@@ -1,10 +1,10 @@
 #pragma once
 #include <Lucky.h>
 
-#include <ImGuizmo.h>
-
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
+
+#include <ImGuizmo.h>
 
 namespace Lucky
 {

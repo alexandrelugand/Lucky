@@ -181,8 +181,9 @@ namespace Lucky
 
 			auto& src = entity.GetComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << src.Color;
-			if(src.Texture)
+			if (src.Texture)
 				out << YAML::Key << "Texture" << YAML::Value << src.Texture->GetPath();
+			out << YAML::Key << "TilingFactor" << YAML::Value << src.TilingFactor;
 
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
@@ -337,12 +338,17 @@ namespace Lucky
 	{
 		try
 		{
+			YAML::Node yaml;
 #ifndef __EMSCRIPTEN__
-			std::ifstream stream(filePath);
-			std::stringstream strstream;
-			strstream << stream.rdbuf();
-
-			YAML::Node yaml = YAML::Load(strstream.str());
+			try
+			{
+				yaml = YAML::LoadFile(filePath);
+			}
+			catch (const YAML::ParserException& e)
+			{
+				LK_CORE_ERROR("Failed to load .hazel file '{0}'\n     {1}", filePath, e.what());
+				return false;
+			}
 #else
 			FILE *f = fopen(filePath.c_str(), "rb");
 			fseek(f, 0, SEEK_END);
@@ -354,7 +360,15 @@ namespace Lucky
 			fclose(f);
 			data[fsize] = 0;
 
-			YAML::Node yaml = YAML::Load(data);
+			try
+			{
+				yaml = YAML::Load(data);
+			}
+			catch (const YAML::ParserException& e)
+			{
+				LK_CORE_ERROR("Failed to load .hazel file '{0}'\n     {1}", filePath, e.what());
+				return false;
+			}
 #endif
 			if (!yaml["Scene"])
 			{
@@ -421,6 +435,7 @@ namespace Lucky
 							auto texturePath = spriteRendererComponent["Texture"].as<std::string>();
 							src.Texture = Texture2D::Create(texturePath);
 						}
+						src.TilingFactor = spriteRendererComponent["TilingFactor"].as<float>();
 					}
 
 					auto circleRendererComponent = entity["CircleRendererComponent"];
