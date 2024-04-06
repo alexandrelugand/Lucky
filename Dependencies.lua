@@ -14,15 +14,18 @@ includeDir["GLM"]="%{wks.location}/Vendors/GLM"
 includeDir["entt"]="%{wks.location}/Vendors/entt/include"
 includeDir["nameof"]="%{wks.location}/Vendors/nameof"
 includeDir["Box2D"]="%{wks.location}/Vendors/Box2D/include"
+includeDir["mono"]="%{wks.location}/Vendors/Mono/net48/include"
 includeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 includeDir["SPIRV_Cross"] = "%{VULKAN_SDK}/spirv_cross"
 includeDir["shaderc"] = "%{VULKAN_SDK}/Include/shaderc"
 
 libDir = {}
 libDir["GLFW"] = "%{wks.location}/Vendors/GLFW/lib-vc2022"
+libDir["mono"] = "%{wks.location}/Vendors/Mono/net48/lib/%{cfg.buildcfg}"
 libDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
 
 library = {}
+library["mono"] = "%{libDir.mono}/libmono-static-sgen.lib"
 library["Vulkan"] = "%{libDir.VulkanSDK}/vulkan-1.lib"
 library["VulkanUtils"] = "%{libDir.VulkanSDK}/VkLayer_utils.lib"
 
@@ -34,3 +37,9 @@ library["SPIRV_Tools_Debug"] = "%{libDir.VulkanSDK}/SPIRV-Toolsd.lib"
 library["ShaderC_Release"] = "%{libDir.VulkanSDK}/shaderc_shared.lib"
 library["SPIRV_Cross_Release"] = "%{libDir.VulkanSDK}/spirv-cross-core.lib"
 library["SPIRV_Cross_GLSL_Release"] = "%{libDir.VulkanSDK}/spirv-cross-glsl.lib"
+
+-- Windows
+library["WinSock"] = "Ws2_32.lib"
+library["Winmm"] = "Winmm.lib"
+library["WinVersion"] = "Version.lib"
+library["BCrypt"] = "Bcrypt.lib"

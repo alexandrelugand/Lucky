@@ -1,0 +1,84 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>c06cb3ac-539f-4807-926d-6eaa130a41ed</UserSecretsId>
+		<RunAOTCompilation>True</RunAOTCompilation>
+		<WasmNativeBuild>true</WasmNativeBuild>
+		<WasmNativeStrip>false</WasmNativeStrip>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.3" PrivateAssets="all" />
+	</ItemGroup>
+
+	<!--Create a native file reference to a relocatable wasm file-->
+	<ItemGroup>
+		<NativeFileReference Include="../../bin/browser/$(Configuration)/LuckyEditor.a" />
+		<NativeFileReference Include="../../bin/browser/$(Configuration)/Lucky.a" />
+		<NativeFileReference Include="../../bin/browser/$(Configuration)/ImGui.a" />
+		<NativeFileReference Include="../../bin/browser/$(Configuration)/ImGuizmo.a" />
+		<NativeFileReference Include="../../bin/browser/$(Configuration)/yaml-cpp.a" />
+		<NativeFileReference Include="../../bin/browser/$(Configuration)/Box2D.a" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="SWIG\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="wwwroot\assets\cache\shader\opengl\Circle.glsl.cached_opengl.frag" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Circle.glsl.cached_opengl.vert" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Circle.glsl.cached_vulkan.frag" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Circle.glsl.cached_vulkan.vert" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Line.glsl.cached_opengl.frag" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Line.glsl.cached_opengl.vert" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Line.glsl.cached_vulkan.frag" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Line.glsl.cached_vulkan.vert" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Quad.glsl.cached_opengl.frag" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Quad.glsl.cached_opengl.vert" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Quad.glsl.cached_vulkan.frag" />
+	  <None Include="wwwroot\assets\cache\shader\opengl\Quad.glsl.cached_vulkan.vert" />
+	  <None Include="wwwroot\assets\fonts\opensans\OFL.txt" />
+	  <None Include="wwwroot\assets\fonts\opensans\OpenSans-Bold.ttf" />
+	  <None Include="wwwroot\assets\fonts\opensans\OpenSans-Regular.ttf" />
+	  <None Include="wwwroot\assets\layout\imgui.ini" />
+	  <None Include="wwwroot\assets\scenes\example.lucky" />
+	  <None Include="wwwroot\assets\scenes\GreenCube.lucky" />
+	  <None Include="wwwroot\assets\scenes\Physics.lucky" />
+	  <None Include="wwwroot\assets\scenes\PinkCube.lucky" />
+	  <None Include="wwwroot\assets\scenes\test.lucky" />
+	  <None Include="wwwroot\assets\scenes\TexturedCube.lucky" />
+	  <None Include="wwwroot\assets\scenes\toto.lucky" />
+	  <None Include="wwwroot\assets\shaders\OpenGLES3\Circle.glsl" />
+	  <None Include="wwwroot\assets\shaders\OpenGLES3\Line.glsl" />
+	  <None Include="wwwroot\assets\shaders\OpenGLES3\MousePicking.glsl" />
+	  <None Include="wwwroot\assets\shaders\OpenGLES3\Quad.glsl" />
+	  <None Include="wwwroot\assets\shaders\OpenGL\Circle.glsl" />
+	  <None Include="wwwroot\assets\shaders\OpenGL\Line.glsl" />
+	  <None Include="wwwroot\assets\shaders\OpenGL\Quad.glsl" />
+	  <None Include="wwwroot\assets\textures\Checkerboard.png" />
+	  <None Include="wwwroot\assets\textures\ChernoLogo.png" />
+	  <None Include="wwwroot\resources\icons\contentbrowser\DirectoryIcon.png" />
+	  <None Include="wwwroot\resources\icons\contentbrowser\FileIcon.png" />
+	  <None Include="wwwroot\resources\icons\PauseButton.png" />
+	  <None Include="wwwroot\resources\icons\PlayButton.png" />
+	  <None Include="wwwroot\resources\icons\SimulateButton.png" />
+	  <None Include="wwwroot\resources\icons\StepButton.png" />
+	  <None Include="wwwroot\resources\icons\StopButton.png" />
+	  <None Include="wwwroot\resources\Scripts\Lucky-ScriptCore.dll" />
+	  <None Include="wwwroot\resources\Scripts\Lucky-ScriptCore.pdb" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<EmccExtraLDFlags>-g -sUSE_WEBGL2=1 -sFULL_ES3=1 -sUSE_GLFW=3 -sWASM=3 -sMIN_WEBGL_VERSION=2 -sMEMORY64=0 -sFORCE_FILESYSTEM=1 -sALLOW_MEMORY_GROWTH=1 -sNO_EXIT_RUNTIME=0 --use-preload-plugins --no-heap-copy -lidbfs.js</EmccExtraLDFlags>
+		<WasmEmitSymbolMap>true</WasmEmitSymbolMap>
+		<WasmAllowUndefinedSymbols>true</WasmAllowUndefinedSymbols>
+		<OutputType>Exe</OutputType>
+		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<BaseOutputPath>..\..\bin\browser</BaseOutputPath>
+	</PropertyGroup>
+
+</Project>

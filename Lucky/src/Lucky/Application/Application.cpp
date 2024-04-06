@@ -5,6 +5,7 @@
 #include "Lucky/Platforms/Platform.h"
 #include "Lucky/Renderer/Renderer.h"
 #include "Lucky/Renderer/Renderer2D.h"
+#include "Lucky/Scripting/ScriptEngine.h"
 
 namespace Lucky
 {
@@ -39,6 +40,7 @@ namespace Lucky
 
         Renderer::Init();
 		Renderer2D::Init();
+		ScriptEngine::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -47,9 +49,12 @@ namespace Lucky
     Application::~Application()
     {
 		LK_PROFILE_FUNCTION();
+		Renderer::Shutdown();
+		Renderer2D::Shutdown();
+		ScriptEngine::Shutdown();
     }
 
-    void Application::Run()
+	void Application::Run()
     {
 		LK_PROFILE_FUNCTION();
 		LK_CORE_INFO("Application is running");
@@ -86,7 +91,7 @@ namespace Lucky
         overlay->OnAttach();
     }
 
-    void Application::RenderFrame() 
+	void Application::RenderFrame()
     {
 		LK_PROFILE_FUNCTION();
 		float time = Time::GetTime();

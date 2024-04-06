@@ -12,6 +12,8 @@
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_circle_shape.h>
 
+#include "Lucky/Scripting/ScriptEngine.h"
+
 namespace Lucky
 {
 	static b2BodyType RigidBody2DTypeToBox2DType(RigidBody2DComponent::BodyType bodyType)
@@ -208,6 +210,8 @@ namespace Lucky
 
 				nsc.Instance->OnUpdate(ts);
 			});
+
+			ScriptEngine::OnUpdate(ts);
 #ifdef COMPILER_MSVC
 #pragma warning(pop)
 #else

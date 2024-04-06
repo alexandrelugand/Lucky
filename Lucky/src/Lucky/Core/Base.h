@@ -31,9 +31,9 @@
 #define STRCAT(x, y) std::string(x).append(y)
 
 #ifdef __EMSCRIPTEN__
-    #define ASSETS "assets_db"
+#define ASSETS "/assets"
 #else
-    #define ASSETS "assets"
+#define ASSETS "assets"
 #endif
 
 namespace Lucky

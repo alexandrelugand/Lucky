@@ -1,98 +1,152 @@
-project "LuckyEditor"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++20"
-	architecture "x64"
-	targetdir ("%{wks.location}/bin/" .. outputdir)
-	objdir ("%{wks.location}/bin-int/" .. tmpdir)
-	staticruntime "off"
+local _files =
+{ 
+	"**.h", 
+	"**.cpp", 
+	"%{includeDir.GLM}/glm/**.hpp", 
+	"%{includeDir.GLM}/glm/**.inl" 
+}
 
-	dependson { "GLAD", "ImGui", "yaml-cpp", "Lucky" }
-
-	files
+local _vpaths =
+{
+	["Vendors/*"] = 
 	{ 
-		"**.h", 
-		"**.cpp", 
 		"%{includeDir.GLM}/glm/**.hpp", 
-		"%{includeDir.GLM}/glm/**.inl" 
+		"%{includeDir.GLM}/glm/**.inl"
 	}
+}
 
-	vpaths 
-	{
-		["Vendors/*"] = 
-		{ 
-			"%{includeDir.GLM}/glm/**.hpp", 
-			"%{includeDir.GLM}/glm/**.inl"
-		}
-	}
+local _includedirs =
+{
+	"src",
+	"../Lucky/src",
+	"%{includeDir.spdlog}",
+	"%{includeDir.GLFW}",
+	"%{includeDir.GLAD}",
+	"%{includeDir.ImGui}",
+	"%{includeDir.GLM}",
+	"%{includeDir.entt}",
+	"%{includeDir.ImGuizmo}",
+	"%{includeDir.nameof}"
+}
 
-	includedirs
-	{
-		"src",
-		"../Lucky/src",
-		"%{includeDir.spdlog}",
-		"%{includeDir.GLFW}",
-		"%{includeDir.GLAD}",
-		"%{includeDir.ImGui}",
-		"%{includeDir.GLM}",
-		"%{includeDir.entt}",
-		"%{includeDir.ImGuizmo}",
-		"%{includeDir.nameof}"
-	}
+local _libdirs =
+{
+	"%{libDir.GLFW}",
+	"%{libDir.ImGui}"
+}
 
-	libdirs 
-	{
-		"%{libDir.GLFW}",
-		"%{libDir.ImGui}"
-	}
+group "Core"
+	project "LuckyEditor"
+		kind "ConsoleApp"
+		language "C++"
+		cppdialect "C++20"
+		architecture "x64"
+		targetdir ("%{wks.location}/bin/" .. outputdir)
+		objdir ("%{wks.location}/bin-int/" .. tmpdir)
+		staticruntime "off"
 
-	links
-	{
-		"Lucky",
-		"ImGui",
-		"ImGuizmo",
-		"yaml-cpp",
-		"Box2D"
-	}
+		dependson { "GLAD", "ImGui", "yaml-cpp", "Lucky" }
 
-	-- Precompile header
-	pchheader "LuckyEditorPch.h"
-	pchsource "src/LuckyEditorPch.cpp"
-
-	-- Configurations
-	filter "configurations:Debug"
-		defines { "DEBUG" }
-		runtime "Debug"
-		symbols "On" 
-		optimize "Off"
-
-	filter "configurations:Release"  
-		defines { "NDEBUG" }
-		runtime "Release"
-		optimize "full"
-
-	-- EMScripten
-	filter { "action:gmake2" }
-		architecture "x86"
-		makesettings [[
-CC = emcc
-CXX = em++
-AR = emar
-		]]
-		targetextension  ".html"
-		buildoptions { "-Wall -Wformat -s DISABLE_EXCEPTION_CATCHING=1 -Wno-deprecated-include-gch" }
-		linkoptions { "-s DISABLE_EXCEPTION_CATCHING=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_GLFW=3 -s FULL_ES3=1 -s FORCE_FILESYSTEM=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 --use-preload-plugins --no-heap-copy --preload-file assets --preload-file resources -lidbfs.js" }
-
-	filter { "action:gmake2", "configurations:Debug" }
-		linkoptions { "-g" }
-
-	-- VS 2022
-	filter "action:vs2022"
-		defines {  "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
+		files(_files)
+		vpaths(_vpaths)
+		includedirs(_includedirs)
+		libdirs(_libdirs)
 		disablewarnings { "4996" }
-		links { "glfw3_mt" }
 
-	filter { "action:vs2022", "configurations:Debug" }
-		ignoredefaultlibraries { "LIBCMT" }
-		debugargs { "assets\\scenes\\Physics.lucky" }
+		excludes {
+			"src/Bootstrapper.h",
+			"src/Bootstrapper.cpp",
+			"src/Bootstrapper_wrap.cpp",
+		}
 
+		links
+		{
+			"Lucky",
+			"ImGui",
+			"ImGuizmo",
+			"yaml-cpp",
+			"Box2D",
+			"glfw3_mt"
+		}
+
+		defines
+		{
+			"PLATFORM_WINDOWS",
+			"_CRT_SECURE_NO_WARNINGS"
+		}
+
+		-- Precompile header
+		pchheader "LuckyEditorPch.h"
+		pchsource "src/LuckyEditorPch.cpp"
+
+		-- Configurations
+		filter "configurations:Debug"
+			defines { "DEBUG" }
+			runtime "Debug"
+			symbols "On" 
+			optimize "Off"
+			ignoredefaultlibraries { "LIBCMT" }
+			debugargs { "assets\\scenes\\Physics.lucky" }
+
+		filter "configurations:Release"  
+			defines { "NDEBUG" }
+			runtime "Release"
+			optimize "full"
+
+group "Browser/Core"
+	project "LuckyEditor.Web"
+		kind "StaticLib"
+		targetname "LuckyEditor"
+		targetextension ".a"
+		language "C++"
+		cppdialect "C++20"
+		architecture "x64"
+		targetdir ("%{wks.location}/bin/" .. outputdirweb)
+		objdir ("%{wks.location}/bin-int/" .. tmpdirweb)
+		staticruntime "off"
+
+		dependson { "ImGui.Web", "yaml-cpp.Web", "Lucky.Web" }
+
+		files(_files)
+		vpaths(_vpaths)
+		includedirs(_includedirs)
+		libdirs(_libdirs)
+
+		links
+		{
+			"Lucky.Web",
+			"ImGui.Web",
+			"ImGuizmo.Web",
+			"yaml-cpp.Web",
+			"Box2D.Web"
+		}
+
+		defines
+		{
+			"__EMSCRIPTEN__"
+		}
+
+		-- Precompile header
+		pchheader "src/LuckyEditorPch.h"
+		pchsource "src/LuckyEditorPch.cpp"
+		pchoutputfile "LuckyEditorPch.h.gch"
+
+		-- Prebuild
+		prebuildmessage "Running swig language bridge..."
+		prebuildcommands { 
+			"set \"SWIG_LIB=$(SWIG_LIB_DIRECTORY)\"",
+			"\"$(SWIG_EXECUTABLE)\" -c++ -csharp -outdir \"$(SolutionDir)Browser\\BlazorLuckyEditor\\SWIG\" -o \"$(ProjectDir)src\\Bootstrapper_wrap.cpp\" \"$(ProjectDir)src\\Bootstrapper.i\"",
+			"\"$(PYTHON)\" \"$(SolutionDir)Scripts\\fixswig.py\" \"$(SolutionDir)Browser\\BlazorLuckyEditor\\SWIG\\LuckyEditorPINVOKE.cs\""
+		}
+
+		-- Configurations
+		filter "configurations:Debug"
+			defines { "DEBUG" }
+			runtime "Debug"
+			symbols "On" 
+			optimize "Off"
+
+		filter "configurations:Release"  
+			defines { "NDEBUG" }
+			runtime "Release"
+			optimize "full"

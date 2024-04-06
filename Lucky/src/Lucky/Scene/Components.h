@@ -93,6 +93,10 @@ namespace Lucky
 		bool FixedAspectRatio = false;
 	};
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-incomplete" 
+#endif
 	//Forward declarations
 	class Entity;
 	class ScriptableEntity;
@@ -113,6 +117,9 @@ namespace Lucky
 			DestroyScript = [&]() { delete Instance; Instance = nullptr; };
 		}
 	};
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 	struct RigidBody2DComponent
 	{

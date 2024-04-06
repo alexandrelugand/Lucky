@@ -17,10 +17,7 @@ namespace Lucky
 		{
 			ImGui::BeginChild("##listbox", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing()));
 
-			auto cwd = std::filesystem::current_path();
-			const auto& path = cwd.concat(folder);
-
-			char* fileString = (char*)EM_ASM_PTR({
+			char* fileString = (char*)EM_ASM_INT({
 				let dirPath = UTF8ToString($0);
 				try {
 					let scenes = FS.readdir(dirPath);
@@ -29,7 +26,7 @@ namespace Lucky
 				} catch (e) {
 					return stringToNewUTF8("");
 				}				
-			}, path.c_str());
+			}, (int)folder.c_str());
 
 			std::vector<std::string> files;
 			std::istringstream f(fileString);
@@ -58,7 +55,7 @@ namespace Lucky
 			{
 				ImGui::CloseCurrentPopup();
 				ImGui::EndPopup();
-				std::string filePath = fmt::format("{0}/{1}", path.c_str(), item_current);
+				std::string filePath = fmt::format("{0}/{1}", folder, item_current);
 				item_current = {};
 				return filePath;
 			}

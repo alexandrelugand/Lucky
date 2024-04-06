@@ -1,104 +1,183 @@
-project "Lucky"
-	kind "StaticLib"
-	language "C++"
-	cppdialect "C++20"
-	architecture "x64"
-	targetdir ("%{wks.location}/bin/" .. outputdir)
-	objdir ("%{wks.location}/bin-int/" .. tmpdir)
-	staticruntime "off"
+local _files = 
+{ 
+	"**.h",
+	"**.cpp",
+	"%{includeDir.GLM}/glm/**.hpp", 
+	"%{includeDir.GLM}/glm/**.inl",
+	"%{includeDir.stb}/**.h", 
+	"%{includeDir.stb}/**.cpp"
+}
 
-	dependson { "GLAD", "ImGui", "yaml-cpp" }
-
-	files
+local _vpaths =
+{ 
+	["Vendors/*"] = 
 	{ 
-		"**.h",
-		"**.cpp",
 		"%{includeDir.GLM}/glm/**.hpp", 
 		"%{includeDir.GLM}/glm/**.inl",
-		"%{includeDir.stb}/**.h", 
+		"%{includeDir.stb}/**.h",
 		"%{includeDir.stb}/**.cpp"
-	}
+	} 
+}
 
-	vpaths 
-	{ 
-		["Vendors/*"] = 
-		{ 
-			"%{includeDir.GLM}/glm/**.hpp", 
-			"%{includeDir.GLM}/glm/**.inl",
-			"%{includeDir.stb}/**.h",
-			"%{includeDir.stb}/**.cpp"
-		} 
-	}
+local _includedirs =
+{
+	"src",
+	"%{includeDir.spdlog}",
+	"%{includeDir.GLFW}",
+	"%{includeDir.GLAD}",
+	"%{includeDir.ImGui}",
+	"%{includeDir.ImGui}/backends",
+	"%{includeDir.GLM}",
+	"%{includeDir.stb}",
+	"%{includeDir.entt}",
+	"%{includeDir.yaml}",
+	"%{includeDir.ImGuizmo}",
+	"%{includeDir.nameof}",
+	"%{includeDir.Box2D}",
+	"%{includeDir.VulkanSDK}"
+}
 
-	includedirs
-	{
-		"src",
-		"%{includeDir.spdlog}",
-		"%{includeDir.GLFW}",
-		"%{includeDir.GLAD}",
-		"%{includeDir.ImGui}",
-		"%{includeDir.ImGui}/backends",
-		"%{includeDir.GLM}",
-		"%{includeDir.stb}",
-		"%{includeDir.entt}",
-		"%{includeDir.yaml}",
-		"%{includeDir.ImGuizmo}",
-		"%{includeDir.nameof}",
-		"%{includeDir.Box2D}",
-		"%{includeDir.VulkanSDK}"
-	}
+local _libdirs =
+{
+	"%{libDir.GLFW}"
+}
 
-	libdirs 
-	{
-		"%{libDir.GLFW}"
-	}
+group "Core"
+	project "Lucky"
+		kind "StaticLib"
+		language "C++"
+		cppdialect "C++20"
+		architecture "x64"
+		targetdir ("%{wks.location}/bin/" .. outputdir)
+		objdir ("%{wks.location}/bin-int/" .. tmpdir)
+		staticruntime "off"
 
-	links
-	{
-		"opengl32",
-		"GLAD",
-		"ImGui",
-		"ImGuizmo",
-		"yaml-cpp",
-		"Box2D"
-	}
+		dependson { "GLAD", "ImGui", "yaml-cpp" }
 
-	defines
-	{
-		"GLFW_INCLUDE_NONE",
-		"YAML_CPP_STATIC_DEFINE"
-	}
+		files(_files)
+		vpaths(_vpaths)
+		includedirs(_includedirs)
+		libdirs(_libdirs)
+		disablewarnings { "4996" }
 
-	-- Precompile header
-	pchheader "LuckyPch.h"
-	pchsource "src/LuckyPch.cpp"
+		links
+		{
+			"opengl32",
+			"GLAD",
+			"ImGui",
+			"ImGuizmo",
+			"yaml-cpp",
+			"Box2D"		
+		}
 
-	filter "files:../Vendors/ImGuizmo/*.cpp"
-		flags { "NoPCH" }
+		defines
+		{
+			"GLFW_INCLUDE_NONE",
+			"YAML_CPP_STATIC_DEFINE",
+			"PLATFORM_WINDOWS", 
+			"_CRT_SECURE_NO_WARNINGS", 
+			"OPENGL"
+		}
 
-	-- Configurations
-	filter "configurations:Debug"
-		defines { "DEBUG" }
-		runtime "Debug"
-		symbols "On" 
-		optimize "Off"
+		excludes
+		{
+			"src/Lucky/Platforms/Browser/**.h",
+			"src/Lucky/Platforms/Browser/**.cpp"
+		}
 
-	filter "configurations:Release"
-		defines { "NDEBUG" }
-		runtime "Release"
-		optimize "full"
+		-- Precompile header
+		pchheader "LuckyPch.h"
+		pchsource "src/LuckyPch.cpp"
 
-	-- EMScripten
-	filter { "action:gmake2" }
-		architecture "x86"
-		makesettings [[
-CC = emcc
-CXX = em++
-AR = emar
-		]]
-		targetextension  ".a"
-		buildoptions { "-Wall -Wformat -s DISABLE_EXCEPTION_CATCHING=1 -Wno-deprecated-include-gch" }
-		linkoptions { "-s DISABLE_EXCEPTION_CATCHING=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_GLFW=3 -s FULL_ES3=1 -s FORCE_FILESYSTEM=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 --use-preload-plugins --no-heap-copy" }
+		filter "files:../Vendors/ImGuizmo/*.cpp"
+			flags { "NoPCH" }
+
+		-- Configurations
+		filter "configurations:Debug"
+			defines { "DEBUG" }
+			runtime "Debug"
+			symbols "On" 
+			optimize "Off"
+
+			links 
+			{
+				"%{library.ShaderC_Debug}",
+				"%{library.SPIRV_Cross_Debug}",
+				"%{library.SPIRV_Cross_GLSL_Debug}"
+			}
+
+		filter "configurations:Release"
+			defines { "NDEBUG" }
+			runtime "Release"
+			optimize "full"
+
+			links 
+			{
+				"%{library.ShaderC_Release}",
+				"%{library.SPIRV_Cross_Release}",
+				"%{library.SPIRV_Cross_GLSL_Release}"
+			}
+
+		filter "action:vs2022"
+			includedirs
+			{
+				"%{includeDir.mono}"
+			}
+
+			libdirs 
+			{
+				"%{libDir.mono}"
+			}
+
+			links 
+			{ 
+				"glfw3_mt",
+				"%{library.mono}",
+				"%{library.WinSock}",
+				"%{library.Winmm}",
+				"%{library.WinVersion}",
+				"%{library.BCrypt}"
+			}
+
+group "Browser/Core"
+	project "Lucky.Web"
+		kind "StaticLib"
+		targetname "Lucky"
+		targetextension ".a"
+		language "C++"
+		cppdialect "C++20"
+		architecture "x64"
+		targetdir ("%{wks.location}/bin/" .. outputdirweb)
+		objdir ("%{wks.location}/bin-int/" .. tmpdirweb)
+		staticruntime "off"
+
+		dependson { "ImGui.Web", "yaml-cpp.Web" }
+
+		files(_files)
+		vpaths(_vpaths)
+		includedirs(_includedirs)
+
+		libdirs 
+		{
+			"%{libDir.GLFW}"
+		}
+
+		links
+		{
+			-- "opengl32",
+			"ImGui.Web",
+			"ImGuizmo.Web",
+			"yaml-cpp.Web",
+			"Box2D.Web"
+		}
+
+		defines
+		{
+			"__EMSCRIPTEN__",
+			"GLFW_INCLUDE_NONE",
+			"YAML_CPP_STATIC_DEFINE"
+		}
+
 		excludes
 		{
 			"src/Lucky/Platforms/Windows/**.h",
@@ -107,32 +186,22 @@ AR = emar
 			"src/Lucky/Platforms/OpenGL/**.cpp",
 		}
 
-	-- VS 2022
-	filter "action:vs2022"
-		defines { "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS", "OPENGL" }
-		disablewarnings { "4996" }
-		excludes
-		{
-			"src/Lucky/Platforms/Browser/**.h",
-			"src/Lucky/Platforms/Browser/**.cpp"
-		}
-		links 
-		{ 
-			"glfw3_mt" 
-		}
+		-- Precompile header
+		pchheader "src/LuckyPch.h"
+		pchsource "src/LuckyPch.cpp"
+		pchoutputfile "LuckyPch.h.gch"
 
-	filter { "action:vs2022", "configurations:Debug"}
-		links 
-		{
-			"%{library.ShaderC_Debug}",
-			"%{library.SPIRV_Cross_Debug}",
-			"%{library.SPIRV_Cross_GLSL_Debug}"
-		}
-	
-	filter { "action:vs2022", "configurations:Release"}
-		links 
-		{
-			"%{library.ShaderC_Release}",
-			"%{library.SPIRV_Cross_Release}",
-			"%{library.SPIRV_Cross_GLSL_Release}"
-		}
+		filter "files:../Vendors/ImGuizmo/*.cpp"
+			flags { "NoPCH" }
+
+		-- Configurations
+		filter "configurations:Debug"
+			defines { "DEBUG" }
+			runtime "Debug"
+			symbols "On" 
+			optimize "Off"
+
+		filter "configurations:Release"
+			defines { "NDEBUG" }
+			runtime "Release"
+			optimize "full"

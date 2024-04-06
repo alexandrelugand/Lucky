@@ -37,8 +37,10 @@
 Sandbox/**/*.json
 
 # Folders
+obj
 bin
 bin-int
+Intermediates
 !Vendors/**/*.exe
 !Vendors/**/*.a
 !Vendors/**/*.dll
@@ -53,7 +55,23 @@ Makefile
 .vs
 *.sln
 *.vcxproj
+*.Web.vcxproj
 *.vcxproj.*
+*.Web.vcxproj.*
+*.csproj.*
 
 # LuckyEditor
 LuckyEditor/assets/scenes
+/Browser/BlazorLuckyEditor/obj
+/Browser/BlazorLuckyEditor/SWIG/Bootstrapper.cs
+/Browser/BlazorLuckyEditor/SWIG/LuckyEditor.cs
+/Browser/BlazorLuckyEditor/SWIG/LuckyEditorPINVOKE.cs
+/Browser/BlazorLuckyEditor/wwwroot/assets
+/Browser/BlazorLuckyEditor/wwwroot/resources
+
+#SWIG
+*_wrap.cpp
+
+#Mono
+!Vendors/Mono/**
+!LuckyEditor/mono/**

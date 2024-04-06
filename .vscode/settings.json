@@ -74,7 +74,9 @@
         "list": "cpp",
         "set": "cpp",
         "valarray": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "csignal": "cpp",
+        "bootstrapper.h": "c"
     },
     "cmake.configureOnOpen": false
 }
