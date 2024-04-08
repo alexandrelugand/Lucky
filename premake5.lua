@@ -18,6 +18,7 @@ workspace "Lucky"
 		["Scripts"] = {
 			"./Scripts/setup.cmd",
 			"./Scripts/clean.cmd",
+			"./Scripts/symlinks.cmd",
 			["Python"] = {
 				"./Scripts/*.py"
 			}

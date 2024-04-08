@@ -32,6 +32,7 @@ A section with all necessary Visual Studio extensions is described below.
 - Add `EMSDK` environment variable with value = `C:\emsdk`
 - Add `Emscripten` environment variable with value = `C:\emsdk\upstream\emscripten`
 - You can alos add `C:\emsdk` and `C:\emsdk\upstream\emscripten` in PATH environment variable
+- Install 3.1.34 specific version (same as dotnet using) with command `emsdk install 3.1.34`
 - Check if EMCC compiler works fine in cmd console with command:
     ```
     emsdk_env
@@ -47,7 +48,7 @@ A section with all necessary Visual Studio extensions is described below.
     ```
     It must return something like this
     ```
-    emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.47 (431685f05c67f0424c11473cc16798b9587bb536) ...
+    emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.34 (57b21b8fdcbe3ebb523178b79465254668eab408) ...
     ```
 
 ## Visual Studio extensions
@@ -68,7 +69,10 @@ In Visual Studio, the `setup.cmd` script can be launch using the `Open Command L
 
 **Assets** are stored in `LuckyEditor` project in `assets` folder.
 The `resources` folder contains all mandatory files for Lucky Editor execution (images, scripts).
-This folders are available in Blazor Lucky Editor project by using symbolic links.
+
+This folders are available in **Blazor Lucky Editor** project by using symbolic links.
+To create them, launch `symlinks.cmd` script (with administrator rights).
+<span style="color:orange">Remarks:</span> Window user must have the permission to create symbolic link. To enable it, please refer to this [article](https://experienceleague.adobe.com/en/docs/experience-manager-learn/ams/dispatcher/git-symlinks).
 
 # Troubleshooting
 
