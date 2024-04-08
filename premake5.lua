@@ -32,6 +32,9 @@ workspace "Lucky"
 			["LuckyEditor"] = {
 				"./LuckyEditor/premake5.lua"
 			},
+			["BlazorLuckyEditor"] = {
+				"./Browser/BlazorLuckyEditor/premake5.lua"
+			},
 			["Sandbox"] = {
 				"./Sandbox/premake5.lua"
 			},
