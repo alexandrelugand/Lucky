@@ -2,10 +2,10 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Label="Configuration">
-	  <EMSCRIPTEN_EMSDK_DIR>C:\\emsdk\\upstream\\emscripten</EMSCRIPTEN_EMSDK_DIR>
-	  <SWIG_EXECUTABLE>C:\\swigwin-4.2.1\\swig.exe</SWIG_EXECUTABLE>
-	  <SWIG_LIB_DIRECTORY>C:\\swigwin-4.2.1\\Lib\\</SWIG_LIB_DIRECTORY>
-	  <PYTHON>C:\\Users\\Alex\\AppData\\Local\\Programs\\Python\\Python312\\python.exe</PYTHON>
+	  <EMSCRIPTEN_EMSDK_DIR>$(EMSDK)\\upstream\\emscripten</EMSCRIPTEN_EMSDK_DIR>
+	  <SWIG_EXECUTABLE>$(SWIGWIN)\\swig.exe</SWIG_EXECUTABLE>
+	  <SWIG_LIB_DIRECTORY>$(SWIGWIN)\\Lib\\</SWIG_LIB_DIRECTORY>
+	  <PYTHON>$(PYTHON)\\python.exe</PYTHON>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
