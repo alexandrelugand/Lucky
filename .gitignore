@@ -61,7 +61,6 @@ Makefile
 *.csproj.*
 
 # LuckyEditor
-LuckyEditor/assets/scenes
 /Browser/BlazorLuckyEditor/obj
 /Browser/BlazorLuckyEditor/SWIG/Bootstrapper.cs
 /Browser/BlazorLuckyEditor/SWIG/LuckyEditor.cs

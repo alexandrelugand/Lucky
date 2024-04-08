@@ -1,0 +1,86 @@
+Scene: Untitled
+Entities:
+  - Entity: 14688635888743834828
+    TagComponent:
+      Tag: Top
+    TransformComponent:
+      Translation: [0, 0.5, 0]
+      Rotation: [1.57079637, 0.785398185, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.99227798, 0.998479426, 1, 1]
+      Texture: assets/textures/Checkerboard.png
+      TilingFactor: 2
+  - Entity: 5846415942455005736
+    TagComponent:
+      Tag: FrontRight
+    TransformComponent:
+      Translation: [0.354999989, 0, 0.349999994]
+      Rotation: [0, 0.785398185, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.683397651, 0.683397651, 0.683397651, 1]
+      Texture: assets/textures/Checkerboard.png
+      TilingFactor: 2
+  - Entity: 7373892244353608196
+    TagComponent:
+      Tag: FrontLeft
+    TransformComponent:
+      Translation: [-0.349999994, 0, 0.349999994]
+      Rotation: [4.01943764e-14, -0.785398424, -6.84886686e-07]
+      Scale: [0.999999881, 1, 1.00000024]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      Texture: assets/textures/Checkerboard.png
+      TilingFactor: 2
+  - Entity: 2986306551490229987
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 1.20000005, 3.5]
+      Rotation: [-0.347320497, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFov: 45
+        PerspectiveNearClip: 0.00999999978
+        PerspectiveFarClip: 1000
+        OrthographicSize: 10
+        OrthographicNearClip: -1
+        OrthographicFarClip: 1
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 2102589155948939243
+    TagComponent:
+      Tag: RearRight
+    TransformComponent:
+      Translation: [0.349999994, 0, -0.354999989]
+      Rotation: [0, -0.785398245, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.459459484, 0.459459484, 0.459459484, 1]
+      Texture: assets/textures/Checkerboard.png
+      TilingFactor: 2
+  - Entity: 5626821331103450171
+    TagComponent:
+      Tag: RearLeft
+    TransformComponent:
+      Translation: [-0.354999989, 0, -0.351943374]
+      Rotation: [0, 0.785398245, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.67567569, 0.67567569, 0.67567569, 1]
+      Texture: assets/textures/Checkerboard.png
+      TilingFactor: 2
+  - Entity: 5007359029500023471
+    TagComponent:
+      Tag: Bottom
+    TransformComponent:
+      Translation: [0, -0.5, 0]
+      Rotation: [1.57079637, 0.785398185, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.312741339, 0.312741339, 0.312741339, 1]
+      Texture: assets/textures/Checkerboard.png
+      TilingFactor: 2
