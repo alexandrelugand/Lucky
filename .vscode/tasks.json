@@ -26,7 +26,7 @@
             "label": "Setup",
             "type": "shell",
             "windows": {
-                "command": "${workspaceFolder}/Scripts/setup.bat"
+                "command": "${workspaceFolder}/Scripts/setup.cmd"
             },
             "options": {
                 "cwd": "${workspaceFolder}/scripts"

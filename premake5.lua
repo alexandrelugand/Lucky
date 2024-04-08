@@ -13,6 +13,47 @@ workspace "Lucky"
 		"MultiProcessorCompile" 
 	}
 
+	solutionitems {
+		"./README.md",
+		["Scripts"] = {
+			"./Scripts/setup.cmd",
+			"./Scripts/clean.cmd",
+			["Python"] = {
+				"./Scripts/*.py"
+			}
+		},
+		["Premake"] = {
+			"./premake5.lua",
+			"./Dependencies.lua",
+			["Lucky"] = {
+				"./Lucky/premake5.lua"
+			},
+			["LuckyEditor"] = {
+				"./LuckyEditor/premake5.lua"
+			},
+			["Sandbox"] = {
+				"./Sandbox/premake5.lua"
+			},
+			["Vendors"] = {
+				["Box2D"] = {
+					"./Vendors/Box2D/premake5.lua"
+				},
+				["GLAD"] = {
+					"./Vendors/GLAD/premake5.lua"
+				},
+				["ImGui"] = {
+					"./Vendors/ImGui/premake5.lua"
+				},
+				["ImGuizmo"] = {
+					"./Vendors/ImGuizmo/premake5.lua"
+				},
+				["yaml-cpp"] = {
+					"./Vendors/yaml-cpp/premake5.lua"
+				}
+			}
+		}
+	}
+
 outputdir = "%{cfg.system}\\%{cfg.architecture}\\%{cfg.buildcfg}"
 outputdirweb = "browser\\%{cfg.buildcfg}"
 tmpdir = "%{cfg.system}\\%{cfg.architecture}"
