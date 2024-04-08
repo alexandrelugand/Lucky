@@ -112,6 +112,11 @@ group "Browser/Core"
 		includedirs(_includedirs)
 		libdirs(_libdirs)
 
+		files
+		{
+			"src/Bootstrapper_wrap.cpp"
+		}
+
 		links
 		{
 			"Lucky.Web",
