@@ -5,7 +5,8 @@ A basic 2D/3D engine framework (OpenGL) working with Visual Studio and EMCC (web
 The project is configured to build inside [Visual Sudio](https://visualstudio.microsoft.com/fr/downloads/).
 
 The solution and projects are generated with **Premake5** (binary is included in repository in `Vendors/Binary/Premake` folder).
-<span style="color:orange">Remarks:</span> The provided Premake binary is a modified version adding some new features. The source code is available [here](https://github.com/alexandrelugand/premake-core).
+
+<span style="color:orange">**Remarks:**</span> The provided Premake binary is a modified version adding some new features. The source code is available [here](https://github.com/alexandrelugand/premake-core).
 
 A section with all necessary Visual Studio extensions is described below.
 
@@ -72,7 +73,8 @@ The `resources` folder contains all mandatory files for Lucky Editor execution (
 
 This folders are available in **Blazor Lucky Editor** project by using symbolic links.
 To create them, launch `symlinks.cmd` script (with administrator rights).
-<span style="color:orange">Remarks:</span> Window user must have the permission to create symbolic link. To enable it, please refer to this [article](https://experienceleague.adobe.com/en/docs/experience-manager-learn/ams/dispatcher/git-symlinks).
+
+<span style="color:orange">**Remarks:**</span> Window user must have the permission to create symbolic link. To enable it, please refer to this [article](https://experienceleague.adobe.com/en/docs/experience-manager-learn/ams/dispatcher/git-symlinks).
 
 # Troubleshooting
 
