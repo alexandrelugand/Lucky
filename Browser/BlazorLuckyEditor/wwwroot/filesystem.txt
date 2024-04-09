@@ -18,9 +18,7 @@
 /assets/scenes/GreenCube.lucky
 /assets/scenes/Physics.lucky
 /assets/scenes/PinkCube.lucky
-/assets/scenes/test.lucky
 /assets/scenes/TexturedCube.lucky
-/assets/scenes/toto.lucky
 /resources
 /resources/icons
 /resources/icons/PauseButton.png
