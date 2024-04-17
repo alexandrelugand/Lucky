@@ -15,6 +15,7 @@ workspace "Lucky"
 
 	solutionitems {
 		"./README.md",
+		"./.gitignore",
 		["Scripts"] = {
 			"./Scripts/setup.cmd",
 			"./Scripts/clean.cmd",
@@ -31,6 +32,15 @@ workspace "Lucky"
 			},
 			["LuckyEditor"] = {
 				"./LuckyEditor/premake5.lua"
+			},
+			["LuckyApi"] = {
+				"./LuckyApi/premake5.lua"
+			},
+			["LuckyApi.Web"] = {
+				"./LuckyApi.Web/premake5.lua"
+			},
+			["Lucky-ScriptCore"] = {
+				"./Lucky-ScriptCore/premake5.lua"
 			},
 			["BlazorLuckyEditor"] = {
 				"./Browser/BlazorLuckyEditor/premake5.lua"
@@ -70,28 +80,21 @@ if _ACTION == "gmake2" then
 end
 
 group "Dependencies"
-	if _ACTION == "vs2022" then
-		include "Vendors/GLAD/premake5.lua"
-	end
-	if _ACTION == "gmake2" then
-		include "Vendors/Mono/net8.0/lib/src/premake5.lua"
-	end
+	include "Vendors/GLAD/premake5.lua"
 	include "Vendors/ImGui/premake5.lua"
 	include "Vendors/ImGuizmo/premake5.lua"
 	include "Vendors/yaml-cpp/premake5.lua"
 	include "Vendors/Box2D/premake5.lua"
 
-group "Core"
-	include "Lucky/premake5.lua"
-	if _ACTION == "vs2022" then
-		include "Lucky-ScriptCore/premake5.lua"
-	end
+-- Core
+include "Lucky/premake5.lua"
+include "LuckyEditor/premake5.lua"
+include "Browser/BlazorLuckyEditor/premake5.lua"
 
-group "Tools"
-	include "LuckyEditor/premake5.lua"
+-- Scripting
+include "LuckyApi/premake5.lua"
+include "LuckyApi.Web/premake5.lua"
+include "Lucky-ScriptCore/premake5.lua"
 
-group "Misc"
-	include "Sandbox/premake5.lua"
-
-group "Browser/Core"
-	include "Browser/BlazorLuckyEditor/premake5.lua"
+-- Misc
+include "Sandbox/premake5.lua"

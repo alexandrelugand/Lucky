@@ -67,8 +67,9 @@
 	  <None Include="wwwroot\resources\icons\SimulateButton.png" />
 	  <None Include="wwwroot\resources\icons\StepButton.png" />
 	  <None Include="wwwroot\resources\icons\StopButton.png" />
-	  <None Include="wwwroot\resources\Scripts\Lucky-ScriptCore.dll" />
-	  <None Include="wwwroot\resources\Scripts\Lucky-ScriptCore.pdb" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\LuckyApi.Web\LuckyApi.Web.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup>

@@ -30,4 +30,5 @@
 /resources/icons/contentbrowser/DirectoryIcon.png
 /resources/icons/contentbrowser/FileIcon.png
 /resources/Scripts
-/resources/Scripts/Lucky-ScriptCore.dll
+/resources/Scripts/Browser
+/resources/Scripts/Browser/Lucky-ScriptCore.dll

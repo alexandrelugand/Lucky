@@ -1,109 +1,110 @@
-project "Sandbox"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++20"
-	architecture "x64"
-	targetdir ("%{wks.location}/bin/" .. outputdir)
-	objdir ("%{wks.location}/bin-int/" .. tmpdir)
-	staticruntime "off"
+group "Misc"
+	project "Sandbox"
+		kind "ConsoleApp"
+		language "C++"
+		cppdialect "C++20"
+		architecture "x64"
+		targetdir ("%{wks.location}/bin/" .. outputdir)
+		objdir ("%{wks.location}/bin-int/" .. tmpdir)
+		staticruntime "off"
 
-	dependson { "GLAD", "ImGui", "yaml-cpp", "Lucky" }
+		dependson { "GLAD", "ImGui", "yaml-cpp", "Lucky" }
 
-	files
-	{ 
-		"**.h", 
-		"**.cpp", 
-		"%{includeDir.GLM}/glm/**.hpp", 
-		"%{includeDir.GLM}/glm/**.inl" 
-	}
-
-	vpaths 
-	{
-		["Vendors/*"] = 
+		files
 		{ 
+			"**.h", 
+			"**.cpp", 
 			"%{includeDir.GLM}/glm/**.hpp", 
-			"%{includeDir.GLM}/glm/**.inl"
+			"%{includeDir.GLM}/glm/**.inl" 
 		}
-	}
 
-	includedirs
-	{
-		"src",
-		"../Lucky/src",
-		"%{includeDir.spdlog}",
-		"%{includeDir.GLFW}",
-		"%{includeDir.GLAD}",
-		"%{includeDir.ImGui}",
-		"%{includeDir.GLM}",
-		"%{includeDir.entt}"
-	}
-
-	libdirs 
-	{
-		"%{libDir.GLFW}"
-	}
-
-	links
-	{
-		"Lucky",
-		"ImGui",
-		"ImGuizmo",
-		"yaml-cpp",
-		"Box2D"
-	}
-
-	-- Precompile header
-	pchheader "SandboxPch.h"
-	pchsource "src/SandboxPch.cpp"
-
-	-- Configurations
-	filter "configurations:Debug"
-		defines { "DEBUG" }
-		runtime "Debug"
-		symbols "On" 
-		optimize "Off"
-
-	filter "configurations:Release"  
-		defines { "NDEBUG" }
-		runtime "Release"
-		optimize "full"
-	
-	-- EMScripten
-	filter { "action:gmake2" }
-		architecture "x86"
-		makesettings [[
-CC = emcc
-CXX = em++
-AR = emar
-		]]
-		targetextension  ".html"
-		buildoptions { "-Wall -Wformat -s DISABLE_EXCEPTION_CATCHING=1 -Wno-deprecated-include-gch" }
-		linkoptions { "-s DISABLE_EXCEPTION_CATCHING=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_GLFW=3 -s FULL_ES3=1 -s FORCE_FILESYSTEM=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 --use-preload-plugins --no-heap-copy --preload-file assets -lidbfs.js -s ERROR_ON_UNDEFINED_SYMBOLS=0" }
+		vpaths 
+		{
+			["Vendors/*"] = 
+			{ 
+				"%{includeDir.GLM}/glm/**.hpp", 
+				"%{includeDir.GLM}/glm/**.inl"
+			}
+		}
 
 		includedirs
 		{
-			"%{includeDir.mono_wasm}"
+			"src",
+			"../Lucky/src",
+			"%{includeDir.spdlog}",
+			"%{includeDir.GLFW}",
+			"%{includeDir.GLAD}",
+			"%{includeDir.ImGui}",
+			"%{includeDir.GLM}",
+			"%{includeDir.entt}"
 		}
 
 		libdirs 
 		{
-			"%{libDir.mono_wasm}"
+			"%{libDir.GLFW}"
 		}
 
-		links 
-		{ 
-			"monosgen-2.0",
-			"dotnet"
+		links
+		{
+			"Lucky",
+			"ImGui",
+			"ImGuizmo",
+			"yaml-cpp",
+			"Box2D"
 		}
 
-	filter { "action:gmake2", "configurations:Debug" }
-		linkoptions { "-g" }
+		-- Precompile header
+		pchheader "SandboxPch.h"
+		pchsource "src/SandboxPch.cpp"
 
-	-- VS 2022
-	filter "action:vs2022"
-		defines {  "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
-		disablewarnings { "4996" }
-		links { "glfw3_mt" }
+		-- Configurations
+		filter "configurations:Debug"
+			defines { "DEBUG" }
+			runtime "Debug"
+			symbols "On" 
+			optimize "Off"
 
-	filter { "action:vs2022", "configurations:Debug" }
-		ignoredefaultlibraries { "LIBCMT" }
+		filter "configurations:Release"  
+			defines { "NDEBUG" }
+			runtime "Release"
+			optimize "full"
+	
+		-- EMScripten
+		filter { "action:gmake2" }
+			architecture "x86"
+			makesettings [[
+	CC = emcc
+	CXX = em++
+	AR = emar
+			]]
+			targetextension  ".html"
+			buildoptions { "-Wall -Wformat -s DISABLE_EXCEPTION_CATCHING=1 -Wno-deprecated-include-gch" }
+			linkoptions { "-s DISABLE_EXCEPTION_CATCHING=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_GLFW=3 -s FULL_ES3=1 -s FORCE_FILESYSTEM=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 --use-preload-plugins --no-heap-copy --preload-file assets -lidbfs.js -s ERROR_ON_UNDEFINED_SYMBOLS=0" }
+
+			includedirs
+			{
+				"%{includeDir.mono_wasm}"
+			}
+
+			libdirs 
+			{
+				"%{libDir.mono_wasm}"
+			}
+
+			links 
+			{ 
+				"monosgen-2.0",
+				"dotnet"
+			}
+
+		filter { "action:gmake2", "configurations:Debug" }
+			linkoptions { "-g" }
+
+		-- VS 2022
+		filter "action:vs2022"
+			defines {  "PLATFORM_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
+			disablewarnings { "4996" }
+			links { "glfw3_mt" }
+
+		filter { "action:vs2022", "configurations:Debug" }
+			ignoredefaultlibraries { "LIBCMT" }

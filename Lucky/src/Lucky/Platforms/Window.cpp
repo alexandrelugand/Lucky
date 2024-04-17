@@ -65,6 +65,7 @@ namespace Lucky
 
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+			glfwWindowHint(GLFW_SAMPLES, 4);
 
             LK_CORE_ASSERT(success, "Could not initialize GLFW!");
             glfwSetErrorCallback([](int error_code, const char* description)

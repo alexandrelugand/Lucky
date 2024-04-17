@@ -1,9 +1,9 @@
-import os
-import os.path
+# import os
+# import os.path
 import re
 import glob
 
-from sys import argv
+#from sys import argv
 from lxml import etree
 
 class WebAssembliesConfiguration:
@@ -19,8 +19,6 @@ class WebAssembliesConfiguration:
 	@classmethod
 	def PatchProject(self, projectPath):
 		requestedProjFile = projectPath
-		print("Patching '" + requestedProjFile + "' project...")
-		# requestedClassName = os.path.splitext(os.path.basename(requestedProjFile))[0]
 
 		f = open(requestedProjFile, "r")
 		oldBuffer = str(f.read())
@@ -66,14 +64,6 @@ class WebAssembliesConfiguration:
 		for bad in root.xpath("//ns:ImportGroup[@Label='UserMacros']", namespaces=namespaces):
 			bad.getparent().remove(bad)
 			
-		# Add emcc.props in project if exists
-		projectDir = os.path.dirname(projectPath)
-		emccPropsPath = os.path.join(projectDir, "emcc.props")
-		if os.path.isfile(emccPropsPath):
-			project = root.xpath("//ns:Project", namespaces=namespaces)[0]
-			importProps = etree.SubElement(project, "Import")
-			importProps.set("Project", "emcc.props")
-
 		with open(requestedProjFile, "wb") as f:
 			root.write(f, encoding="utf-8")
 		return
@@ -110,5 +100,5 @@ class WebAssembliesConfiguration:
 		return
 
 if __name__ == "__main__":
-	print("Generate projects and solution for WebAssembly configuration")
+	print("Generate projects and solution for WebAssembly configuration...")
 	WebAssembliesConfiguration.Setup()

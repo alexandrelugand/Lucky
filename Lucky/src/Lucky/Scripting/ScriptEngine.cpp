@@ -14,6 +14,7 @@ namespace Lucky
 		MonoDomain* RootDomain = nullptr;
 		MonoDomain* AppDomain = nullptr;
 
+		MonoAssembly* ApiAssembly = nullptr;
 		MonoAssembly* CoreAssembly = nullptr;
 		MonoObject* Script = nullptr;
 		MonoMethod* OnUpdate = nullptr;
@@ -25,18 +26,18 @@ namespace Lucky
 		uint64_t instance = 0;
 	};
 #endif
-	static ScriptEngineData* s_Data;
+	static ScriptEngineData* s_ScriptingData;
 
 	void ScriptEngine::Init()
 	{
-		s_Data = new ScriptEngineData();
+		s_ScriptingData = new ScriptEngineData();
 		InitEngine();
 	}
 
 	void ScriptEngine::Shutdown()
 	{
 		ShutdownEngine();
-		delete s_Data;
+		delete s_ScriptingData;
 	}
 
 #ifndef __EMSCRIPTEN__
@@ -70,12 +71,14 @@ namespace Lucky
 
 	MonoAssembly* LoadCSharpAssembly(const std::string& assemblyPath)
 	{
-		size_t fileSize = 0;
+		/*size_t fileSize = 0;
 		char* fileData = ReadBytes(assemblyPath, &fileSize);
 
 		MonoImageOpenStatus status;
-		MonoImage* image = mono_image_open_from_data_full(fileData, (uint32_t)fileSize, 1, &status, 0);
+		MonoImage* image = mono_image_open_from_data_full(fileData, (uint32_t)fileSize, 1, &status, 0);*/
 
+		MonoImageOpenStatus status;
+		MonoImage* image = mono_image_open_full(assemblyPath.c_str(), &status, 0);
 		if(status != MONO_IMAGE_OK)
 		{
 			const char* errorMessage = mono_image_strerror(status);
@@ -86,7 +89,7 @@ namespace Lucky
 		MonoAssembly* assembly = mono_assembly_load_from_full(image, assemblyPath.c_str(), &status, 0);
 		mono_image_close(image);
 
-		delete[] fileData;
+		//delete[] fileData;
 		return assembly;
 	}
 
@@ -118,20 +121,26 @@ namespace Lucky
 		LK_CORE_ASSERT(rootDomain);
 
 		// Store the root domain pointer
-		s_Data->RootDomain = rootDomain;
+		s_ScriptingData->RootDomain = rootDomain;
 
 		 // Create an App Domain
-		 s_Data->AppDomain = mono_domain_create_appdomain((char*)"LuckyScriptRuntime", nullptr);
-		 mono_domain_set(s_Data->AppDomain, true);
+		 s_ScriptingData->AppDomain = mono_domain_create_appdomain((char*)"LuckyScriptRuntime", nullptr);
+		 mono_domain_set(s_ScriptingData->AppDomain, true);
 
-		 s_Data->CoreAssembly = LoadCSharpAssembly("resources/Scripts/Lucky-ScriptCore.dll");
-		 PrintAssemblyTypes(s_Data->CoreAssembly);
+		 s_ScriptingData->ApiAssembly = mono_domain_assembly_open(s_ScriptingData->AppDomain, "resources/Scripts/Desktop/LuckyApi.dll");
+		 ////s_ScriptingData->ApiAssembly = LoadCSharpAssembly("resources/Scripts/LuckyApi.dll");
+		 //MonoImage* apiAssemblyImage = mono_assembly_get_image(s_ScriptingData->ApiAssembly);
+		 //PrintAssemblyTypes(s_ScriptingData->ApiAssembly);
 
-		 MonoImage* assemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
+		 //s_ScriptingData->CoreAssembly = LoadCSharpAssembly("resources/Scripts/Lucky-ScriptCore.dll");
+		 //PrintAssemblyTypes(s_ScriptingData->CoreAssembly);
+		 s_ScriptingData->CoreAssembly = mono_domain_assembly_open(s_ScriptingData->AppDomain, "resources/Scripts/Desktop/Lucky-ScriptCore.dll");
+
+		 MonoImage* assemblyImage = mono_assembly_get_image(s_ScriptingData->CoreAssembly);
 		 MonoClass* monoClass = mono_class_from_name(assemblyImage, "Lucky", "Main");
 
 		 // 1. Create an object (and call constructor
-		 MonoObject* instance = mono_object_new(s_Data->AppDomain, monoClass);
+		 MonoObject* instance = mono_object_new(s_ScriptingData->AppDomain, monoClass);
 		 mono_runtime_object_init(instance);
 
 		 // 2. Call function
@@ -154,7 +163,7 @@ namespace Lucky
 		 };
 		 mono_runtime_invoke(printIntsFunc, instance, params, nullptr);
 
-		 MonoString* monoString = mono_string_new(s_Data->AppDomain, "Hello world from C++!");
+		 MonoString* monoString = mono_string_new(s_ScriptingData->AppDomain, "Hello world from C++!");
 		 MonoMethod* printCustomMessageFunc = mono_class_get_method_from_name(monoClass, "PrintCustomMessage", 1);
 		 void* stringParam = monoString;
 		 mono_runtime_invoke(printCustomMessageFunc, instance, &stringParam, nullptr);
@@ -185,7 +194,7 @@ namespace Lucky
 			}
 		}, message.c_str());
 
-		std::string filePath = "/resources/Scripts/Lucky-ScriptCore.dll";
+		std::string filePath = "/resources/Scripts/Browser/Lucky-ScriptCore.dll";
 		FILE* f = fopen(filePath.c_str(), "rb");
 		fseek(f, 0, SEEK_END);
 		long fsize = ftell(f);
@@ -205,48 +214,56 @@ namespace Lucky
 			}
 		}, assemblyName.c_str(), data, fsize);
 
-		s_Data->instance = (uint64_t)EM_ASM_INT({
+		s_ScriptingData->instance = (uint64_t)EM_ASM_INT({
 			if(ScriptRuntime) {
 				let assemblyName = UTF8ToString($0);
 				let className = UTF8ToString($1);
 				let instance = ScriptRuntime.CreateInstance(assemblyName, className);
-				console.log(instance);
 				return instance;
 			}
 			return 0;
-		}, (int)assemblyName.c_str(), (int)className.c_str());
+		}, assemblyName.c_str(), className.c_str());
 
-		
+		std::string methodName = "PrintMessage";
+		EM_ASM({
+			if (ScriptRuntime) {
+				let assemblyName = UTF8ToString($0);
+				let className = UTF8ToString($1);
+				let methodName = UTF8ToString($2);
+				let args = new Array();
+				ScriptRuntime.Invoke(assemblyName, className, methodName, $3, args);
+			}
+			}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_ScriptingData->instance);
 #endif	
 	}
 
 	void ScriptEngine::ShutdownEngine()
 	{
 #ifndef __EMSCRIPTEN__
-		mono_jit_cleanup(s_Data->RootDomain);
-		s_Data->RootDomain = nullptr;
+		mono_jit_cleanup(s_ScriptingData->RootDomain);
+		s_ScriptingData->RootDomain = nullptr;
 #endif		
 	}
 
 	void ScriptEngine::OnUpdate(Timestep ts)
 	{
 #ifndef __EMSCRIPTEN__
-		if (s_Data->Script == nullptr)
+		if (s_ScriptingData->Script == nullptr)
 		{
-			MonoImage* assemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
+			MonoImage* assemblyImage = mono_assembly_get_image(s_ScriptingData->CoreAssembly);
 			MonoClass* monoClass = mono_class_from_name(assemblyImage, "Lucky", "Main");
 
-			s_Data->Script = mono_object_new(s_Data->AppDomain, monoClass);
-			mono_runtime_object_init(s_Data->Script);
+			s_ScriptingData->Script = mono_object_new(s_ScriptingData->AppDomain, monoClass);
+			mono_runtime_object_init(s_ScriptingData->Script);
 
-			s_Data->OnUpdate = mono_class_get_method_from_name(monoClass, "OnUpdate", 1);
+			s_ScriptingData->OnUpdate = mono_class_get_method_from_name(monoClass, "OnUpdate", 1);
 		}
 	
 		double value = (double)(float)ts;
 		void* param = &value;
-		mono_runtime_invoke(s_Data->OnUpdate, s_Data->Script, &param, nullptr);
+		mono_runtime_invoke(s_ScriptingData->OnUpdate, s_ScriptingData->Script, &param, nullptr);
 #else
-		if(s_Data->instance == 0)
+		if(s_ScriptingData->instance == 0)
 			return;
 
 		std::string assemblyName = "Lucky-ScriptCore";
@@ -262,7 +279,9 @@ namespace Lucky
 				args[0] = $4;
 				ScriptRuntime.Invoke(assemblyName, className, methodName, $3, args);
 			}
-		}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_Data->instance, (double)(float)ts);
+		}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_ScriptingData->instance, (double)(float)ts);
 #endif		
 	}
+
+	
 }

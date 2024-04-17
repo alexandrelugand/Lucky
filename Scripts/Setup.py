@@ -22,6 +22,7 @@ if (premakeInstalled):
         print("\nRunning premake...")
         subprocess.call(["Vendors/Binaries/premake/windows/premake5.exe", "vs2022"])
         subprocess.call(["python", "Scripts/SetupWebAssemblies.py"])
+        subprocess.call(["python", "Scripts/SetupExternalTools.py"])
 
     print("\nSetup completed!")
 else:

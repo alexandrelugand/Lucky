@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Lucky</RootNamespace>
+    <BaseOutputPath></BaseOutputPath>
+    <AssemblyName>LuckyApi</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="SWIG\" />
+  </ItemGroup>
+
+</Project>

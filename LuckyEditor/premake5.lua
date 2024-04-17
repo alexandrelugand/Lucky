@@ -1,7 +1,8 @@
 local _files =
 { 
 	"**.h", 
-	"**.cpp", 
+	"**.cpp",
+	"*.def",
 	"%{includeDir.GLM}/glm/**.hpp", 
 	"%{includeDir.GLM}/glm/**.inl" 
 }
@@ -45,7 +46,7 @@ group "Core"
 		objdir ("%{wks.location}/bin-int/" .. tmpdir)
 		staticruntime "off"
 
-		dependson { "GLAD", "ImGui", "yaml-cpp", "Lucky" }
+		dependson { "GLAD", "ImGui", "yaml-cpp", "Lucky", "Lucky-ScriptCore" }
 
 		files(_files)
 		vpaths(_vpaths)

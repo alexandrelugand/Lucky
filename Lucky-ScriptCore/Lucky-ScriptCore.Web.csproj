@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{782636D9-641F-552B-8D51-3AB079A93437}</ProjectGuid>
+    <ProjectGuid>{645B6F3C-50EA-F805-F908-0D01E57609AC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lucky-ScriptCore</RootNamespace>
-    <AssemblyName>Lucky-ScriptCore</AssemblyName>
+    <RootNamespace>Lucky-ScriptCore.Web</RootNamespace>
+    <AssemblyName>Lucky-ScriptCore.Web</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -18,8 +18,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\LuckyEditor\resources\Scripts\Desktop\</OutputPath>
-    <BaseIntermediateOutputPath>obj\Desktop\Debug\</BaseIntermediateOutputPath>
+    <OutputPath>..\LuckyEditor\resources\Scripts\Browser\</OutputPath>
+    <BaseIntermediateOutputPath>obj\Browser\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -30,8 +30,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>true</Optimize>
-    <OutputPath>..\LuckyEditor\resources\Scripts\Desktop\</OutputPath>
-    <BaseIntermediateOutputPath>obj\Desktop\Release\</BaseIntermediateOutputPath>
+    <OutputPath>..\LuckyEditor\resources\Scripts\Browser\</OutputPath>
+    <BaseIntermediateOutputPath>obj\Browser\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -46,9 +46,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LuckyApi\LuckyApi.csproj">
-      <Project>{67B25EBC-537F-B9C7-7C98-A76F68C4EE55}</Project>
-      <Name>LuckyApi</Name>
+    <ProjectReference Include="..\LuckyApi.Web\LuckyApi.Web.csproj">
+      <Project>{D346CA57-BFA9-59FC-682F-92B25471257F}</Project>
+      <Name>LuckyApi.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

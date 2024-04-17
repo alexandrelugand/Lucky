@@ -2,10 +2,11 @@ local _files =
 { 
 	"**.h",
 	"**.cpp",
+	"src/Lucky/LuckyApi_wrap.cpp",
 	"%{includeDir.GLM}/glm/**.hpp", 
 	"%{includeDir.GLM}/glm/**.inl",
 	"%{includeDir.stb}/**.h", 
-	"%{includeDir.stb}/**.cpp"
+	"%{includeDir.stb}/**.cpp",
 }
 
 local _vpaths =
@@ -89,7 +90,18 @@ group "Core"
 		pchheader "LuckyPch.h"
 		pchsource "src/LuckyPch.cpp"
 
+		-- Prebuild
+		prebuildmessage "Running swig language bridge..."
+		prebuildcommands { 
+			"set \"SWIG_LIB=$(SWIG_LIB_DIRECTORY)\"",
+			"\"$(SWIG_EXECUTABLE)\" -c++ -csharp -namespace Lucky -outdir \"$(SolutionDir)LuckyApi\\SWIG\" -o \"$(ProjectDir)src\\Lucky\\LuckyApi_wrap.cpp\" \"$(ProjectDir)src\\Lucky\\LuckyApi.i\"",
+			"\"$(PYTHON)\" \"$(SolutionDir)Scripts\\fixswig.py\" \"$(SolutionDir)LuckyApi\\SWIG\\LuckyPINVOKE.cs\" \"Lucky\""
+		}
+
 		filter "files:../Vendors/ImGuizmo/*.cpp"
+			flags { "NoPCH" }
+
+		filter "files:src/Lucky/LuckyApi*.cpp"
 			flags { "NoPCH" }
 
 		-- Configurations
@@ -190,6 +202,14 @@ group "Browser/Core"
 		pchheader "src/LuckyPch.h"
 		pchsource "src/LuckyPch.cpp"
 		pchoutputfile "LuckyPch.h.gch"
+
+			-- Prebuild
+		prebuildmessage "Running swig language bridge..."
+		prebuildcommands { 
+			"set \"SWIG_LIB=$(SWIG_LIB_DIRECTORY)\"",
+			"\"$(SWIG_EXECUTABLE)\" -c++ -csharp -namespace Lucky -outdir \"$(SolutionDir)LuckyApi.Web\\SWIG\" -o \"$(ProjectDir)src\\Lucky\\LuckyApi_wrap.cpp\" \"$(ProjectDir)src\\Lucky\\LuckyApi.i\"",
+			"\"$(PYTHON)\" \"$(SolutionDir)Scripts\\fixswig.py\" \"$(SolutionDir)LuckyApi.Web\\SWIG\\LuckyPINVOKE.cs\""
+		}
 
 		filter "files:../Vendors/ImGuizmo/*.cpp"
 			flags { "NoPCH" }

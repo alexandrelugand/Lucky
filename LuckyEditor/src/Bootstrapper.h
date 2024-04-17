@@ -1,7 +1,7 @@
 #pragma once
 
-class Bootstrapper {
-
+class Bootstrapper
+{
 public:
 	Bootstrapper();
 	void Init();
