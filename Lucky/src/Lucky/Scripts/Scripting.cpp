@@ -21,4 +21,19 @@ extern "C"
 		const std::string log(str);
 		LK_CORE_ERROR(log);
 	}
+
+	EXPORT void STDCALL LuckyScripting_LogVec2(glm::vec2* vector)
+	{
+		LK_CORE_INFO("Vector: X:{0}, Y:{1}", vector->x, vector->y);
+	}
+
+	EXPORT void STDCALL LuckyScripting_LogVec3(glm::vec3* vector)
+	{
+		LK_CORE_INFO("Vector: X:{0}, Y:{1}, Z:{2}", vector->x, vector->y, vector->z);
+	}
+
+	EXPORT void STDCALL LuckyScripting_LogVec4(glm::vec4* vector)
+	{
+		LK_CORE_INFO("Vector: X:{0}, Y:{1}, Z:{2}, W:{3}", vector->x, vector->y, vector->z, vector->w);
+	}
 }

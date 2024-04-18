@@ -2,3 +2,6 @@ EXPORTS
 LuckyScripting_Info
 LuckyScripting_Warn
 LuckyScripting_Error
+LuckyScripting_LogVec2
+LuckyScripting_LogVec3
+LuckyScripting_LogVec4
