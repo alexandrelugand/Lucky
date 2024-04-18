@@ -33,11 +33,8 @@ workspace "Lucky"
 			["LuckyEditor"] = {
 				"./LuckyEditor/premake5.lua"
 			},
-			["LuckyApi"] = {
-				"./LuckyApi/premake5.lua"
-			},
-			["LuckyApi.Web"] = {
-				"./LuckyApi.Web/premake5.lua"
+			["LuckyScripting"] = {
+				"./LuckyScripting/premake5.lua"
 			},
 			["Lucky-ScriptCore"] = {
 				"./Lucky-ScriptCore/premake5.lua"
@@ -92,8 +89,7 @@ include "LuckyEditor/premake5.lua"
 include "Browser/BlazorLuckyEditor/premake5.lua"
 
 -- Scripting
-include "LuckyApi/premake5.lua"
-include "LuckyApi.Web/premake5.lua"
+include "LuckyScripting/premake5.lua"
 include "Lucky-ScriptCore/premake5.lua"
 
 -- Misc

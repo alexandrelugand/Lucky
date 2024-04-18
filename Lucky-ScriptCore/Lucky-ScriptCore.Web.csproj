@@ -7,8 +7,8 @@
     <ProjectGuid>{645B6F3C-50EA-F805-F908-0D01E57609AC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lucky-ScriptCore.Web</RootNamespace>
-    <AssemblyName>Lucky-ScriptCore.Web</AssemblyName>
+    <RootNamespace>Lucky-ScriptCore</RootNamespace>
+    <AssemblyName>Lucky-ScriptCore</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,9 +46,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LuckyApi.Web\LuckyApi.Web.csproj">
-      <Project>{D346CA57-BFA9-59FC-682F-92B25471257F}</Project>
-      <Name>LuckyApi.Web</Name>
+    <ProjectReference Include="..\LuckyScripting\LuckyScripting.Web.csproj">
+      <Project>{ACCDFF77-98B1-C0CD-0112-BB20ED14AB4F}</Project>
+      <Name>LuckyScripting.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

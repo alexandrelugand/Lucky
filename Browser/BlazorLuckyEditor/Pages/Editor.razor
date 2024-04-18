@@ -1,5 +1,7 @@
 ﻿@page "/"
+@using BlazorLuckyEditor.Interfaces.Services
 @inject IJSRuntime JsRuntime
+@inject IBootstrap Bootstrap
 
 <PageTitle>Lucky Editor</PageTitle>
 
@@ -7,15 +9,13 @@
 <canvas id="canvas" oncontextmenu="event.preventDefault()" width="1280" height="720"></canvas>
 
 @code {
-	private Bootstrapper? Bootstrapper { get; set; }
 
 	protected override Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
 		{
 			JsRuntime.InvokeVoidAsync("Browser.init");
-			Bootstrapper = new Bootstrapper();
-			Bootstrapper.Init();
+			Bootstrap.Init();
 		}
 		return Task.CompletedTask;
 	}

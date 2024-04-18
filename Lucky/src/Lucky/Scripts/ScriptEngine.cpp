@@ -71,12 +71,6 @@ namespace Lucky
 
 	MonoAssembly* LoadCSharpAssembly(const std::string& assemblyPath)
 	{
-		/*size_t fileSize = 0;
-		char* fileData = ReadBytes(assemblyPath, &fileSize);
-
-		MonoImageOpenStatus status;
-		MonoImage* image = mono_image_open_from_data_full(fileData, (uint32_t)fileSize, 1, &status, 0);*/
-
 		MonoImageOpenStatus status;
 		MonoImage* image = mono_image_open_full(assemblyPath.c_str(), &status, 0);
 		if(status != MONO_IMAGE_OK)
@@ -89,7 +83,6 @@ namespace Lucky
 		MonoAssembly* assembly = mono_assembly_load_from_full(image, assemblyPath.c_str(), &status, 0);
 		mono_image_close(image);
 
-		//delete[] fileData;
 		return assembly;
 	}
 
@@ -127,13 +120,7 @@ namespace Lucky
 		 s_ScriptingData->AppDomain = mono_domain_create_appdomain((char*)"LuckyScriptRuntime", nullptr);
 		 mono_domain_set(s_ScriptingData->AppDomain, true);
 
-		 s_ScriptingData->ApiAssembly = mono_domain_assembly_open(s_ScriptingData->AppDomain, "resources/Scripts/Desktop/LuckyApi.dll");
-		 ////s_ScriptingData->ApiAssembly = LoadCSharpAssembly("resources/Scripts/LuckyApi.dll");
-		 //MonoImage* apiAssemblyImage = mono_assembly_get_image(s_ScriptingData->ApiAssembly);
-		 //PrintAssemblyTypes(s_ScriptingData->ApiAssembly);
-
-		 //s_ScriptingData->CoreAssembly = LoadCSharpAssembly("resources/Scripts/Lucky-ScriptCore.dll");
-		 //PrintAssemblyTypes(s_ScriptingData->CoreAssembly);
+		 s_ScriptingData->ApiAssembly = mono_domain_assembly_open(s_ScriptingData->AppDomain, "resources/Scripts/Desktop/LuckyScripting.dll");
 		 s_ScriptingData->CoreAssembly = mono_domain_assembly_open(s_ScriptingData->AppDomain, "resources/Scripts/Desktop/Lucky-ScriptCore.dll");
 
 		 MonoImage* assemblyImage = mono_assembly_get_image(s_ScriptingData->CoreAssembly);
@@ -147,53 +134,27 @@ namespace Lucky
 		 MonoMethod* printMessageFunc = mono_class_get_method_from_name(monoClass, "PrintMessage", 0);
 		 mono_runtime_invoke(printMessageFunc, instance, nullptr, nullptr);
 
-		 // 3. Call function with param
-		 MonoMethod* printIntFunc = mono_class_get_method_from_name(monoClass, "PrintInt", 1);
+		 //// 3. Call function with param
+		 //MonoMethod* printIntFunc = mono_class_get_method_from_name(monoClass, "PrintInt", 1);
 
-		 int value = 5;
-		 void* param = &value;
-		 mono_runtime_invoke(printIntFunc, instance, &param, nullptr);
+		 //int value = 5;
+		 //void* param = &value;
+		 //mono_runtime_invoke(printIntFunc, instance, &param, nullptr);
 
-		 MonoMethod* printIntsFunc = mono_class_get_method_from_name(monoClass, "PrintInts", 2);
-		 int value2 = 508;
-		 void* params[2] =
-		 {
-		 	&value,
-		 	&value2
-		 };
-		 mono_runtime_invoke(printIntsFunc, instance, params, nullptr);
+		 //MonoMethod* printIntsFunc = mono_class_get_method_from_name(monoClass, "PrintInts", 2);
+		 //int value2 = 508;
+		 //void* params[2] =
+		 //{
+		 //	&value,
+		 //	&value2
+		 //};
+		 //mono_runtime_invoke(printIntsFunc, instance, params, nullptr);
 
-		 MonoString* monoString = mono_string_new(s_ScriptingData->AppDomain, "Hello world from C++!");
-		 MonoMethod* printCustomMessageFunc = mono_class_get_method_from_name(monoClass, "PrintCustomMessage", 1);
-		 void* stringParam = monoString;
-		 mono_runtime_invoke(printCustomMessageFunc, instance, &stringParam, nullptr);
+		 //MonoString* monoString = mono_string_new(s_ScriptingData->AppDomain, "Hello world from C++!");
+		 //MonoMethod* printCustomMessageFunc = mono_class_get_method_from_name(monoClass, "PrintCustomMessage", 1);
+		 //void* stringParam = monoString;
+		 //mono_runtime_invoke(printCustomMessageFunc, instance, &stringParam, nullptr);
 #else		
-		EM_ASM(
-			if (ScriptRuntime) {
-				ScriptRuntime.PrintMessage();
-			}
-		);
-
-		EM_ASM({
-			if (ScriptRuntime) {
-				ScriptRuntime.PrintInt($0);
-			}
-		}, 5);
-
-		EM_ASM({
-			if (ScriptRuntime) {
-				ScriptRuntime.PrintInts($0, $1);
-			}
-		}, 1, 2);
-
-		std::string message = "Hello from C++!";
-		EM_ASM({
-			if (ScriptRuntime) {
-				let message = UTF8ToString($0);
-				ScriptRuntime.PrintCustomMessage(message);
-			}
-		}, message.c_str());
-
 		std::string filePath = "/resources/Scripts/Browser/Lucky-ScriptCore.dll";
 		FILE* f = fopen(filePath.c_str(), "rb");
 		fseek(f, 0, SEEK_END);
@@ -208,32 +169,25 @@ namespace Lucky
 		std::string className = "Main";
 
 		EM_ASM({
-			if(ScriptRuntime) {
-				let assemblyName = UTF8ToString($0);
-				ScriptRuntime.LoadLibrary(assemblyName, HEAPU8.subarray($1, $1 + $2));
-			}
+			let assemblyName = UTF8ToString($0);
+			Scripting.LoadLibrary(assemblyName, HEAPU8.subarray($1, $1 + $2));
 		}, assemblyName.c_str(), data, fsize);
 
 		s_ScriptingData->instance = (uint64_t)EM_ASM_INT({
-			if(ScriptRuntime) {
-				let assemblyName = UTF8ToString($0);
-				let className = UTF8ToString($1);
-				let instance = ScriptRuntime.CreateInstance(assemblyName, className);
-				return instance;
-			}
-			return 0;
+			let assemblyName = UTF8ToString($0);
+			let className = UTF8ToString($1);
+			let instance = Scripting.CreateInstance(assemblyName, className);
+			return instance;
 		}, assemblyName.c_str(), className.c_str());
 
 		std::string methodName = "PrintMessage";
 		EM_ASM({
-			if (ScriptRuntime) {
-				let assemblyName = UTF8ToString($0);
-				let className = UTF8ToString($1);
-				let methodName = UTF8ToString($2);
-				let args = new Array();
-				ScriptRuntime.Invoke(assemblyName, className, methodName, $3, args);
-			}
-			}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_ScriptingData->instance);
+			let assemblyName = UTF8ToString($0);
+			let className = UTF8ToString($1);
+			let methodName = UTF8ToString($2);
+			let args = new Array();
+			Scripting.Invoke(assemblyName, className, methodName, $3, args);
+		}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_ScriptingData->instance);
 #endif	
 	}
 
@@ -271,14 +225,12 @@ namespace Lucky
 		std::string methodName = "OnUpdate";
 
 		EM_ASM({
-			if(ScriptRuntime) {
-				let assemblyName = UTF8ToString($0);
-				let className = UTF8ToString($1);
-				let methodName = UTF8ToString($2);
-				let args = new Array();
-				args[0] = $4;
-				ScriptRuntime.Invoke(assemblyName, className, methodName, $3, args);
-			}
+			let assemblyName = UTF8ToString($0);
+			let className = UTF8ToString($1);
+			let methodName = UTF8ToString($2);
+			let args = new Array();
+			args[0] = $4;
+			Scripting.Invoke(assemblyName, className, methodName, $3, args);
 		}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_ScriptingData->instance, (double)(float)ts);
 #endif		
 	}

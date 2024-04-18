@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Lucky</RootNamespace>
-    <BaseOutputPath></BaseOutputPath>
-    <AssemblyName>LuckyApi</AssemblyName>
+    <BaseOutputPath>bin\Desktop</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="SWIG\" />
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
   </ItemGroup>
 
 </Project>

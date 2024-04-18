@@ -1,4 +1,4 @@
 EXPORTS
-CSharp_Lucky_new_LuckyApi
-CSharp_Lucky_LuckyApi_Log
-CSharp_Lucky_delete_LuckyApi
+LuckyScripting_Info
+LuckyScripting_Warn
+LuckyScripting_Error

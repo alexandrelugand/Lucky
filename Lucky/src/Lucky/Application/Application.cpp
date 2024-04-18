@@ -5,7 +5,7 @@
 #include "Lucky/Platforms/Platform.h"
 #include "Lucky/Renderer/Renderer.h"
 #include "Lucky/Renderer/Renderer2D.h"
-#include "Lucky/Scripting/ScriptEngine.h"
+#include "Lucky/Scripts/ScriptEngine.h"
 
 namespace Lucky
 {

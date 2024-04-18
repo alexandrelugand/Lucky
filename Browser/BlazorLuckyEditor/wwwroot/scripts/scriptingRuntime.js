@@ -1,6 +1,6 @@
-var Scripting = {
+var ScriptingRuntime = {
 	async init() {
 		var exports = await Blazor.runtime.getAssemblyExports("BlazorLuckyEditor");
-		window.ScriptRuntime = exports.BlazorLuckyEditor.Services.ScriptingRuntime;
+		window.Scripting = exports.BlazorLuckyEditor.Services.ScriptingRuntime;
 	}
 };

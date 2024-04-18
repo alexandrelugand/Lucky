@@ -25,9 +25,6 @@
 		<NativeFileReference Include="../../bin/browser/$(Configuration)/Box2D.a" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="SWIG\" />
-	</ItemGroup>
-	<ItemGroup>
 	  <None Include="wwwroot\assets\cache\shader\opengl\Circle.glsl.cached_opengl.frag" />
 	  <None Include="wwwroot\assets\cache\shader\opengl\Circle.glsl.cached_opengl.vert" />
 	  <None Include="wwwroot\assets\cache\shader\opengl\Circle.glsl.cached_vulkan.frag" />
@@ -69,7 +66,7 @@
 	  <None Include="wwwroot\resources\icons\StopButton.png" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\LuckyApi.Web\LuckyApi.Web.csproj" />
+	  <ProjectReference Include="..\..\LuckyScripting\LuckyScripting.Web.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup>

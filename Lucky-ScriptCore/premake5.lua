@@ -15,7 +15,7 @@ group "Scripting"
 		kind "SharedLib"
 		language "C#"
 		dotnetframework "4.8"
-		links { "LuckyApi" }
+		links { "LuckyScripting" }
 
 		targetdir ("%{wks.location}/LuckyEditor/resources/Scripts/Desktop")
 
@@ -36,8 +36,9 @@ group "Browser/Scripting"
 		kind "SharedLib"
 		language "C#"
 		dotnetframework "4.8"
-		links { "LuckyApi.Web" }
+		links { "LuckyScripting.Web" }
 
+		targetname("Lucky-ScriptCore")
 		targetdir ("%{wks.location}/LuckyEditor/resources/Scripts/Browser")
 
 		files(_files)

@@ -69,13 +69,6 @@ Makefile
 /Browser/BlazorLuckyEditor/wwwroot/resources
 /LuckyEditor/resources/Scripts
 
-#SWIG
-/LuckyApi/SWIG
-/LuckyApi.Web/SWIG
-/Lucky-ScriptCore/SWIG
-/Browser/BlazorLuckyEditor/SWIG
-*_wrap.cpp
-
 #Mono
 !Vendors/Mono/**
 !LuckyEditor/mono/**

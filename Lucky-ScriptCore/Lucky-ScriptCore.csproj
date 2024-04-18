@@ -46,9 +46,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LuckyApi\LuckyApi.csproj">
-      <Project>{67B25EBC-537F-B9C7-7C98-A76F68C4EE55}</Project>
-      <Name>LuckyApi</Name>
+    <ProjectReference Include="..\LuckyScripting\LuckyScripting.csproj">
+      <Project>{C0B418E5-AC82-0CEB-9516-7D118183E84F}</Project>
+      <Name>LuckyScripting</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

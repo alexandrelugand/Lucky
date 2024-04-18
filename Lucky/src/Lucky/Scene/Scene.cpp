@@ -12,7 +12,7 @@
 #include <box2d/b2_polygon_shape.h>
 #include <box2d/b2_circle_shape.h>
 
-#include "Lucky/Scripting/ScriptEngine.h"
+#include "Lucky/Scripts/ScriptEngine.h"
 
 namespace Lucky
 {

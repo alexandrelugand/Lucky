@@ -1,4 +1,4 @@
 @echo off
 python Setup.py
-pause
+if NOT %errorlevel%==0 pause
 exit

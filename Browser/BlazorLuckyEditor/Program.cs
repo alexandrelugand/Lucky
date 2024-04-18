@@ -19,6 +19,7 @@ namespace BlazorLuckyEditor
 			builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 			builder.Services.AddSingleton<ILuckyEditorManager, LuckyEditorManager>();
 			builder.Services.AddSingleton<IScriptingRuntime, ScriptingRuntime>();
+			builder.Services.AddSingleton<IBootstrap, Bootstrap>();
 
 			var host = builder.Build();
 			var luckyEditorManager = host.Services.GetService<ILuckyEditorManager>();

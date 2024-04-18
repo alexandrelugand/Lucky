@@ -3,8 +3,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Label="Configuration">
 	  <EMSCRIPTEN_EMSDK_DIR>$(EMSDK)\\upstream\\emscripten</EMSCRIPTEN_EMSDK_DIR>
-	  <SWIG_EXECUTABLE>$(SWIGWIN)\\swig.exe</SWIG_EXECUTABLE>
-	  <SWIG_LIB_DIRECTORY>$(SWIGWIN)\\Lib\\</SWIG_LIB_DIRECTORY>
 	  <PYTHON>$(PYTHON)\\python.exe</PYTHON>
   </PropertyGroup>
   <PropertyGroup />

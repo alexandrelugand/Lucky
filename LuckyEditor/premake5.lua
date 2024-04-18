@@ -56,8 +56,7 @@ group "Core"
 
 		excludes {
 			"src/Bootstrapper.h",
-			"src/Bootstrapper.cpp",
-			"src/Bootstrapper_wrap.cpp",
+			"src/Bootstrapper.cpp"
 		}
 
 		links
@@ -113,11 +112,6 @@ group "Browser/Core"
 		includedirs(_includedirs)
 		libdirs(_libdirs)
 
-		files
-		{
-			"src/Bootstrapper_wrap.cpp"
-		}
-
 		links
 		{
 			"Lucky.Web",
@@ -136,14 +130,6 @@ group "Browser/Core"
 		pchheader "src/LuckyEditorPch.h"
 		pchsource "src/LuckyEditorPch.cpp"
 		pchoutputfile "LuckyEditorPch.h.gch"
-
-		-- Prebuild
-		prebuildmessage "Running swig language bridge..."
-		prebuildcommands { 
-			"set \"SWIG_LIB=$(SWIG_LIB_DIRECTORY)\"",
-			"\"$(SWIG_EXECUTABLE)\" -c++ -csharp -outdir \"$(SolutionDir)Browser\\BlazorLuckyEditor\\SWIG\" -o \"$(ProjectDir)src\\Bootstrapper_wrap.cpp\" \"$(ProjectDir)src\\Bootstrapper.i\"",
-			"\"$(PYTHON)\" \"$(SolutionDir)Scripts\\fixswig.py\" \"$(SolutionDir)Browser\\BlazorLuckyEditor\\SWIG\\LuckyEditorPINVOKE.cs\""
-		}
 
 		-- Configurations
 		filter "configurations:Debug"

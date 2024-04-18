@@ -3,6 +3,7 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using BlazorLuckyEditor.Interfaces.Services;
+using Lucky;
 using Microsoft.JSInterop;
 
 namespace BlazorLuckyEditor.Services
@@ -12,6 +13,7 @@ namespace BlazorLuckyEditor.Services
 	{
 		private static IJSRuntime _jsRuntime = default!;
 		private static readonly Dictionary<string, Assembly> Assemblies = new(StringComparer.InvariantCultureIgnoreCase);
+		private static readonly Scripting Scripting = new();
 
 		public ScriptingRuntime
 		(
@@ -23,33 +25,7 @@ namespace BlazorLuckyEditor.Services
 
 		public async Task Init()
 		{
-			Console.WriteLine("Initialize scripting...");
-			await _jsRuntime.InvokeVoidAsync("Scripting.init");
-		}
-
-		[JSExport]
-		public static void PrintMessage()
-		{
-			Console.WriteLine("Hello world from C#!");
-			_jsRuntime.InvokeVoidAsync("window.testfunction", 10);
-		}
-
-		[JSExport]
-		public static void PrintInt(int value)
-		{
-			Console.WriteLine($"C# says: {value}");
-		}
-
-		[JSExport]
-		public static void PrintInts(int value1, int value2)
-		{
-			Console.WriteLine($"C# says: {value1} and {value2}");
-		}
-
-		[JSExport]
-		public static void PrintCustomMessage(string message)
-		{
-			Console.WriteLine($"C# says: {message}");
+			await _jsRuntime.InvokeVoidAsync("ScriptingRuntime.init");
 		}
 
 		[JSExport]
@@ -59,14 +35,14 @@ namespace BlazorLuckyEditor.Services
 			{
 				if (!Assemblies.TryGetValue(assemblyName, out var asm))
 				{
-					Console.WriteLine($"Loading '{assemblyName}' library...");
+					Scripting.Info($"Loading '{assemblyName}' library...");
 					asm = AppDomain.CurrentDomain.Load(rawAssembly: data);
 					Assemblies.Add(assemblyName, asm);
 				}
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Failed to load '{assemblyName}' library: {ex}");
+				Scripting.Error($"Failed to load '{assemblyName}' library: {ex}");
 			}
 		}
 
@@ -77,7 +53,6 @@ namespace BlazorLuckyEditor.Services
 			{
 				if (Assemblies.TryGetValue(assemblyName, out var asm))
 				{
-					Console.WriteLine($"Creating instance of '{className}' class (assembly: {assemblyName})...");
 					var objType = asm.GetTypes().FirstOrDefault(t => t.Name == className);
 					if (objType != null)
 					{
@@ -85,14 +60,14 @@ namespace BlazorLuckyEditor.Services
 						var gch = GCHandle.Alloc(instance, GCHandleType.Pinned);
 						return GCHandle.ToIntPtr(gch);
 					}
-					Console.WriteLine($"Failed to create instance of '{className}' class (assembly: {assemblyName}): No class found");
+					Scripting.Error($"Failed to create instance of '{className}' class (assembly: {assemblyName}): No class found");
 				}
 				else
-					Console.WriteLine($"Failed to create instance of '{className}' class (assembly: {assemblyName}): No assembly found");
+					Scripting.Error($"Failed to create instance of '{className}' class (assembly: {assemblyName}): No assembly found");
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Failed to create instance of '{className}' class (assembly: {assemblyName}): {ex}");
+				Scripting.Error($"Failed to create instance of '{className}' class (assembly: {assemblyName}): {ex}");
 			}
 
 			return IntPtr.Zero;
@@ -105,7 +80,6 @@ namespace BlazorLuckyEditor.Services
 			{
 				if (Assemblies.TryGetValue(assemblyName, out var asm))
 				{
-					Console.WriteLine($"Invoking '{method}' method (assemblyName: {assemblyName}, className: {className}, instance: {instance}, args: {string.Join(',', args)})...");
 					var objType = asm.GetTypes().FirstOrDefault(t => t.Name == className);
 					if (objType != null)
 					{
@@ -118,15 +92,15 @@ namespace BlazorLuckyEditor.Services
 								mi.Invoke(gch.Target, args);
 						}
 						else
-							Console.WriteLine($"Failed to create instance of '{className}' class (assembly: {assemblyName}): No method found");
+							Scripting.Error($"Failed to create instance of '{className}' class (assembly: {assemblyName}): No method found");
 					}
 				}
 				else
-					Console.WriteLine($"Failed to create instance of '{className}' class (assembly: {assemblyName}): No assembly found");
+					Scripting.Error($"Failed to create instance of '{className}' class (assembly: {assemblyName}): No assembly found");
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Failed to invoke '{method}' method of '{className}' class (assembly: {assemblyName}): {ex}");
+				Scripting.Error($"Failed to invoke '{method}' method of '{className}' class (assembly: {assemblyName}): {ex}");
 			}
 		}
 	}
