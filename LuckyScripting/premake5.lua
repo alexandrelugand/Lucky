@@ -4,7 +4,6 @@ group "Scripting"
 		location "."
 		kind "SharedLib"
 		language "C#"
-		dependson { "Lucky" }
 
 group "Browser/Scripting"
 
@@ -12,4 +11,3 @@ group "Browser/Scripting"
 		location "."
 		kind "SharedLib"
 		language "C#"
-		dependson { "Lucky.Web" }
