@@ -4,7 +4,6 @@ namespace Lucky
 {
 	public class Main : BaseScript
 	{
-
 		public Main()
 		{
 			Scripting.Info("Main constructor!");
