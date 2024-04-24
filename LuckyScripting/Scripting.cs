@@ -1,55 +1,33 @@
 ﻿using System.Runtime.InteropServices;
-using Lucky.Models;
+using Lucky.Maths;
 
 namespace Lucky
 {
 	public class Scripting
 	{
 		#region PInvoke
-
 #if WEB
-		[DllImport("Lucky", EntryPoint = "LuckyScripting_Info")]
+		private const string DllName = "Lucky";
 #else
-		[DllImport("__Internal", EntryPoint = "LuckyScripting_Info")]
+		private const string DllName = "__Internal";
 #endif
+
+		[DllImport(DllName)]
 		public static extern void LuckyScripting_Info(string str);
 
-#if WEB
-		[DllImport("Lucky", EntryPoint = "LuckyScripting_Warn")]
-#else
-		[DllImport("__Internal", EntryPoint = "LuckyScripting_Warn")]
-#endif
+		[DllImport(DllName)]
 		public static extern void LuckyScripting_Warn(string str);
 
-#if WEB
-		[DllImport("Lucky", EntryPoint = "LuckyScripting_Error")]
-#else
-		[DllImport("__Internal", EntryPoint = "LuckyScripting_Error")]
-#endif
+		[DllImport(DllName)]
 		public static extern void LuckyScripting_Error(string str);
 
-#if WEB
-		[DllImport("Lucky", EntryPoint = "LuckyScripting_LogVec2")]
-#else
-		[DllImport("__Internal", EntryPoint = "LuckyScripting_LogVec2")]
-#endif
-
+		[DllImport(DllName)]
 		public static extern void LuckyScripting_LogVec2(ref Vec2 vector);
 
-#if WEB
-		[DllImport("Lucky", EntryPoint = "LuckyScripting_LogVec3")]
-#else
-		[DllImport("__Internal", EntryPoint = "LuckyScripting_LogVec3")]
-#endif
-
+		[DllImport(DllName)]
 		public static extern void LuckyScripting_LogVec3(ref Vec3 vector);
 
-#if WEB
-		[DllImport("Lucky", EntryPoint = "LuckyScripting_LogVec4")]
-#else
-		[DllImport("__Internal", EntryPoint = "LuckyScripting_LogVec4")]
-#endif
-
+		[DllImport(DllName)]
 		public static extern void LuckyScripting_LogVec4(ref Vec4 vector);
 
 		#endregion

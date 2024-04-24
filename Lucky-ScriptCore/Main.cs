@@ -1,11 +1,9 @@
-using System;
-using Lucky.Models;
+using Lucky.Maths;
 
 namespace Lucky
 {
-	public class Main
+	public class Main : BaseScript
 	{
-		public static Scripting Scripting = new Scripting();
 
 		public Main()
 		{
@@ -23,9 +21,9 @@ namespace Lucky
 			Scripting.LogVec4(ref vector4);
 		}
 
-		public void OnUpdate(double ts)
+		public override void OnUpdate(string method, float ts)
 		{
-			Scripting.Info($"OnUpdate: {ts}");
+			Scripting.Info($"{method}: {ts}");
 		}
 	}
 }

@@ -185,8 +185,8 @@ namespace Lucky
 			let assemblyName = UTF8ToString($0);
 			let className = UTF8ToString($1);
 			let methodName = UTF8ToString($2);
-			let args = new Array();
-			Scripting.Invoke(assemblyName, className, methodName, $3, args);
+			//let args = new Array();
+			Scripting.Invoke(assemblyName, className, methodName, $3/*, args*/);
 		}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_ScriptingData->instance);
 #endif	
 	}
@@ -201,37 +201,57 @@ namespace Lucky
 
 	void ScriptEngine::OnUpdate(Timestep ts)
 	{
+		std::string methodName = "OnUpdateInternal";
+
+		struct OnUpdateArgs
+		{
+			void* methodNamePtr;
+			float ts;
+		};
+
+		OnUpdateArgs args;
+		args.methodNamePtr = (void*)methodName.c_str();
+		args.ts = ts;
+
+		void* params[1] =
+		{
+			&args
+		};
+
+		std::string className = "Main";
+
 #ifndef __EMSCRIPTEN__
+		std::string assemblyName = "Lucky";
+
 		if (s_ScriptingData->Script == nullptr)
 		{
+			MonoImage* scriptingAssemblyImage = mono_assembly_get_image(s_ScriptingData->ApiAssembly);
+			MonoClass* monoBaseClass = mono_class_from_name(scriptingAssemblyImage, assemblyName.c_str(), "BaseScript");
+
 			MonoImage* assemblyImage = mono_assembly_get_image(s_ScriptingData->CoreAssembly);
-			MonoClass* monoClass = mono_class_from_name(assemblyImage, "Lucky", "Main");
+			MonoClass* monoClass = mono_class_from_name(assemblyImage, assemblyName.c_str(), className.c_str());
 
 			s_ScriptingData->Script = mono_object_new(s_ScriptingData->AppDomain, monoClass);
 			mono_runtime_object_init(s_ScriptingData->Script);
 
-			s_ScriptingData->OnUpdate = mono_class_get_method_from_name(monoClass, "OnUpdate", 1);
+			s_ScriptingData->OnUpdate = mono_class_get_method_from_name(monoBaseClass, methodName.c_str(), 1);
 		}
-	
-		double value = (double)(float)ts;
-		void* param = &value;
-		mono_runtime_invoke(s_ScriptingData->OnUpdate, s_ScriptingData->Script, &param, nullptr);
+
+		mono_runtime_invoke(s_ScriptingData->OnUpdate, s_ScriptingData->Script, params, nullptr);
 #else
 		if(s_ScriptingData->instance == 0)
 			return;
 
 		std::string assemblyName = "Lucky-ScriptCore";
-		std::string className = "Main";
-		std::string methodName = "OnUpdate";
 
 		EM_ASM({
 			let assemblyName = UTF8ToString($0);
 			let className = UTF8ToString($1);
 			let methodName = UTF8ToString($2);
-			let args = new Array();
-			args[0] = $4;
-			Scripting.Invoke(assemblyName, className, methodName, $3, args);
-		}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_ScriptingData->instance, (double)(float)ts);
+			let instance = $3;
+			let args = Array.from(new Uint32Array(Module.HEAP8.buffer, $4, $5));
+			Scripting.Invoke(assemblyName, className, methodName, instance, args);
+		}, assemblyName.c_str(), className.c_str(), methodName.c_str(), s_ScriptingData->instance, params, sizeof(params)/sizeof(void*));
 #endif		
 	}
 
